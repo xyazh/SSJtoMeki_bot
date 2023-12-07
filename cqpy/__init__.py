@@ -12,4 +12,3 @@ from .CQCode import CQCode
 from .CQCode import CQCodeHelper
 from .data import data
 from .IType import *
-from .AIBotChat import AIBotChat
