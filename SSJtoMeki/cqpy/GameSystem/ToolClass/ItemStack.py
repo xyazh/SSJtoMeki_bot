@@ -13,3 +13,6 @@ class ItemStack:
     
     def __len__(self):
         return self.n
+    
+    def copy(self)->"ItemStack":
+        return ItemStack(self.item,self.n)

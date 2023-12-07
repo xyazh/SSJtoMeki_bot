@@ -1,6 +1,7 @@
 import weakref
-from ..DataManager import DataManager
+from ...xyazhServer.DataManager import DataManager
 from ..ToolClass.RollDict import RollDict
+
 
 class BaseDataPlayer:
     data_manager = DataManager()
