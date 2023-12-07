@@ -1,0 +1,160 @@
+<div id="roll_data_site" class="site-text">
+    <div class="layui-collapse" id="roll_data_collapse">
+    </div>
+</div>
+<style>
+    .custom-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .table-header {
+        background-color: #ebfdff;
+    }
+
+    .table-cell {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .custom-table tr:nth-child(even) {
+        background-color: rgb(222, 234, 246);
+    }
+</style>
+<script type="text/html" id="roll_data_table">
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title" style="background-color: rgb(190, 215, 238);">{{qq_id}}<i class="layui-icon layui-colla-icon"></i></h2>
+        <div class="layui-colla-content" style="padding: 0;">
+            <div class="layui-colla-item">
+                <div style="height: 10px;"></div>
+                <table class="custom-table">
+                    <tr>
+                        <th class="table-header">名字:</th>
+                        <th class="table-header">血量:</th>
+                        <th class="table-header">理智:</th>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="table-cell">词条:——</td>
+                    </tr>
+                    <tr>
+                        <td class="table-cell">状态:《显示或隐藏2_</td>
+                        <td colspan="2" class="table-cell">效果:_《可自定义编辑2</td>
+                    </tr>
+                    <tr>
+                        <td class="table-cell">词条:</td>
+                        <td class="table-cell">数量:</td>
+                        <td class="table-cell">类型:</td>
+                    </tr>
+                    <tr>
+                        <td class="table-cell">状态:（显示或隐藏）</td>
+                        <td colspan="2" class="table-cell">效果:（可自定义编辑）</td>
+                    </tr>
+                    <tr>
+                        <td class="table-cell">词条:</td>
+                        <td class="table-cell">数量:</td>
+                        <td class="table-cell">类型:</td>
+                    </tr>
+                    <tr>
+                        <td class="table-cell">状态:（显示或隐藏）</td>
+                        <td colspan="2" class="table-cell">效果:（可自定义编辑）</td>
+                    </tr>
+                    <tr>
+                        <td class="table-cell">词条:</td>
+                        <td class="table-cell">数量:</td>
+                        <td class="table-cell">类型:</td>
+                    </tr>
+                    <tr>
+                        <td class="table-cell">状态:《显示或隐藏）</td>
+                        <td colspan="2" class="table-cell">效果:《可自定义编辑）</td>
+                    </tr>
+                    <tr>
+                        <td class="table-cell">词条:</td>
+                        <td class="table-cell">数量:</td>
+                        <td class="table-cell">类型:</td>
+                    </tr>
+                    <tr>
+                        <td class="table-cell">状态:（显示或隐藏）</td>
+                        <td colspan="2" class="table-cell">效果:（可自定义编辑）</td>
+                    </tr>
+                </table>
+                <div style="height: 10px;"></div>
+                <h2 class="layui-colla-title" style="background-color: rgb(197, 227, 233);">显示原始表格</h2>
+                <div class="layui-colla-content" style="padding: 0;margin: 0;">
+                    <table style="margin-top: 0;" id="group_roll_table_{{qq_id}}" lay-filter="group_roll_table_{{qq_id}}"></table>
+                </div>
+                <div style="height: 10px;"></div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 10px;"></div>
+</script>
+<script>
+    layui.use('table', function () {
+        $.ajax({
+            url: "/api/get_roll_menber",
+            type: "get",
+            success: function (result) {
+                var t_data = JSON.parse(result)
+                for (k in t_data) {
+                    t = template("roll_data_table", { "qq_id": k })
+                    $("#roll_data_collapse").append(t)
+                }
+                $(".layui-colla-title").click(function (obj) {
+                    var obj = $(obj.target);
+                    var f_ch = obj.find("*").eq(0)
+                    var next_obj = obj.next();
+                    var cl = next_obj.attr("class");
+                    if (cl.includes("layui-show")) {
+                        f_ch.html("");
+                        next_obj.attr("class", "layui-colla-content");
+                    } else {
+                        f_ch.html("");
+                        next_obj.attr("class", "layui-colla-content layui-show");
+                    }
+                });
+                var table = layui.table;
+                const rTable = function (t_data, qq_id) {
+                    table.render({
+                        elem: '#group_roll_table_' + qq_id,
+                        data: t_data,
+                        page: false, //开启分页
+                        limit: Infinity,
+                        even: true,
+                        escape: false,
+                        cols: [[ //表头
+                            { field: 'name', title: '词条名', sort: true, fixed: 'left' },
+                            { field: 'val', title: '值' },
+                            { field: 'type', title: '类型', sort: true },
+                        ]]
+                    });
+                    table.on('row(group_roll_table_' + qq_id + ')', function (obj) {
+                        var val = parseInt(prompt("请输入要设置的值", ""));
+                        var qq = parseInt(qq_id);
+                        if (val) {
+                            var name = obj.data.name;
+                            var type = obj.data.type;
+                            console.log(qq, val, name, type);
+                        }
+                        obj.data.name += "1";
+                    });
+                }
+                for (k in t_data) {
+                    rTable(t_data[k], k);
+                }
+            },
+            error: function (xhr, status, error) {
+                var m = "错误"
+                switch (xhr.status) {
+                    case 401:
+                        m = "登录信息失效";
+                        break;
+                    case 404:
+                        m = "未绑定qq";
+                        break;
+                }
+                $("#roll_data_site").html(m);
+            }
+        });
+    });
+</script>
