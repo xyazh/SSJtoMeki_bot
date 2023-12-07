@@ -1,6 +1,6 @@
 import datetime,random,time
 from ..GameSystem.PlayerSystem.Player import Player
-from ..I18n import I18n
+from ..I18n.I18n import I18n
 from .YxBaseGroup import YxBaseGroup
 from ..GroupHelper import GroupHelper
 
