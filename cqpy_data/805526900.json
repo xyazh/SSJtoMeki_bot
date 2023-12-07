@@ -1,0 +1,29 @@
+{
+    "fate_last_time": 1674317727.3324604,
+    "fate": 82,
+    "last_time": 1674317721.5197597,
+    "day": 5,
+    "point": 56,
+    "fate_change_pt": 15,
+    "emotion": 4,
+    "binded_chara": "空白卡",
+    "chara_cards": {
+        "空白卡": {
+            "hp": 1,
+            "san": 54,
+            "mp": 1,
+            "str": 10,
+            "dex": 10,
+            "con": 10,
+            "siz": 10,
+            "app": 10,
+            "int": 10,
+            "pow": 10,
+            "edu": 10,
+            "luk": 10,
+            "理智": 54,
+            "sanity": 54,
+            "sc": -1
+        }
+    }
+}

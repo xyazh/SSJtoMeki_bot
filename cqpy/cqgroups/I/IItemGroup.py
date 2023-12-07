@@ -7,7 +7,7 @@ from ...GameSystem.Helper import RollHelper
 from ...GameSystem.ItemSystem.Items.BaseItem import BaseItem
 from ...IType import *
 from ...CQCode import CQCodeHelper
-from ...I18n import I18n
+from ...I18n.I18n import I18n
 
 class IItemGroup(IBaseGroup):
     @BaseGroup.register

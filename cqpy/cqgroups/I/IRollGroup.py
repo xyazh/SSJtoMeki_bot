@@ -6,7 +6,7 @@ from ...GroupHelper import GroupHelper
 from ...GameSystem.PlayerSystem.Player import Player
 from ...GameSystem.Helper import RollHelper
 from ...IType import *
-from ...I18n import I18n
+from ...I18n.I18n import I18n
 from ...CQCode import CQCodeHelper
 
 class IRollGroup(IBaseGroup):

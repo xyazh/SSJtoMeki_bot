@@ -8,7 +8,7 @@ from ..GroupHelper import GroupHelper
 from ..GroupHelper import ORDER_SPLIT_LIST
 from ..GenVoice import GenVoice
 from ..xyazhServer.BestXor import BestXor
-from ..I18n import I18n
+from ..I18n.I18n import I18n
 from .BaseGroup import BaseGroup
 from .I.ISSJGroup import ISSJGroup
 from .I.IRollGroup import IRollGroup
