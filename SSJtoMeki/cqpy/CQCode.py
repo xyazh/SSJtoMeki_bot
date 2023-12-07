@@ -25,41 +25,17 @@ class CQCodeHelper:
             
     @staticmethod
     def parseCQ(s:str)->tuple[str,dict]|None:
-        s = re.sub(r"(\{.*\})",lambda m:m.group()
-        .replace(",","|xcqescape114")
-        .replace(":","|xcqescape514")
-        .replace("[","|xcqescape191")
-        .replace("]","|xcqescape919")
-        .replace("=","|xcqescape810")
-        .replace("\'","|xcqescape853")
-        .replace("\"","|xcqescape641"),s)
-        s = (s
-            .replace("[","[\"CQType=")
-            .replace("]","\"]")
-            .replace(",","\",\""))
-        try:
-            l:list[str] = json.loads(s)
-            r = {}
-            for i in l:
-                ls = i.split("=",1)
-                r[ls[0]] = ls[1]
-            d = {}
-        except BaseException as e:
-            ConsoleMessage.printWarning("无效的CQ码：" + str(e))
-            return None
-        for i in r:
-            r[i] = (r[i]
-                .replace("|xcqescape114",",")
-                .replace("|xcqescape514",":")
-                .replace("|xcqescape191","[")
-                .replace("|xcqescape919","]")
-                .replace("|xcqescape810","=")
-                .replace("|xcqescape853","\'")
-                .replace("|xcqescape641","\""))
-            d[i] = r[i]
-        t_str = d.pop("CQType")
-        t_str = t_str[3:]
-        return (t_str,d)
+        s = s[1:-1]
+        s = s.split(",")
+        t = ""
+        r = {}
+        for i in s:
+            if not t and "CQ:" in i:
+                t = i.split(":")[1]
+            if "=" in i:
+                key_val = i.split("=",1)
+                r[key_val[0]] = key_val[1]
+        return t,r
 
     @staticmethod
     def creatCQCodeFromMsg(msg:str)->list[CQCode]:

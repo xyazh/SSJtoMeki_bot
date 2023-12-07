@@ -3,7 +3,9 @@ import json
 import time
 import random
 import inspect
-from .DataManager import DataManager
+import urllib.parse
+from urllib import request
+from .xyazhServer.DataManager import DataManager
 from .Event import Event
 from .GroupHelper import GroupHelper
 from . import cqgroups
@@ -134,20 +136,11 @@ class Cqserver(t.MyWebApp):
         print(" * ---------------------------------")
 
     def get(self, path) -> bytes:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((self.ip, self.port))
-        s.send(b"GET %b HTTP/1.1\r\n" % (bytes(path, "utf8")))
-        s.send(b"Host: %b\r\n" % (bytes(self.ip, "utf8")))
-        s.send(b"Connection: close\r\n")
-        s.send(b"\r\n")
-        data_list = []
-        while True:
-            data_recv = s.recv(1)
-            data_list.append(data_recv)
-            if (len(data_list) >= 4 and b"\r" == data_list[-4] and b"\n" == data_list[-3] and b"\r" == data_list[-2] and b"\n" == data_list[-1]) or len(data_recv) == 0:
-                break
-        s.close()
-        return b"".join(data_list)
+        r = b""
+        with request.urlopen("http://%s:%s%s"%(self.ip,self.port,path)) as f:
+            r = f.read()
+        return r
+
 
     def sendGroup(self, group_id, msg):
         time.sleep(0.7 + random.random()/2)
@@ -170,28 +163,7 @@ class Cqserver(t.MyWebApp):
                 "/send_msg?message_type=private&user_id=%s&message=%s" % (id, msg))
 
     def escapeMsg(self, msg: str) -> str:
-        msg = (msg
-               .replace("%", "%25")
-               .replace(" ", "%20")
-               .replace("\r", "%0d")
-               .replace("\n", "%0a")
-               .replace("/", "%2f")
-               .replace("?", "%3f")
-               .replace("#", "%23")
-               .replace("&amp;", "%26")
-               .replace("&", "&amp;")
-               .replace("&amp;", "%26")
-               .replace("<", "%3c")
-               .replace("=", "%3d")
-               .replace(">", "%3e")
-               .replace("+", "%2b")
-               .replace("|", "%7c")
-               .replace("(", "%28")
-               .replace(")", "%29")
-               .replace("]", "%5d")
-               .replace("[", "%5b")
-               .replace(":", "%3a")
-               .replace(";", "%3b"))
+        msg = urllib.parse.quote(msg)
         return msg
 
     def setGroupLeave(self, group_id):
@@ -208,4 +180,9 @@ class Cqserver(t.MyWebApp):
                  (group_id, cq))
 
     def getGroupList(self):
-        self.get("/get_group_list")
+        return self.get("/get_group_list")
+    
+    def getForwardMsg(self,msg_id:str|int)->bytes:
+        return self.get("/get_forward_msg?message_id=%s"%msg_id)
+
+    
