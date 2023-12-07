@@ -1,2 +1,2 @@
 class Config:
-    LANG = "yx"
+    LANG = "cn"
