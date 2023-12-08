@@ -208,7 +208,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                 self.s.sendGroup(self.group_id,I18n.format("sign_0")%(GroupHelper.getName(data)))
                 return
             if (last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
-                self.s.sendGroup(self.group_id,I18n.format("sign_0")%(GroupHelper.getName(data),time.time()-last_time))
+                self.s.sendGroup(self.group_id,I18n.format("sign_ng")%(GroupHelper.getName(data),time.time()-last_time))
             else:
                 day = player.findGet("day",0)
                 e = player.findGet("emotion",0)
