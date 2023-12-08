@@ -133,7 +133,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             pt = player.findGet("point")
             if pt == None:
                 player.set("point",1)
-                self.s.sendGroup(self.group_id,"%s第一次看到了魔素凝结成形。\r\n（魔素【+1✧】）："%GroupHelper.getName(data))
+                self.s.sendGroup(self.group_id,I18n.format("pt_0")%GroupHelper.getName(data))
             elif pt > 0:
                 if pt < 10:
                     self.s.sendGroup(self.group_id,(I18n.format("pt_1"))%(GroupHelper.getName(data),pt))
@@ -161,7 +161,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             e = player.get("emotion")
             if e == None:
                 player.set("emotion",1)
-                self.s.sendGroup(self.group_id,"“%s”，嗯，三色堇记住了的说……阁下真的愿意和三色堇做朋友吗……\r\n（获得了【+1◈】好感）"%GroupHelper.getName(data))
+                self.s.sendGroup(self.group_id,I18n.format("e_0")%GroupHelper.getName(data))
             elif e > 0:
                 if e < 150:
                     self.s.sendGroup(self.group_id,(I18n.format("e_1"))%(GroupHelper.getName(data),e))
@@ -186,12 +186,12 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             player = Player(GroupHelper.getId(data))
             e = player.get("emotion")
             if e == None:
-                self.s.sendGroup(self.group_id,"那个……阁下是不是认错人了？")
+                self.s.sendGroup(self.group_id,I18n.format("e_rst_0"))
             elif e < 0:
                 player.set("emotion",1)
-                self.s.sendGroup(self.group_id,"“%s”阁下不用这样子郑重地……噶呜……那些事情已经三色堇没有记在心上啦……\r\n（当前好感恢复至【1◈】）"%(GroupHelper.getName(data)))
+                self.s.sendGroup(self.group_id,I18n.format("e_rst_1")%(GroupHelper.getName(data)))
             else:
-                self.s.sendGroup(self.group_id,"“%s”阁下并没有做被三色堇讨厌的事情哦……阁下不用这么担心三色堇啦……\r\n（当前好感为【%g◈】）"%(GroupHelper.getName(data),e))
+                self.s.sendGroup(self.group_id,I18n.format("e_rst_ng")%(GroupHelper.getName(data),e))
 
     #获取签到者签到天数，并加魔素与好感
     @register
@@ -205,10 +205,10 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                 player.set("day",1)
                 pt = player.findGet("point",0)
                 player.set("point",pt + 1)
-                self.s.sendGroup(self.group_id,"“%s”?三色堇是个好孩子……会记住的……送给阁下这个的说。【+1✧】"%(GroupHelper.getName(data)))
+                self.s.sendGroup(self.group_id,I18n.format("sign_0")%(GroupHelper.getName(data)))
                 return
             if (last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
-                self.s.sendGroup(self.group_id,"“%s”阁下【%.2f】秒前应该来过了的说……三色堇对自己的记忆力还是有信心的……"%(GroupHelper.getName(data),time.time()-last_time))
+                self.s.sendGroup(self.group_id,I18n.format("sign_0")%(GroupHelper.getName(data),time.time()-last_time))
             else:
                 day = player.findGet("day",0)
                 e = player.findGet("emotion",0)
@@ -220,7 +220,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                 player.set("day",day)
                 player.set("emotion",e + add_e)
                 player.set("point",pt + add_pt)
-                self.s.sendGroup(self.group_id,"这是“%s”第%d次来这里的说……我觉得这个应该……有用……【+%g✧】【+%g◈】"%(GroupHelper.getName(data),day,add_pt,add_e))
+                self.s.sendGroup(self.group_id,I18n.format("sign_1")%(GroupHelper.getName(data),day,add_pt,add_e))
 
     #获取发送者占卜命运结果
     @register
