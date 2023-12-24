@@ -413,3 +413,44 @@ class IRollGroup(IBaseGroup):
             for i in d:
                 player.setItemNumberTotBindedChara(i, int(d[i]))
         self.s.sendGroup(self.group_id, "物品设置完毕")
+
+    @BaseGroup.register
+    @BaseGroup.helpData(["roll"], "检定变更", "[ARR]", "[ARR] [xdy*...|xdy*...]", "对属性进行检定，若成功执行|左边的内容，失败则执行|右边的内容")
+    def rollCheck(self, data: dict, order: Order):
+        if not order.checkOrder("set_item"):
+            return
+        qq_id = GroupHelper.getId(data)
+        player = Player(qq_id)
+        card = player.getBindedCardNotNone()
+        order_str = order.getOrderStr()
+        if order_str not in card:
+            return
+        arg = order.getArg(1)
+        xdys = arg.split("|")
+        if len(xdys)==1:
+            xdys = ["1",xdys[0]]
+        elif len(xdys)<2:
+            self.s.sendGroup(self.group_id,I18n.format("has_help"))
+            return
+        val = card[order_str]
+        rc = random.randint(1, 100)
+        msg = I18n.format("ra_meki_kantei") % (GroupHelper.getName(data), order_str, rc, val)
+        if rc<=val:
+            r = IRollGroup.safeRoll(
+                self, RollHelper.evaluateExpression, xdys[0])
+            if r == None:
+                return
+            r = int(r)
+            msg += I18n.format("ra_meki_huutsuu")
+            msg += "\r\n你的%s变更为%s"%(order_str,"+%s"%r if r>=0 else "%s"%r)
+            player.setBindedCardArr({order_str:val+r})
+        else:
+            r = IRollGroup.safeRoll(
+                self, RollHelper.evaluateExpression, xdys[1])
+            if r == None:
+                return
+            r = int(r)
+            msg += I18n.format("ra_meki_shippai")
+            msg += "\r\n你的%s变更为%s"%(order_str,"+%s"%r if r>=0 else "%s"%r)
+            player.setBindedCardArr({order_str:val+r})
+        self.s.sendGroup(self.group_id, msg)

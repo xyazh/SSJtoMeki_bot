@@ -13,6 +13,9 @@ class Order:
         if order == self.o_li[0][1:]:
             return True
         return False
+    
+    def getOrderStr(self)->str:
+        return self.o_li[0][1:]
 
     def getArg(self,index:int,t:Callable[[T],T]=str)->str|T|None:
         r = None
@@ -29,8 +32,6 @@ class Order:
     
     def getArgs(self,*args:tuple[int],t:Callable[[T],T]=str)->tuple[str|T|None,...]:
         return tuple(self.getArg(i,t=t) for i in args)
-
-
 
 if __name__ == "__main__":
     order = Order(["/s","1","b"])

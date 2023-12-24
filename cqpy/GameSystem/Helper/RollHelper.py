@@ -37,12 +37,12 @@ class RollHelper:
 
     @staticmethod
     def evaluateExpression(expression: str) -> float | int | complex:
-        operator_precedence = {"|": 0, "+": 1, "-": 1,
+        operator_precedence = {"?": 0, "+": 1, "-": 1,
                                "*": 2, "/": 2, "^": 3, "D": 4, "d": 4}
         expression = expression.replace("（", "(")
         expression = expression.replace("）", ")")
         expression = expression.replace("(-", "(0-")
-        tokens = re.findall(r"[-+*/^Ddij()|]|\d+\.?\d*", expression)
+        tokens = re.findall(r"[-+*/^Ddij()\?]|\d+\.?\d*", expression)
         operator_stack = []
         output_queue = []
 
@@ -80,7 +80,7 @@ class RollHelper:
                     a = None
                     if len(operand_stack) > 0:
                         a = operand_stack.pop()
-                    if token == "|":
+                    if token == "?":
                         if a == None:
                             raise SyntaxError("invalid syntax")
                         result = random.choice((a,b))
