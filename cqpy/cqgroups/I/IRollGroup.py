@@ -440,7 +440,7 @@ class IRollGroup(IBaseGroup):
                 return
             r = int(r)
             msg += I18n.format("ra_meki_huutsuu")
-            msg += "\r\n你的%s变更为%s-%s=%s"%(order_str,val,"+%s"%r if r>=0 else "%s"%r,val+r)
+            msg += "\r\n你的%s变更为%s%s=%s"%(order_str,val,"+%s"%r if r>=0 else "%s"%r,val+r)
             player.setBindedCardArr({order_str:val+r})
         else:
             r = IRollGroup.safeRoll(
@@ -449,6 +449,6 @@ class IRollGroup(IBaseGroup):
                 return
             r = int(r)
             msg += I18n.format("ra_meki_shippai")
-            msg += "\r\n你的%s变更为%s-%s=%s"%(order_str,val,"+%s"%r if r>=0 else "%s"%r,val+r)
+            msg += "\r\n你的%s变更为%s%s=%s"%(order_str,val,"+%s"%r if r>=0 else "%s"%r,val+r)
             player.setBindedCardArr({order_str:val+r})
         self.s.sendGroup(self.group_id, msg)
