@@ -191,7 +191,7 @@ class IRollGroup(IBaseGroup):
                     self.s.sendGroup(self.group_id, "好像没有%s这个属性" % k)
                     return
             r = random.randint(1, 100)
-            msg = I18n.format("ra_meki_kantei") % (GroupHelper.getName(data), k, r, v)
+            msg = I18n.format("ra_kantei") % (GroupHelper.getName(data), k, r, v)
             if self.vanilla_ra_rule:
                 if r == 1:
                     msg += I18n.format("ra_meki_daiseiko")
@@ -432,7 +432,7 @@ class IRollGroup(IBaseGroup):
             return
         val = card[order_str]
         rc = random.randint(1, 100)
-        msg = I18n.format("ra_meki_kantei") % (GroupHelper.getName(data), order_str, rc, val)
+        msg = I18n.format("ra_kantei") % (GroupHelper.getName(data), order_str, rc, val)
         if rc<=val:
             r = IRollGroup.safeRoll(
                 self, RollHelper.evaluateExpression, xdys[0])
@@ -440,7 +440,7 @@ class IRollGroup(IBaseGroup):
                 return
             r = int(r)
             msg += I18n.format("ra_meki_huutsuu")
-            msg += "\r\n你的%s变更为%s%s=%s"%(order_str,val,"+%s"%r if r>=0 else "%s"%r,val+r)
+            msg += "\r\n（你的“%s”变更为【%s%s=%s】）"%(order_str,val,"+%s"%r if r>=0 else "%s"%r,val+r)
             player.setBindedCardArr({order_str:val+r})
         else:
             r = IRollGroup.safeRoll(
@@ -449,6 +449,48 @@ class IRollGroup(IBaseGroup):
                 return
             r = int(r)
             msg += I18n.format("ra_meki_shippai")
-            msg += "\r\n你的%s变更为%s%s=%s"%(order_str,val,"+%s"%r if r>=0 else "%s"%r,val+r)
+            msg += "\r\n（你的“%s”变更为【%s%s=%s】）"%(order_str,val,"+%s"%r if r>=0 else "%s"%r,val+r)
             player.setBindedCardArr({order_str:val+r})
         self.s.sendGroup(self.group_id, msg)
+
+    @BaseGroup.register
+    @BaseGroup.helpData(["roll"], "奖励骰子", "rb", "rb [ARR](number)", "对属性进行奖励骰检定，可设定投骰子次数取最小值，默认骰两次。")
+    def rollBenefits(self, data: dict, order: Order):
+        if order.checkOrder("rb"):
+            player = Player(GroupHelper.getId(data))
+            arg_1 = order.getArg(1)
+            value = player.getBindedCardVal(arg_1)
+            if value is not None:
+                arg_2 = order.getArg(2)
+                arg_2 = int(arg_2) if arg_2 != None else 2
+                rc_list = (random.randint(1, 100) for _ in range(arg_2))
+                rc = min(rc_list)
+                if rc <= value:
+                    msg = I18n.format("rb_meki_seikou")
+                else:
+                    msg = I18n.format("rb_meki_shippai")
+            else:
+                return
+            msg = I18n.format("rb_kantei") % (GroupHelper.getName(data), arg_1, rc, value) + msg
+            self.s.sendGroup(self.group_id, msg)
+
+    @BaseGroup.register
+    @BaseGroup.helpData(["roll"], "惩罚骰子", "rp", "rp [ARR](number)", "对属性进行惩罚骰检定，可设定投骰子次数取最大值，默认骰两次。")
+    def rollPunish(self, data: dict, order: Order):
+        if order.checkOrder("rp"):
+            player = Player(GroupHelper.getId(data))
+            arg_1 = order.getArg(1)
+            value = player.getBindedCardVal(arg_1)
+            if value is not None:
+                arg_2 = order.getArg(2)
+                arg_2 = int(arg_2) if arg_2 != None else 2
+                rc_list = (random.randint(1, 100) for _ in range(arg_2))
+                rc = max(rc_list)
+                if rc >= value:
+                    msg = I18n.format("rp_meki_shippai")
+                else:
+                    msg = I18n.format("rp_meki_seikou")
+            else:
+                return
+            msg = I18n.format("rp_kantei") % (GroupHelper.getName(data), arg_1, rc, value) + msg
+            self.s.sendGroup(self.group_id, msg)
