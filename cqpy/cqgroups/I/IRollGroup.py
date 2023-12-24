@@ -417,8 +417,6 @@ class IRollGroup(IBaseGroup):
     @BaseGroup.register
     @BaseGroup.helpData(["roll"], "检定变更", "[ARR]", "[ARR] [xdy*...|xdy*...]", "对属性进行检定，若成功执行|左边的内容，失败则执行|右边的内容")
     def rollCheck(self, data: dict, order: Order):
-        if not order.checkOrder("set_item"):
-            return
         qq_id = GroupHelper.getId(data)
         player = Player(qq_id)
         card = player.getBindedCardNotNone()
