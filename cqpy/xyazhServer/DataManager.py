@@ -1,8 +1,10 @@
 import os,json,io,logging
 
 class DataManager:
-    def __init__(self,path="\\cqpy_data\\"):
-        self.path = os.getcwd() + path
+    def __init__(self, path="\\cqpy_data\\"):
+        current_directory = os.getcwd()
+        parent_directory = os.path.dirname(current_directory)
+        self.path = os.path.join(parent_directory, path)
         if not os.path.exists(self.path):
             os.mkdir(self.path)
 
