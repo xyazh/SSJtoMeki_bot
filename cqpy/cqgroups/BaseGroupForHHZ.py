@@ -54,11 +54,11 @@ class BaseGroupForHHZ(BaseGroup):
                 msg += "\r\n%s" % datdetails
                 msg += I18n.format("help_1")
             else:
-                self.s.sendGroup(self.group_id, I18n.format(
+                self.server.sendGroup(self.group_id, I18n.format(
                     "help_not_found") % BOT_NAME)
                 return
             msg += I18n.format("help_2")
-            self.s.sendGroup(self.group_id, msg)
+            self.server.sendGroup(self.group_id, msg)
 
     @BaseGroup.register
     @BaseGroup.helpData(["o"], "测试指令", "test", "test (msg)", "发送一句test或者指定的参数")
@@ -66,22 +66,22 @@ class BaseGroupForHHZ(BaseGroup):
         if order.checkOrder("test"):
             arg = order.getArg(1)
             if arg:
-                self.s.sendGroup(self.group_id, arg)
+                self.server.sendGroup(self.group_id, arg)
             else:
-                self.s.sendGroup(self.group_id, "test")
+                self.server.sendGroup(self.group_id, "test")
 
     @BaseGroup.register
     @BaseGroup.helpData(["o"], "退出该群", "bye", "bye", "让机器人退出该群")
     def bye(self, data: dict, order: Order):
         if order.checkOrder("bye") or order.checkOrder("exit"):
             if GroupHelper.checkOwnerOrAdmin(data):
-                self.s.setGroupLeave(self.group_id)
+                self.server.setGroupLeave(self.group_id)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n", "o"], "开发信息", "bot", "bot", "输出机器人信息")
     def bot(self, data: dict, order: Order):
         if order.checkOrder("bot"):
-            self.s.sendGroup(
+            self.server.sendGroup(
                 self.group_id, I18n.format("bot_desc"))
 
     @BaseGroup.register
@@ -93,14 +93,14 @@ class BaseGroupForHHZ(BaseGroup):
         player = Player(qq_id)
         last_time = player.findGet("last_time", 0)
         if last_time//(24*3600) == time.time()//(24*3600):
-            self.s.sendGroup(self.group_id, "%s，%.2f秒前才签到过。这么快就忘了" % (
+            self.server.sendGroup(self.group_id, "%s，%.2f秒前才签到过。这么快就忘了" % (
                 GroupHelper.getName(data), time.time()-last_time))
         else:
             n = player.findGet("n", 1)
             p = player.findGet("point", 1)
             ap = random.randint(int(n//2), n)
             ap = 1 if ap <= 0 else ap
-            self.s.sendGroup(self.group_id, "%s，今天已签到。第%d天签到获得：%dP，今天也来见%s了呢" % (
+            self.server.sendGroup(self.group_id, "%s，今天已签到。第%d天签到获得：%dP，今天也来见%s了呢" % (
                 GroupHelper.getName(data), n, ap, BOT_NAME))
             player.set("n", n+1)
             player.set("point", p+ap)
@@ -155,7 +155,7 @@ class BaseGroupForHHZ(BaseGroup):
             r += "今天已经测过运势了" if not flag else random.choice(["街上好安静啊", "大哥哥......", "打完这场仗我就会老家结婚", "听好，在我回来之前不要乱走", "已经没什么好怕的了",
                                "你们先走我马上就来", "身体好轻", "因为我不再是一个人了", "什么声音，我去看看", "完了，这次真的完了", "没关系，问题不大（", "嗯？是错觉吗"])
         msg = "%s今日的幸运指数是%i %s" % (GroupHelper.getName(data), 100-ys, r)
-        self.s.sendGroup(self.group_id, msg)
+        self.server.sendGroup(self.group_id, msg)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "动漫资讯", "anime_news", "anime_news", "获取当日动漫新闻。资讯来源于网络，每小时会尝试更新，直接发送动漫新闻、动画新闻、二次元新闻、anime新闻、动漫资讯、动画资讯、二次元资讯、anime资讯有同样效果")
@@ -166,10 +166,10 @@ class BaseGroupForHHZ(BaseGroup):
         if order.checkOrder("anime_news"):
             li = LoopEvent.today_anime_news
             if len(li) > 0:
-                self.s.sendGroup(
+                self.server.sendGroup(
                     self.group_id, li[random.randint(0, len(li)-1)])
                 return
-            self.s.sendGroup(self.group_id, "当前没有资讯力")
+            self.server.sendGroup(self.group_id, "当前没有资讯力")
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "游戏资讯", "gal_news", "gal_news (0-9*|all)", "获取当日gal新闻。资讯来源于网络，每小时会尝试更新。参数为空随机，为all输出全部，数字输出当前条数，发送gal新闻、galgame新闻、gal资讯、galgame资讯也可随机获取一条")
@@ -181,10 +181,10 @@ class BaseGroupForHHZ(BaseGroup):
             li = LoopEvent.today_galgame_news
             arg = order.getArg(1)
             if len(li) <= 0:
-                self.s.sendGroup(self.group_id, "当前没有资讯力")
+                self.server.sendGroup(self.group_id, "当前没有资讯力")
                 return
             if arg == None:
-                self.s.sendGroup(
+                self.server.sendGroup(
                     self.group_id, li[random.randint(0, len(li)-1)])
                 return
             if arg == "all":
@@ -194,17 +194,17 @@ class BaseGroupForHHZ(BaseGroup):
                     for i in li:
                         n += 1
                         msg += "\r\n\r\n%d.%s" % (n, i)
-                    self.s.sendGroup(self.group_id, msg)
+                    self.server.sendGroup(self.group_id, msg)
                     return
             if arg.isdigit():
                 i = int(arg)
                 if i > 0 and i < len(li):
                     msg = "%d.%s" % (i, li[i-1])
-                    self.s.sendGroup(self.group_id, msg)
+                    self.server.sendGroup(self.group_id, msg)
                     return
-                self.s.sendGroup(self.group_id, "好像没有这条资讯")
+                self.server.sendGroup(self.group_id, "好像没有这条资讯")
                 return
-            self.s.sendGroup(self.group_id, I18n.format("has_help"))
+            self.server.sendGroup(self.group_id, I18n.format("has_help"))
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "添加回复", "ppp", "ppp [msg] [{dosomething}*t1|...]", "ppp指令是add指令的升级版。ppp设置参数1为关键词。参数2为机器人随机回复的语料组，{dosomething}表示当机器人随机选中当前这条语料后额外执行的操作（仅群主或管理员可用）\r\n\r\n操作列表：\r\n增加点数：p_add([number])\r\n减少点数：p_sub([number])")
@@ -213,7 +213,7 @@ class BaseGroupForHHZ(BaseGroup):
             a1 = order.getArg(1)
             a2 = order.getArg(2)
             if not (a1 and a2):
-                self.s.sendGroup(self.group_id, I18n.format("has_help"))
+                self.server.sendGroup(self.group_id, I18n.format("has_help"))
                 return
             a_list = [i for i in a2.split("|") if i != ""]
             is_owner_or_admin = GroupHelper.checkOwnerOrAdmin(data)
@@ -223,7 +223,7 @@ class BaseGroupForHHZ(BaseGroup):
                 if ra:
                     tx = a[ra.end():]
                     if not is_owner_or_admin:
-                        self.s.sendGroup(
+                        self.server.sendGroup(
                             self.group_id, "只有群主或管理员才能使用{dosomething}操作")
                         return
                     o = ORDER_SPLIT_LIST[0] + "%s" % ra.group()[1:-1]
@@ -237,17 +237,17 @@ class BaseGroupForHHZ(BaseGroup):
                         if arg and arg.isdigit():
                             p_li.append([tx, "p_add", int(arg)])
                         else:
-                            self.s.sendGroup(self.group_id, "操作用法好像不对")
+                            self.server.sendGroup(self.group_id, "操作用法好像不对")
                             return
                     elif m_order.checkOrder("p_sub"):
                         arg = m_order.getArg(1)
                         if arg and arg.isdigit():
                             p_li.append([tx, "p_sub", int(arg)])
                         else:
-                            self.s.sendGroup(self.group_id, "操作用法好像不对")
+                            self.server.sendGroup(self.group_id, "操作用法好像不对")
                             return
                     else:
-                        self.s.sendGroup(
+                        self.server.sendGroup(
                             self.group_id, "嗯，不支持%s操作呢（需要help吗）" % m_order.getArg(0)[1:])
                         return
                 else:
@@ -264,11 +264,11 @@ class BaseGroupForHHZ(BaseGroup):
             if type(dp) == dict:
                 dp.update({a1: p_li})
                 self.data_manager.set(str(self.group_id) + ".json", "ppp", dp)
-                self.s.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+                self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
             else:
                 dp = {a1: p_li}
                 self.data_manager.set(str(self.group_id) + ".json", "ppp", dp)
-                self.s.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+                self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "添加回复", "add", "add [msg1] [msg2]", "当机器人收到msg1时回复msg2")
@@ -277,7 +277,7 @@ class BaseGroupForHHZ(BaseGroup):
             a1 = order.getArg(1)
             a2 = order.getArg(2)
             if not (a1 and a2):
-                self.s.sendGroup(self.group_id, I18n.format("has_help"))
+                self.server.sendGroup(self.group_id, I18n.format("has_help"))
                 return
             dp: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "ppp")
@@ -291,11 +291,11 @@ class BaseGroupForHHZ(BaseGroup):
             if type(da) == dict:
                 da.update({a1: a2})
                 self.data_manager.set(str(self.group_id) + ".json", "add", da)
-                self.s.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+                self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
             else:
                 da = {a1: a2}
                 self.data_manager.set(str(self.group_id) + ".json", "add", da)
-                self.s.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+                self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "删除回复", "del", "del [del]", "删除add和ppp设置的自动回复")
@@ -303,7 +303,7 @@ class BaseGroupForHHZ(BaseGroup):
         if order.checkOrder("del"):
             a1 = order.getArg(1)
             if not a1:
-                self.s.sendGroup(self.group_id, I18n.format("has_help"))
+                self.server.sendGroup(self.group_id, I18n.format("has_help"))
                 return
             flag = True
             dp: dict = self.data_manager.get(
@@ -313,7 +313,7 @@ class BaseGroupForHHZ(BaseGroup):
                     dp.pop(a1)
                     self.data_manager.set(
                         str(self.group_id) + ".json", "ppp", dp)
-                    self.s.sendGroup(
+                    self.server.sendGroup(
                         self.group_id, "%s不会再这样子说了" % BOT_NAME_SELF)
                     flag = False
             da: dict = self.data_manager.get(
@@ -323,11 +323,11 @@ class BaseGroupForHHZ(BaseGroup):
                     da.pop(a1)
                     self.data_manager.set(
                         str(self.group_id) + ".json", "add", da)
-                    self.s.sendGroup(
+                    self.server.sendGroup(
                         self.group_id, "%s不会再这样子说了" % BOT_NAME_SELF)
                     flag = False
             if flag:
-                self.s.sendGroup(self.group_id, "%s好像没有这样过" % BOT_NAME_SELF)
+                self.server.sendGroup(self.group_id, "%s好像没有这样过" % BOT_NAME_SELF)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "查看点数", "point", "point", "查看当前点数")
@@ -336,12 +336,12 @@ class BaseGroupForHHZ(BaseGroup):
             p = self.data_manager.get(
                 str(GroupHelper.getId(data))+".json", "point")
             if type(p) == int:
-                self.s.sendGroup(self.group_id, "%s当前拥有点数：%dP" %
+                self.server.sendGroup(self.group_id, "%s当前拥有点数：%dP" %
                                  (GroupHelper.getName(data), p))
             else:
                 self.data_manager.set(
                     str(GroupHelper.getId(data))+".json", "point", 1)
-                self.s.sendGroup(self.group_id, "%s当前拥有点数：1P" %
+                self.server.sendGroup(self.group_id, "%s当前拥有点数：1P" %
                                  GroupHelper.getName(data))
 
     @BaseGroup.register
@@ -350,7 +350,7 @@ class BaseGroupForHHZ(BaseGroup):
         da: dict = self.data_manager.get(str(self.group_id) + ".json", "add")
         if type(da) == dict:
             if msg in da:
-                self.s.sendGroup(self.group_id, da[msg])
+                self.server.sendGroup(self.group_id, da[msg])
                 return
         dp: dict = self.data_manager.get(str(self.group_id) + ".json", "ppp")
         if type(dp) == dict:
@@ -372,14 +372,14 @@ class BaseGroupForHHZ(BaseGroup):
                     p = p if p else 1
                     self.data_manager.set(
                         str(GroupHelper.getId(data))+".json", "point", p - n)
-                self.s.sendGroup(self.group_id, msg)
+                self.server.sendGroup(self.group_id, msg)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "随机图片", "roll_img", "roll_img", "随机获取涩图")
     def rollImg(self, data: dict, order: Order):
         if order.checkOrder("roll_img"):
             # self.s.sendImgToGroupFromUrl(self.group_id,"https://iw233.cn/api.php?sort=iw233")
-            self.s.sendImgToGroupFromUrl(
+            self.server.sendImgToGroupFromUrl(
                 self.group_id, "https://www.dmoe.cc/random.php")
 
     @BaseGroup.register
@@ -392,17 +392,17 @@ class BaseGroupForHHZ(BaseGroup):
             text = order.getArg(1)
             l = order.getArg(2)
             if not text:
-                self.s.sendGroup(self.group_id, I18n.format("has_help"))
+                self.server.sendGroup(self.group_id, I18n.format("has_help"))
                 return
             if l in ("日本語", "简体中文", "English"):
                 r = GenVoice.gen(text, l)
             else:
                 r = GenVoice.genVioce(text)
             if not r:
-                self.s.sendGroup(self.group_id, I18n.format("gen_loss"))
+                self.server.sendGroup(self.group_id, I18n.format("gen_loss"))
                 return
             r = r.replace("C:\\", "C:\\\\")
-            self.s.sendGroup(self.group_id, "[CQ:record,file=file:///%s]" % r)
+            self.server.sendGroup(self.group_id, "[CQ:record,file=file:///%s]" % r)
         th = threading.Thread(target=t, args=(self, data, order))
         th.start()
 
@@ -413,11 +413,11 @@ class BaseGroupForHHZ(BaseGroup):
             return
         uid = order.getArg(1)
         if uid == None:
-            self.s.sendGroup(self.group_id, I18n.format("has_help"))
+            self.server.sendGroup(self.group_id, I18n.format("has_help"))
             return
         token = BestXor.bestEncryptXor(uid.encode(
             "utf8"), b"%d" % GroupHelper.getId(data))
-        self.s.sendGroup(self.group_id, "你的token是：\r\n%s" % token)
+        self.server.sendGroup(self.group_id, "你的token是：\r\n%s" % token)
 
     @BaseGroup.register
     @BaseGroup.helpData(["o"], "执行语句", "exec", "exec [code]", "执行一段代码，仅限机器人所有者可用")
@@ -431,7 +431,7 @@ class BaseGroupForHHZ(BaseGroup):
                 exec(co)
             except BaseException as e:
                 logging.exception(e)
-                self.s.sendGroup(self.group_id, str(e))
+                self.server.sendGroup(self.group_id, str(e))
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "随机食物", "/what_do_eat", "what_do_eat", "看看吃什么")
@@ -460,7 +460,7 @@ class BaseGroupForHHZ(BaseGroup):
                            "面包", "蛋糕", "汉堡", "披萨")
             msgs = ("我觉得%s还不错","那就尝尝%s吧","试试%s如何")
         msg = random.choice(msgs)%random.choice(foods)
-        self.s.sendGroup(self.group_id,msg)
+        self.server.sendGroup(self.group_id,msg)
 
     #@BaseGroup.register
     def fireStar(self, data: dict, order: Order):
@@ -476,7 +476,7 @@ class BaseGroupForHHZ(BaseGroup):
         if data["app"] != "com.tencent.multimsg":
             return
         msg_id = data["meta"]["detail"]["resid"]
-        f_msg = self.s.getForwardMsg(msg_id)
+        f_msg = self.server.getForwardMsg(msg_id)
         j_f_msg:dict = json.loads(f_msg)
         d = j_f_msg["data"]["messages"]
         for i in d:
@@ -488,4 +488,4 @@ class BaseGroupForHHZ(BaseGroup):
             year = dt_object.year
             month = dt_object.month
             day = dt_object.day
-            self.s.sendGroup(self.group_id,"此聊天记录记录于%s-%s-%s"%(year,month,day))
+            self.server.sendGroup(self.group_id,"此聊天记录记录于%s-%s-%s"%(year,month,day))

@@ -29,7 +29,7 @@ class BaseGroup:
         self._getHelpsData()
 
     def setSender(self,s):
-        self.s:Cqserver = s
+        self.server:Cqserver = s
     
     def _getHelpsData(self):
         self.helps_class: dict[str:list[str]] = {i:[] for i in HELP_CLASS_DATA}

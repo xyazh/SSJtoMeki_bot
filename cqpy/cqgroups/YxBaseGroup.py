@@ -72,9 +72,9 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                 msg += "\r\n------------------\r\n功能详解：%s"%datdetails
                 msg += "\r\n------------------\r\n数据类型详解：\r\n(可选参数) ; [必须参数]\r\n/未完成参数/ ; *可选语法\r\n...可重复 ; |或"
             else:
-                self.s.sendGroup(self.group_id,(I18n.format("prob")) + "\r\n（找不到这样的指令）")
+                self.server.sendGroup(self.group_id,(I18n.format("prob")) + "\r\n（找不到这样的指令）")
                 return
-            self.s.sendGroup(self.group_id,msg)
+            self.server.sendGroup(self.group_id,msg)
 
     #手动让三色堇退群
     @register
@@ -82,7 +82,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
     def bye(self,data:dict,order:Order):
         if order.checkOrder("bye") or order.checkOrder("exit"):
             if GroupHelper.checkOwnerOrAdmin(data):
-                self.s.setGroupLeave(self.group_id)
+                self.server.setGroupLeave(self.group_id)
 
     #测试机器人发送信息
     @register
@@ -91,16 +91,16 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
         if order.checkOrder("test"):
             arg = order.getArg(1)
             if arg:
-                self.s.sendGroup(self.group_id,arg)
+                self.server.sendGroup(self.group_id,arg)
             else: 
-                self.s.sendGroup(self.group_id,"test")
+                self.server.sendGroup(self.group_id,"test")
 
     #输出机器人开发信息
     @register
     @helpData(["other"],"开发信息","bot","bot","输出机器人信息。")
     def bot(self,data,order:Order):
         if order.checkOrder("bot"):
-            self.s.sendGroup(self.group_id,"Multi functional dice rolling bot made with Python by Xyazh")
+            self.server.sendGroup(self.group_id,"Multi functional dice rolling bot made with Python by Xyazh")
 
     @register
     @helpData(["other"],"网页绑定","web_bind","web_bind [uid]","在网站上绑定qq用（跑团可能需要）")
@@ -109,10 +109,10 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             return
         uid = order.getArg(1)
         if uid == None:
-            self.s.sendGroup(self.group_id, I18n.format("prob") + "（需要help吗）")
+            self.server.sendGroup(self.group_id, I18n.format("prob") + "（需要help吗）")
             return
         token = BestXor.bestEncryptXor(uid.encode("utf8"),b"%d"%GroupHelper.getId(data))
-        self.s.sendGroup(self.group_id, "你的token是：\r\n%s"%token)
+        self.server.sendGroup(self.group_id, "你的token是：\r\n%s"%token)
 ########################################################################################################################
     #获取功能列表
     @register
@@ -122,7 +122,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             msg = "#-----功能列表-----#\r\n"
             msg += "获取帮助；每日签到\r\n✧未来视✧；✧未来启✧\r\n魔素具现；查看好感\r\n好感归零；随机涩图\r\n动画资讯；g a l资讯"
             msg += "\r\n------------------\r\n%s"%((I18n.format("fun")))
-            self.s.sendGroup(self.group_id,msg)
+            self.server.sendGroup(self.group_id,msg)
 
     #获取发送者魔素点数
     @register
@@ -133,24 +133,24 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             pt = player.findGet("point")
             if pt == None:
                 player.set("point",1)
-                self.s.sendGroup(self.group_id,I18n.format("pt_0")%GroupHelper.getName(data))
+                self.server.sendGroup(self.group_id,I18n.format("pt_0")%GroupHelper.getName(data))
             elif pt > 0:
                 if pt < 10:
-                    self.s.sendGroup(self.group_id,(I18n.format("pt_1"))%(GroupHelper.getName(data),pt))
+                    self.server.sendGroup(self.group_id,(I18n.format("pt_1"))%(GroupHelper.getName(data),pt))
                 elif pt < 20:
-                    self.s.sendGroup(self.group_id,(I18n.format("pt_2"))%(GroupHelper.getName(data),pt))
+                    self.server.sendGroup(self.group_id,(I18n.format("pt_2"))%(GroupHelper.getName(data),pt))
                 elif pt < 60:
-                    self.s.sendGroup(self.group_id,(I18n.format("pt_3"))%(GroupHelper.getName(data),pt))
+                    self.server.sendGroup(self.group_id,(I18n.format("pt_3"))%(GroupHelper.getName(data),pt))
                 elif pt < 240:
-                    self.s.sendGroup(self.group_id,(I18n.format("pt_4"))%(GroupHelper.getName(data),pt))
+                    self.server.sendGroup(self.group_id,(I18n.format("pt_4"))%(GroupHelper.getName(data),pt))
                 elif pt < 1200:
-                    self.s.sendGroup(self.group_id,(I18n.format("pt_5"))%(GroupHelper.getName(data),pt))
+                    self.server.sendGroup(self.group_id,(I18n.format("pt_5"))%(GroupHelper.getName(data),pt))
                 elif pt < 7200:
-                    self.s.sendGroup(self.group_id,(I18n.format("pt_6"))%(GroupHelper.getName(data),pt))
+                    self.server.sendGroup(self.group_id,(I18n.format("pt_6"))%(GroupHelper.getName(data),pt))
                 else:
-                    self.s.sendGroup(self.group_id,(I18n.format("pt_7"))%(pt,GroupHelper.getName(data)))
+                    self.server.sendGroup(self.group_id,(I18n.format("pt_7"))%(pt,GroupHelper.getName(data)))
             else:
-                self.s.sendGroup(self.group_id,(I18n.format("pt_neg"))%(GroupHelper.getName(data),pt))
+                self.server.sendGroup(self.group_id,(I18n.format("pt_neg"))%(GroupHelper.getName(data),pt))
 
     #获取三色堇对发送者好感度
     @register
@@ -161,22 +161,22 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             e = player.get("emotion")
             if e == None:
                 player.set("emotion",1)
-                self.s.sendGroup(self.group_id,I18n.format("e_0")%GroupHelper.getName(data))
+                self.server.sendGroup(self.group_id,I18n.format("e_0")%GroupHelper.getName(data))
             elif e > 0:
                 if e < 150:
-                    self.s.sendGroup(self.group_id,(I18n.format("e_1"))%(GroupHelper.getName(data),e))
+                    self.server.sendGroup(self.group_id,(I18n.format("e_1"))%(GroupHelper.getName(data),e))
                 elif e < 300:
-                    self.s.sendGroup(self.group_id,(I18n.format("e_2"))%(GroupHelper.getName(data),e))
+                    self.server.sendGroup(self.group_id,(I18n.format("e_2"))%(GroupHelper.getName(data),e))
                 elif e < 600:
-                    self.s.sendGroup(self.group_id,(I18n.format("e_3"))%(GroupHelper.getName(data),e))
+                    self.server.sendGroup(self.group_id,(I18n.format("e_3"))%(GroupHelper.getName(data),e))
                 elif e < 1200:
-                    self.s.sendGroup(self.group_id,(I18n.format("e_4"))%(GroupHelper.getName(data),e))
+                    self.server.sendGroup(self.group_id,(I18n.format("e_4"))%(GroupHelper.getName(data),e))
                 elif e < 2400:
-                    self.s.sendGroup(self.group_id,(I18n.format("e_5"))%(GroupHelper.getName(data),e))
+                    self.server.sendGroup(self.group_id,(I18n.format("e_5"))%(GroupHelper.getName(data),e))
                 else:
-                    self.s.sendGroup(self.group_id,(I18n.format(random.choice["e_6","e_5"]))%(GroupHelper.getName(data),e))
+                    self.server.sendGroup(self.group_id,(I18n.format(random.choice["e_6","e_5"]))%(GroupHelper.getName(data),e))
             else:
-                self.s.sendGroup(self.group_id,(I18n.format("e_neg"))%(GroupHelper.getName(data),e))
+                self.server.sendGroup(self.group_id,(I18n.format("e_neg"))%(GroupHelper.getName(data),e))
 
     #向三色堇道歉
     @register
@@ -186,12 +186,12 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             player = Player(GroupHelper.getId(data))
             e = player.get("emotion")
             if e == None:
-                self.s.sendGroup(self.group_id,I18n.format("e_rst_0"))
+                self.server.sendGroup(self.group_id,I18n.format("e_rst_0"))
             elif e < 0:
                 player.set("emotion",1)
-                self.s.sendGroup(self.group_id,I18n.format("e_rst_1")%(GroupHelper.getName(data)))
+                self.server.sendGroup(self.group_id,I18n.format("e_rst_1")%(GroupHelper.getName(data)))
             else:
-                self.s.sendGroup(self.group_id,I18n.format("e_rst_ng")%(GroupHelper.getName(data),e))
+                self.server.sendGroup(self.group_id,I18n.format("e_rst_ng")%(GroupHelper.getName(data),e))
 
     #获取签到者签到天数，并加魔素与好感
     @register
@@ -205,10 +205,10 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                 player.set("day",1)
                 pt = player.findGet("point",0)
                 player.set("point",pt + 1)
-                self.s.sendGroup(self.group_id,I18n.format("sign_0")%(GroupHelper.getName(data)))
+                self.server.sendGroup(self.group_id,I18n.format("sign_0")%(GroupHelper.getName(data)))
                 return
             if (last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
-                self.s.sendGroup(self.group_id,I18n.format("sign_ng")%(GroupHelper.getName(data),time.time()-last_time))
+                self.server.sendGroup(self.group_id,I18n.format("sign_ng")%(GroupHelper.getName(data),time.time()-last_time))
             else:
                 day = player.findGet("day",0)
                 e = player.findGet("emotion",0)
@@ -220,7 +220,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                 player.set("day",day)
                 player.set("emotion",e + add_e)
                 player.set("point",pt + add_pt)
-                self.s.sendGroup(self.group_id,I18n.format("sign_1")%(GroupHelper.getName(data),day,add_pt,add_e))
+                self.server.sendGroup(self.group_id,I18n.format("sign_1")%(GroupHelper.getName(data),day,add_pt,add_e))
 
     #获取发送者占卜命运结果
     @register
@@ -313,7 +313,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                     r_msg = "✧『✦咲き誇る花、舞い踊る瓣✦』✧" + add_msg%change_point(80,150)
                     r_msg += (I18n.format("fate_19")) + end_msg
                 msg = "%s\r\n“%s”的预言之语是……\r\n------------------\r\n%s"%((I18n.format("mgc_fate")),GroupHelper.getName(data),r_msg)
-            self.s.sendGroup(self.group_id,msg)
+            self.server.sendGroup(self.group_id,msg)
 
     #媒介转运
     @register
@@ -329,7 +329,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                 msg = "阁下今天还没有让我使用过『✧未来视✧』呢……"
             else:
                 msg = I18n.format("pass_text")
-            self.s.sendGroup(self.group_id,msg)
+            self.server.sendGroup(self.group_id,msg)
 
     #获取当日动漫资讯
     @register
@@ -340,9 +340,9 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
         if order.checkOrder("anime_news"):
             li = LoopEvent.today_anime_news
             if len(li)>0:
-                self.s.sendGroup(self.group_id,li[random.randint(0,len(li)-1)])
+                self.server.sendGroup(self.group_id,li[random.randint(0,len(li)-1)])
                 return
-            self.s.sendGroup(self.group_id,"三色堇没有更多的信息了……不要再找三色堇了……")
+            self.server.sendGroup(self.group_id,"三色堇没有更多的信息了……不要再找三色堇了……")
 
     #获取当日gal新闻
     @register
@@ -354,10 +354,10 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             li = LoopEvent.today_galgame_news
             arg = order.getArg(1)
             if len(li)<=0:
-                self.s.sendGroup(self.group_id,"噶呜……三色堇知道的信息都已经说完了……")
+                self.server.sendGroup(self.group_id,"噶呜……三色堇知道的信息都已经说完了……")
                 return
             if arg == None:
-                self.s.sendGroup(self.group_id,li[random.randint(0,len(li)-1)])
+                self.server.sendGroup(self.group_id,li[random.randint(0,len(li)-1)])
                 return
             if arg == "all":
                 if len(li)>0:
@@ -366,17 +366,17 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                     for i in li:
                         n += 1
                         msg += "\r\n\r\n%d.%s"%(n,i)
-                    self.s.sendGroup(self.group_id,msg)
+                    self.server.sendGroup(self.group_id,msg)
                     return
             if arg.isdigit():
                 i = int(arg)
                 if i > 0 and i < len(li):
                     msg = "%d.%s"%(i,li[i-1])
-                    self.s.sendGroup(self.group_id,msg)
+                    self.server.sendGroup(self.group_id,msg)
                     return
-                self.s.sendGroup(self.group_id,"那个……三色堇也找不到相关的信息的说……")
+                self.server.sendGroup(self.group_id,"那个……三色堇也找不到相关的信息的说……")
                 return
-            self.s.sendGroup(self.group_id,(I18n.format("prob")) + "\r\n（需要help吗）")
+            self.server.sendGroup(self.group_id,(I18n.format("prob")) + "\r\n（需要help吗）")
 
     #获取随机涩图
     @register
@@ -384,7 +384,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
     def rollImg(self,data:dict,order:Order):
         if order.checkOrder("roll_img"):
             #self.s.sendImgToGroupFromUrl(self.group_id,"https://iw233.cn/api.php?sort=iw233")
-            self.s.sendImgToGroupFromUrl(self.group_id,"https://www.dmoe.cc/random.php")
+            self.server.sendImgToGroupFromUrl(self.group_id,"https://www.dmoe.cc/random.php")
 
     @register
     @helpData(["normal"],"生成语音","vits","vits [text] (language)","发出真奈美的声音，可以自动识别语言和也可以指定语言，支持日本語、简体中文、English。")
@@ -395,16 +395,16 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
             text = order.getArg(1)
             l = order.getArg(2)
             if not text:
-                self.s.sendGroup(self.group_id,(I18n.format("prob")) + "\r\n（未输入文字）")
+                self.server.sendGroup(self.group_id,(I18n.format("prob")) + "\r\n（未输入文字）")
                 return
             if l in ("日本語","简体中文","English"):
                 r = GenVoice.gen(text,l)
             else:
                 r = GenVoice.genVioce(text)
             if not r:
-                self.s.sendGroup(self.group_id,(I18n.format("prob") + "\r\n（语音生成失败）"))
+                self.server.sendGroup(self.group_id,(I18n.format("prob") + "\r\n（语音生成失败）"))
                 return
             r = r.replace("C:\\","C:\\\\")
-            self.s.sendGroup(self.group_id,"[CQ:record,file=file:///%s]"%r)
+            self.server.sendGroup(self.group_id,"[CQ:record,file=file:///%s]"%r)
         th = threading.Thread(target=t,args=(self,data,order))
         th.start()

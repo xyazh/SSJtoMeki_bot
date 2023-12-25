@@ -18,14 +18,14 @@ class IItemGroup(IBaseGroup):
         item_name = order.getArg(1)
         number = order.getArg(2)
         if item_name == None or number == None:
-            self.s.sendGroup(self.group_id,I18n.format("has_help"))
+            self.server.sendGroup(self.group_id,I18n.format("has_help"))
             return
         if not number.isdigit():
-            self.s.sendGroup(self.group_id,"噫~不会数数的杂鱼大哥哥~kimo")
+            self.server.sendGroup(self.group_id,"噫~不会数数的杂鱼大哥哥~kimo")
             return
         number = int(number)
         if number <= 0:
-            self.s.sendGroup(self.group_id,"%s是在表示你那为%s的杂鱼智商吗~？"%(number,number))
+            self.server.sendGroup(self.group_id,"%s是在表示你那为%s的杂鱼智商吗~？"%(number,number))
             return
         msg = GroupHelper.getMsg(data)
         qq_id = GroupHelper.getId(data)
@@ -40,7 +40,7 @@ class IItemGroup(IBaseGroup):
         player_onwer = Player(qq_id)
         item_number = player_onwer.getItemNumberFromtBindedChara(item_name)
         if item_number < n:
-            self.s.sendGroup(self.group_id,"物品不足")
+            self.server.sendGroup(self.group_id,"物品不足")
             return
         item_stack = player_onwer.countItemFromBindedCharaToIter(item_name,n)
         if at_ids:
@@ -51,7 +51,7 @@ class IItemGroup(IBaseGroup):
         else:
             for i in range(n):
                 item_stack.item.onUse(player_onwer,None)
-        self.s.sendGroup(self.group_id,"%s使用了%s个%s"%(GroupHelper.getName(data),n,item_name))
+        self.server.sendGroup(self.group_id,"%s使用了%s个%s"%(GroupHelper.getName(data),n,item_name))
 
     @BaseGroup.register
     @BaseGroup.helpData(["item"], "物品列表", "item_list", "item_list (page) (chara|godown)", "获取物品列表，默认显示当前角色的物品，如果要查看仓库物品请在最后加上godown参数")
@@ -69,11 +69,11 @@ class IItemGroup(IBaseGroup):
                 flag = True
                 page = "1"
             elif page != "chara":
-                self.s.sendGroup(self.group_id,"噫~不会数数的杂鱼大哥哥~kimo")
+                self.server.sendGroup(self.group_id,"噫~不会数数的杂鱼大哥哥~kimo")
                 return
         page = int(page)
         if page <= 0:
-            self.s.sendGroup(self.group_id,"%s是在表示你那为%s的杂鱼智商吗~？"%(page,page))
+            self.server.sendGroup(self.group_id,"%s是在表示你那为%s的杂鱼智商吗~？"%(page,page))
             return
         limit = 16
         qq_id = GroupHelper.getId(data)
@@ -90,7 +90,7 @@ class IItemGroup(IBaseGroup):
         l = len(item_names)
         max_page = int(l // limit) + 1
         if page > max_page:  
-            self.s.sendGroup(self.group_id,"超出页数")
+            self.server.sendGroup(self.group_id,"超出页数")
             return
         start_index = limit * (page - 1)
         end_index = limit * (page)
@@ -104,4 +104,4 @@ class IItemGroup(IBaseGroup):
             dn = n - len(s)
             s = "  "*dn + s
             msg = msg +"\r\n%s       %s"%(s,i)
-        self.s.sendGroup(self.group_id,msg)
+        self.server.sendGroup(self.group_id,msg)

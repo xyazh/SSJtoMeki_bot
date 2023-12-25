@@ -65,19 +65,19 @@ class G582897932(YxBaseGroup):
             now_hour = int(datetime.datetime.now().strftime("%H"))
             match {0:0,1:0,2:0,3:0,4:0,5:1,6:1,7:1,8:2,9:2,10:2,11:3,12:3,13:4,14:4,15:4,16:5,17:5,18:5,19:6,20:6,21:6,22:6,23:6}[now_hour]:
                 case 0:
-                    self.s.sendGroup(self.group_id,t.strftime(msg_dict["lingchen"]))
+                    self.server.sendGroup(self.group_id,t.strftime(msg_dict["lingchen"]))
                 case 1:
-                    self.s.sendGroup(self.group_id,t.strftime(msg_dict["zaochen"]))
+                    self.server.sendGroup(self.group_id,t.strftime(msg_dict["zaochen"]))
                 case 2:
-                    self.s.sendGroup(self.group_id,t.strftime(msg_dict["shangwu"]))
+                    self.server.sendGroup(self.group_id,t.strftime(msg_dict["shangwu"]))
                 case 3:
-                    self.s.sendGroup(self.group_id,t.strftime(msg_dict["zhongwu"]))
+                    self.server.sendGroup(self.group_id,t.strftime(msg_dict["zhongwu"]))
                 case 4:
-                    self.s.sendGroup(self.group_id,t.strftime(msg_dict["xiawu"]))
+                    self.server.sendGroup(self.group_id,t.strftime(msg_dict["xiawu"]))
                 case 5:
-                    self.s.sendGroup(self.group_id,t.strftime(msg_dict["bangwan"]))
+                    self.server.sendGroup(self.group_id,t.strftime(msg_dict["bangwan"]))
                 case 6:
-                    self.s.sendGroup(self.group_id,t.strftime(msg_dict["wanshang"]))
+                    self.server.sendGroup(self.group_id,t.strftime(msg_dict["wanshang"]))
 
     #三色堇的各种回复
     @YxBaseGroup.register
@@ -163,7 +163,7 @@ class G582897932(YxBaseGroup):
             "额嗯？",
             "……"]
         if msg_list is not None:
-            self.s.sendGroup(self.group_id,random.choice(msg_list))
+            self.server.sendGroup(self.group_id,random.choice(msg_list))
         
     #对于【三色堇】的肢体互动
     @YxBaseGroup.register
@@ -203,10 +203,10 @@ class G582897932(YxBaseGroup):
             msg = msgChoice("shippo_low","shippo_mid","shippo_high")
         if msg is not None:
             if msg[1] < 0:
-                self.s.sendGroup(self.group_id,"咿呀！你是谁！？不要碰三色堇！？（你的手被警惕的三色堇弹开了）")
+                self.server.sendGroup(self.group_id,"咿呀！你是谁！？不要碰三色堇！？（你的手被警惕的三色堇弹开了）")
             elif msg[1] > 0:
                 add_e_list = "（好感上升【+%g◈】）"%msg[1]
-            self.s.sendGroup(self.group_id,msg[0] + add_e_list)
+            self.server.sendGroup(self.group_id,msg[0] + add_e_list)
 
 #三色堇未来功能预定：
     #1.三色堇属性系统，对于群友的互动的反馈系统（投喂次数-体重，……）。

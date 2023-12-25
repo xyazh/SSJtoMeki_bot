@@ -4,6 +4,7 @@ ORDER_SPLIT_LIST = [".", "/", "。", "\\"]
 
 
 class GroupHelper:
+    ORDER_SPLIT_LIST = ORDER_SPLIT_LIST
     @staticmethod
     def getNickname(data: dict) -> str:
         if "sender" in data:
