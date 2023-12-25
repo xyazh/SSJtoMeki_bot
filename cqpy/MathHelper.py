@@ -1,8 +1,15 @@
 class MathHelper:
+    @staticmethod
     def A(m:int,n:int):
+        """
+        排列数
+        """
         return MathHelper.factorial(n)/MathHelper.factorial(n-m)
 
     def C(a:int,b:int):
+        """
+        组合数
+        """
         fz = 1
         n = b-a
         while n < b:
@@ -11,7 +18,11 @@ class MathHelper:
         fm = MathHelper.factorial(a)
         return fz / fm
 
+    @staticmethod
     def decreasesTechnique(m,n):
+        """
+        更相减损术
+        """
         if m==n:
             return n
         while m%2==0 and n%2==0:
@@ -25,13 +36,20 @@ class MathHelper:
             d=li[0]-li[1]
         return d
 
+    @staticmethod
     def factorial(n:int):
+        """
+        计算n的阶乘
+        """
         if n>0:
             return n*MathHelper.factorial(n-1)
         else:
             return 1
 
     class Fraction:
+        """
+        高精度浮点数
+        """
         def __add__(self, other):
             if isinstance(other,MathHelper.Fraction):
                 numerator=self.signBit*self.numerator*other.denominator+other.signBit*other.numerator*self.denominator

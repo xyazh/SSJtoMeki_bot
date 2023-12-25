@@ -9,6 +9,7 @@ class IItemSystem(IPlatyerBase):
     def findItemFromItemName(self, item_name: str) -> BaseItem | None:
         """
         通过物品名获取这个物品的对象
+
         物品不存在则返回none
         """
         return ITEMS_LIST.get(item_name, None)
@@ -16,6 +17,7 @@ class IItemSystem(IPlatyerBase):
     def findItemFromItemNameNotNone(self, item_name: str) -> BaseItem:
         """
         通过物品名获取这个物品的对象
+
         物品不存在则通过BaseItem构建名字属性相同的对象返回
         """
         item = self.findItemFromItemName(item_name)
@@ -24,16 +26,16 @@ class IItemSystem(IPlatyerBase):
             item.name = item_name
         return item
     
-    def getGodownItems(self) -> dict:
+    def getGodownItems(self) -> dict[str:int]:
         """
-        获取仓库物品
+        获取仓库的所有物品为一个字典，字典的key为物品名，val为数量
         """
         items = self.writeGet("godown_items", {})
         return items
 
     def setItemNumberToGodown(self, item: str | BaseItem, n: int):
         """
-        设置一定数量的物品到仓库
+        传入要设置的物品的名称或对象以及数量，设置一定数量的物品到仓库
         """
         n = 0 if n <= 0 else int(n)
         if isinstance(item, BaseItem):
@@ -43,7 +45,7 @@ class IItemSystem(IPlatyerBase):
 
     def getItemNumberFromGodown(self, item: str | BaseItem) -> int:
         """
-        获取仓库里某物品的数量
+        传入物品的名字或对象，获取仓库里某物品的数量
         """
         if isinstance(item, BaseItem):
             item = item.name
@@ -52,7 +54,7 @@ class IItemSystem(IPlatyerBase):
 
     def countItemFromGodown(self, item_name: str, count: int) -> int:
         """
-        从仓库里扣去一定数量的某物品，返回实际扣去的数量
+        传入物品的名字或对象以及需要扣去的数量，从仓库里扣去一定数量的某物品并返回实际扣去的数量
         """
         count = 0 if count <= 0 else int(count)
         n = self.getItemNumberFromGodown(item_name)
@@ -63,13 +65,13 @@ class IItemSystem(IPlatyerBase):
 
     def countItemFromGodownToIter(self, item_name: str, count: int) -> ItemStack:
         """
-        从仓库里扣去一定数量的某物品，返回实际扣去的物品堆
+        传入物品的名字或对象以及需要扣去的数量，返回实际扣去的物品堆
         """
         return ItemStack(self.findItemFromItemNameNotNone(item_name), self.countItemFromGodown(item_name, count))
     
     def getCharaItems(self, chara_name: str) -> dict[str:int]:
         """
-        获取角色物品
+        获取角色的所有物品为一个字典，字典的key为物品名，val为数量
         """
         charas_items = self.writeGet("charas_items", {"空白卡": {}})
         chara_items = DictHelper.wirteGet(charas_items,chara_name,{})
@@ -77,14 +79,14 @@ class IItemSystem(IPlatyerBase):
 
     def getBindedCharaItems(self) -> dict[str:int]:
         """
-        获取绑定角色物品
+        获取绑定角色的所有物品为一个字典，字典的key为物品名，val为数量
         """
         chara_name = self.getBindedCardName()
         return self.getCharaItems(chara_name)
     
     def setItemNumberTotBindedChara(self, item: str | BaseItem, n: int):
         """
-        设置一定数量的物品到绑定角色
+        传入要设置的物品的名称或对象以及数量，设置一定数量的物品到绑定角色
         """
         n = 0 if n <= 0 else int(n)
         if isinstance(item, BaseItem):
@@ -94,7 +96,7 @@ class IItemSystem(IPlatyerBase):
 
     def getItemNumberFromtBindedChara(self, item: str | BaseItem) -> int:
         """
-        从绑定角色扣去一定数量的某物品，返回实际扣去的数量
+        传入物品的名字或对象，获取绑定角色里某物品的数量
         """
         if isinstance(item, BaseItem):
             item = item.name
@@ -103,7 +105,7 @@ class IItemSystem(IPlatyerBase):
 
     def countItemFromtBindedChara(self, item_name: str, count: int) -> int:
         """
-        从绑定角色扣去一定数量的某物品，返回实际扣去的数量
+        传入物品的名字或对象以及需要扣去的数量，从绑定角色扣去一定数量的某物品，返回实际扣去的数量
         """
         count = 0 if count <= 0 else int(count)
         n = self.getItemNumberFromtBindedChara(item_name)
@@ -114,6 +116,6 @@ class IItemSystem(IPlatyerBase):
     
     def countItemFromBindedCharaToIter(self, item_name: str, count: int) -> ItemStack:
         """
-        从绑定角色扣去一定数量的某物品，返回实际扣去的物品堆
+        传入物品的名字或对象以及需要扣去的数量，从绑定角色扣去一定数量的某物品，返回实际扣去的物品堆
         """
         return ItemStack(self.findItemFromItemNameNotNone(item_name), self.countItemFromtBindedChara(item_name, count))

@@ -9,14 +9,23 @@ class BasePlayer(BaseDataPlayer, IRoll, IItemSystem):
         super().__init__(qq_id)
 
     def getName(self)->str:
+        """
+        获取绑定的角色卡的名字
+        """
         return self.getBindedCardName()
 
     def getHp(self)->int:
+        """
+        获取绑定的角色卡的hp
+        """
         card = self.getBindedCardNotNone()
         hp = DictHelper.wirteGet(card,"hp",1)
         return hp
     
     def getMaxHp(self)->int:
+        """
+        获取绑定的角色卡最大hp
+        """
         card = self.getBindedCardNotNone()
         con = DictHelper.wirteGet(card,"con",10)
         siz = DictHelper.wirteGet(card,"siz",10)
@@ -24,11 +33,17 @@ class BasePlayer(BaseDataPlayer, IRoll, IItemSystem):
         return mhp
 
     def setHp(self,hp:int|float):
+        """
+        传入要设置的hp，设置绑定的角色卡的hp
+        """
         hp = int(hp)
         card = self.getBindedCardNotNone()
         card["hp"] = hp
 
     def countHp(self,count_hp:int|float)->int:
+        """
+        传入要扣去的hp，扣去绑定的角色卡的hp，并返回真实扣去的hp
+        """
         count_hp = 0 if count_hp<=0 else int(count_hp)
         hp = self.getHp()
         real_count_hp = min(count_hp,hp)
@@ -37,6 +52,9 @@ class BasePlayer(BaseDataPlayer, IRoll, IItemSystem):
         return real_count_hp
     
     def healHp(self,heal_hp:int|float)->int:
+        """
+        传入要回复的hp，回复绑定的角色卡的hp，并返回真实回复的hp
+        """
         heal_hp = 0 if heal_hp<=0 else int(heal_hp)
         hp = self.getHp()
         mhp = self.getMaxHp()

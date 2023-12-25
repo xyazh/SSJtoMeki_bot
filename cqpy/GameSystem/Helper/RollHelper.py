@@ -6,6 +6,9 @@ import math
 class RollHelper:
     @staticmethod
     def decodeArrStr(t: str) -> dict:
+        """
+        传入录卡字符串，将字符串处理为dict
+        """
         t = t.replace("\r", "")
         t = t.replace("\n", "")
         li = re.split(r"([0-9]+)", t)
@@ -29,6 +32,9 @@ class RollHelper:
 
     @staticmethod
     def isNumber(string):
+        """
+        传入一个字符串，判断该字符串是否为整数或浮点数
+        """
         try:
             float(string)
             return True
@@ -37,6 +43,11 @@ class RollHelper:
 
     @staticmethod
     def evaluateExpression(expression: str) -> float | int | complex:
+        """
+        传入一个roll点的表达式，如1d(1+3),计算该表达式并返回结果
+
+        返回结果包含整数，浮点数，复数
+        """
         operator_precedence = {"?": 0, "+": 1, "-": 1,
                                "*": 2, "/": 2, "^": 3, "D": 4, "d": 4}
         expression = expression.replace("（", "(")
@@ -45,7 +56,6 @@ class RollHelper:
         tokens = re.findall(r"[-+*/^Ddij()\?]|\d+\.?\d*", expression)
         operator_stack = []
         output_queue = []
-
         for token in tokens:
             if RollHelper.isNumber(token):
                 output_queue.append(float(token))
@@ -124,6 +134,11 @@ class RollHelper:
 
     @staticmethod
     def compareComplex(complex1: complex, complex2: complex):
+        """
+        按照自定义的方式比较两个复数的大小
+
+        复数1大于复数2返回1，复数1小于复数2返回-1，复数1等于复数2返回0
+        """
         zero = complex(0, 0)
         one_plus_j = complex(1, 1)
         line = one_plus_j - zero
@@ -140,6 +155,11 @@ class RollHelper:
 
     @staticmethod
     def d(m: int | float | complex, n: int | float | complex) -> int | complex:
+        """
+        传入两个参数m、n————mdn，（如1d3就为m=1，n=3）
+
+        计算投点结果
+        """
         mi = 0
         if isinstance(m, complex):
             mi = m.imag
@@ -202,6 +222,9 @@ class RollHelper:
 
     @staticmethod
     def findRealProjection(complex_number: complex | int | float) -> float:
+        """
+        获取复数在(1,1)上的投影大小
+        """
         line = complex(1, 1)
         projected_complex = (complex_number * line.conjugate()
                              ).real / line.conjugate().real
@@ -209,14 +232,27 @@ class RollHelper:
 
     @staticmethod
     def evaluateExpressionToFloat(expression: str) -> float:
+        """
+        传入一个roll点的表达式，如1d(1+3),计算该表达式并返回结果
+
+        返回结果包含整数，浮点数（不包含复数）
+        """
         return RollHelper.findRealProjection(RollHelper.evaluateExpression(expression))
 
     @staticmethod
     def binomialDistributionProbability(p: float, n: int, k: int) -> float:
+        """
+        二项式分布概率
+        """
         return math.comb(n, k) * p**k * (1-p)**(n-k)
 
     @staticmethod
     def bestRandomGuass(mu: float, sigma: float, n: float):
+        """
+        更好的高斯分布
+
+        可以定义上下边界的高斯分布
+        """
         r = random.gauss(mu, sigma)
         f = -1 if r < mu else 1
         dr = abs(mu-r)
@@ -225,6 +261,9 @@ class RollHelper:
 
     @staticmethod
     def randomSplitInt(n: int, m: int, l: int) -> list[int]:
+        """
+        随机分割一个整数
+        """
         l = int(l)
         m = int(m)
         n = int(n)
@@ -232,7 +271,7 @@ class RollHelper:
             result = [l] * m
         else:
             result = [0] * m
-            for i in range(n):
+            for _ in range(n):
                 index = random.randint(0, m-1)
                 while True:
                     if result[index] + 1 <= l:

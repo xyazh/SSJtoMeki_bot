@@ -15,6 +15,10 @@ class Order:
         return False
     
     def getOrderStr(self)->str:
+        if len(self.o_li)<=0:
+            return ""
+        if len(self.o_li[0])<2:
+            return ""
         return self.o_li[0][1:]
 
     def getArg(self,index:int,t:Callable[[T],T]=str)->str|T|None:

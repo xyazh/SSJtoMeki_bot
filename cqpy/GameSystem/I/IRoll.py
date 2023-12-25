@@ -62,7 +62,7 @@ class IRoll(IPlatyerBase):
 
     def addCardArr(self, card_name: str, d: dict):
         """
-        添加角色卡的数据
+        传入角色卡的名字，以及需要修改/添加的数据组成的字典，添加角色卡的数据
 
         重复的数据会被覆盖
         """
@@ -73,7 +73,7 @@ class IRoll(IPlatyerBase):
 
     def setBindedCardArr(self, d: dict):
         """
-        添加绑定的角色卡的数据
+        传入需要修改/添加的数据组成的字典，修改/添加绑定的角色卡的数据
 
         重复的数据会被覆盖
         """
@@ -82,13 +82,15 @@ class IRoll(IPlatyerBase):
 
     def creatCard(self, card_name: str, d: dict):
         """
-        使用默认数据创建角色卡
+        传入角色卡的名字与数据，创建新角色卡
         """
         self.setCardArr(card_name, d)
 
     def bindCard(self, card_name: str) -> bool:
         """
-        绑定的角色卡
+        传入角色卡的名称，绑定的角色卡
+        
+        绑定成功返回True，若角色卡不存在返回False
         """
         chara_cards = self.getCards()
         if card_name in chara_cards:
@@ -127,7 +129,7 @@ class IRoll(IPlatyerBase):
 
     def delCard(self, card_name: str) -> bool:
         """
-        删除卡
+        传入角色卡的名字，删除卡角色卡
         """
         chara_cards = self.getCards()
         if card_name in chara_cards:
