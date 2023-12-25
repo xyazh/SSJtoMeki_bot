@@ -16,8 +16,9 @@ class IRoll(IPlatyerBase):
 
     def getCard(self, name) -> dict[str:int | float | complex | str | bool | None] | None:
         """
-        获取此用户的某角色卡
-        没有则返回None
+        传入角色卡的名字来获取此用户的某角色卡，返回一个字典
+
+        若该角色卡不存在，则返回None
         """
         chara_cards = self.getCards()
         r = chara_cards.get(name, None)
@@ -25,8 +26,9 @@ class IRoll(IPlatyerBase):
 
     def getBindedCard(self) -> dict[str:int | float | complex | str | bool | None] | None:
         """
-        获取此用户的当前绑定的角色卡
-        没有则返回None
+        获取此用户当前正在绑定的角色卡，返回一个字典
+
+        角色卡不存在，则返回None
         """
         binded_card_name = self.getBindedCardName()
         binded_card = self.getCard(binded_card_name)
@@ -34,7 +36,8 @@ class IRoll(IPlatyerBase):
 
     def getBindedCardNotNone(self) -> dict[str:int | float | complex | str | bool | None]:
         """
-        获取此用户的当前绑定的角色卡
+        传入角色卡的名字来获取此用户的某角色卡，返回一个字典
+
         没有则返回空白卡
         """
         r = self.getBindedCard()
@@ -48,7 +51,8 @@ class IRoll(IPlatyerBase):
 
     def setCardArr(self, card_name: str, d: dict):
         """
-        重新设置角色卡的数据
+        传入角色卡的名字与包含角色卡各属性的字典，重新设置角色卡的数据
+
         注意会清除已有数据
         """
         chara_cards = self.getCards()
@@ -59,6 +63,7 @@ class IRoll(IPlatyerBase):
     def addCardArr(self, card_name: str, d: dict):
         """
         添加角色卡的数据
+
         重复的数据会被覆盖
         """
         chara_cards = self.getCards()
@@ -69,6 +74,7 @@ class IRoll(IPlatyerBase):
     def setBindedCardArr(self, d: dict):
         """
         添加绑定的角色卡的数据
+
         重复的数据会被覆盖
         """
         binded_card_name = self.getBindedCardName()
@@ -93,6 +99,7 @@ class IRoll(IPlatyerBase):
     def creatBindedCardAsStr(self, s: str):
         """
         从录卡字符串重新设置绑定的卡
+
         注意会清除已有数据
         """
         card_name = self.getBindedCardName()
@@ -102,6 +109,7 @@ class IRoll(IPlatyerBase):
     def addBindedCardAsStr(self, s:str):
         """
         从录卡字符串添加绑定的角色卡的数据
+
         重复的数据会被覆盖
         """
         card_name = self.getBindedCardName()
@@ -111,6 +119,7 @@ class IRoll(IPlatyerBase):
     def creatCardAsStr(self, card_name: str, s: str):
         """
         从录卡字符串重新设置属性
+
         注意会清除已有数据
         """
         d = RollHelper.decodeArrStr(s)
@@ -135,7 +144,9 @@ class IRoll(IPlatyerBase):
 
     def getCardVal(self, card_name: str, key: str) -> str | int | float | complex | None:
         """
-        获取角色卡的某个值
+        传入角色卡名称和要获取的属性，获取该角色卡的这个属性的值
+
+        如果角色卡和属性不存在则返回None
         """
         card = self.getCard(card_name)
         if card == None:
@@ -144,7 +155,9 @@ class IRoll(IPlatyerBase):
 
     def getBindedCardVal(self, key: str) -> str | int | float | complex | None:
         """
-        获取绑定的角色卡的某个值
+        传入属性的名字，获取当前绑定的角色卡的这个属性的值
+
+        如果属性不存在则返回None
         """
         binded_card = self.getBindedCardName()
         return self.getCardVal(binded_card, key)
@@ -157,6 +170,6 @@ class IRoll(IPlatyerBase):
     
     def setKp(self,b:bool):
         """
-        设置此用户是否是kp
+        传入True设置此用户为kp，传入False设置此用户不为kp
         """
         self.data["is_kp"] = b
