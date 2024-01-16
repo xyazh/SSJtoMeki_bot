@@ -262,7 +262,7 @@ class RollHelper:
     @staticmethod
     def randomSplitInt(n: int, m: int, l: int) -> list[int]:
         """
-        随机分割一个整数
+        随机分割一个整数 
         """
         l = int(l)
         m = int(m)
