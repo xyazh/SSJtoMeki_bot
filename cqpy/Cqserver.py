@@ -15,6 +15,7 @@ from .xyazhServer import PageManager
 from .xyazhServer import App
 from .xyazhServer import ConsoleMessage
 from .WebApp import t
+from .CqpyModuleLoader import CqpyModuleLoader
 
 
 class Cqserver(t.MyWebApp):
@@ -56,6 +57,7 @@ class Cqserver(t.MyWebApp):
         self.port = port_int
         self.post_port = post_port_int
         self.msg_data_manager = DataManager("//cqpy_msg_data//")
+        self.cqpy_lodule_loader = CqpyModuleLoader()
         self.register()
 
     def saveGroupMsg(self, data: dict):

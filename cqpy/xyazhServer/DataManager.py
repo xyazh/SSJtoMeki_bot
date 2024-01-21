@@ -8,7 +8,6 @@ class DataManager:
     def __init__(self, path="\\cqpy_data\\"):
         current_directory = os.getcwd()
         parent_directory = os.path.dirname(current_directory)
-        self.path = os.path.join(parent_directory, path)
         self.path = parent_directory+"\\SSJtoMeki_data"
         if not os.path.exists(self.path):
             os.mkdir(self.path)
