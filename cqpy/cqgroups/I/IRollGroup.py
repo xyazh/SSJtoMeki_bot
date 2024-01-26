@@ -315,7 +315,7 @@ class IRollGroup(IBaseGroup):
             if isinstance(point, str) and point.isdigit():
                 point = int(point)
             else:
-                roll_result = int(RollHelper.bestRandomGuass(450, 25, 2))
+                roll_result = int(RollHelper.bestRandomGuass(580, 50, 2))
                 roll_result -= int(roll_result % 5)
                 point = roll_result
             if point < min_point:
