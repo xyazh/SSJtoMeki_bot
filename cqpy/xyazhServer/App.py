@@ -1,18 +1,17 @@
-from .Server import Server
-from .ihttp import server
-import socket
 import ssl
-import sys
-import os
+
+from .ihttp import server
+from .Server import Server
+from typing import Callable
 
 
 class App:
     def __init__(self,host:str,port:int):
         self.host = host
         self.port = port
-        self.httpd = server.ThreadingHTTPServer((self.host, port),Server)
-        self.httpd.socket.settimeout(5)
-        self.httpd.timeout
+        self.http_server = server.ThreadingHTTPServer((self.host, port),Server)
+        self.http_server.socket.settimeout(5)
+        self.http_server.timeout
         self.context = None
 
     def pTitleVison(self,t:str):
@@ -22,13 +21,17 @@ class App:
         print(" * HTTP url is %s://%s:%s/ (Press CTRL+C to quit)"%(t,self.host,self.port))
         print(" * ---------------------------------\r\n\r\n")
 
-    def runHTTP(self):
+    def runHTTP(self,func:Callable=None):
         self.pTitleVison("http")
-        self.httpd.serve_forever()
+        if func is not None:
+            func()
+        self.http_server.serve_forever()
 
-    def runHTTPS(self,cert_chain=tuple[str]):
+    def runHTTPS(self,cert_chain:tuple[str],func:Callable=None):
         self.context= ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)    
         self.context.load_cert_chain(*cert_chain)
-        self.httpd.socket= self.context.wrap_socket(self.httpd.socket, server_side = True)
+        self.http_server.socket= self.context.wrap_socket(self.http_server.socket, server_side = True)
         self.pTitleVison("https")
-        self.httpd.serve_forever()
+        if func is not None:
+            func()
+        self.http_server.serve_forever()

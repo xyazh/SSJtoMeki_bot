@@ -153,14 +153,14 @@ class Server(BaseServer,ServerHelper):
     def doStart(self):
         self.request:socket.socket|ssl.SSLSocket
         url_datas = urllib.parse.urlparse(self.path)
-        self.v_path:str = url_datas.path
+        self.virtual_path:str = url_datas.path
         self.cqserver:Cqserver = self.server.cqserver
         self.set_cookie = []
 
     def do_GET(self):
         self.doStart()
         try:
-            fuc = PageManager.findPath(self.v_path,"GET")
+            fuc = PageManager.findPath(self.virtual_path,"GET")
             if fuc == None:
                 self.send_error(404)
             else:
@@ -174,7 +174,7 @@ class Server(BaseServer,ServerHelper):
     def do_POST(self):
         self.doStart()
         try:
-            fuc = PageManager.findPath(self.v_path,"POST")
+            fuc = PageManager.findPath(self.virtual_path,"POST")
             if fuc == None:
                 self.send_error(404)
             else:

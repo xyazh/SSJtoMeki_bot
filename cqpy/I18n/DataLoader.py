@@ -34,7 +34,6 @@ class DataLoader:
         if self.is_loaded:
             return
         self.makePath()
-        self.loadLang()
         self.is_loaded = True
 
     def makePath(self):
