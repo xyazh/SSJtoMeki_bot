@@ -206,6 +206,8 @@ class IRollGroup(IBaseGroup):
                     self.server.sendGroup(self.group_id, "好像没有%s这个属性" % key)
                     return
             roll_result = random.randint(1, 100)
+            event = Event.EventBus.hookRollResultEvent(data,"arr",roll_result,self.server)
+            roll_result = event.getRollResult()
             msg = I18n.format("ra_kantei") % (
                 GroupHelper.getName(data), key, roll_result, value)
             if self.vanilla_ra_rule:
@@ -452,6 +454,8 @@ class IRollGroup(IBaseGroup):
             return
         val = card[order_str]
         rc = random.randint(1, 100)
+        event = Event.EventBus.hookRollResultEvent(data,"arr_op",rc,self.server)
+        rc = event.getRollResult()
         msg = I18n.format("ra_kantei") % (
             GroupHelper.getName(data), order_str, rc, val)
         if rc <= val:
@@ -459,7 +463,7 @@ class IRollGroup(IBaseGroup):
                 self, RollHelper.evaluateExpression, xdys[0])
             if roll_result == None:
                 return
-            event = Event.EventBus.hookRollResultEvent(data,"arr",roll_result,self.server)
+            event = Event.EventBus.hookRollResultEvent(data,"arr_ed",roll_result,self.server)
             roll_result = event.getRollResult()
             roll_result = int(roll_result)
             msg += I18n.format("ra_meki_huutsuu")
@@ -471,7 +475,7 @@ class IRollGroup(IBaseGroup):
                 self, RollHelper.evaluateExpression, xdys[1])
             if roll_result == None:
                 return
-            event = Event.EventBus.hookRollResultEvent(data,"arr",roll_result,self.server)
+            event = Event.EventBus.hookRollResultEvent(data,"arr_ed",roll_result,self.server)
             roll_result = event.getRollResult()
             roll_result = int(roll_result)
             msg += I18n.format("ra_meki_shippai")
