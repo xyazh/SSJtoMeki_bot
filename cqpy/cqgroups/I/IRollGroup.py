@@ -1,13 +1,15 @@
-from ..BaseGroup import BaseGroup
-from .IBaseGroup import IBaseGroup
 import random
-from ...Order import Order
-from ...GroupHelper import GroupHelper
-from ...GameSystem.PlayerSystem.Player import Player
+
+from .IBaseGroup import IBaseGroup
+from ..BaseGroup import BaseGroup
+from ...CQCode import CQCodeHelper
+from ...Event import Event
 from ...GameSystem.Helper import RollHelper
+from ...GameSystem.PlayerSystem.Player import Player
+from ...GroupHelper import GroupHelper
 from ...IType import *
 from ...I18n.I18n import I18n
-from ...CQCode import CQCodeHelper
+from ...Order import Order
 
 
 class IRollGroup(IBaseGroup):
@@ -164,6 +166,8 @@ class IRollGroup(IBaseGroup):
                     self, RollHelper.evaluateExpressionToFloat, attribute_text)
                 if roll_result == None:
                     return
+                event = Event.EventBus.hookRollResultEvent(data,"st",roll_result,self.server)
+                roll_result = event.getRollResult()
                 roll_result = int(roll_result)
                 player.setBindedCardArr({key: roll_result})
                 self.server.sendGroup(self.group_id, "%s设置%s=%s=%d" % (
@@ -288,6 +292,8 @@ class IRollGroup(IBaseGroup):
                 self, RollHelper.evaluateExpression, expression)
             if roll_result == None:
                 return
+            event = Event.EventBus.hookRollResultEvent(data,"r",roll_result,self.server)
+            roll_result = event.getRollResult()
             self.server.sendGroup(self.group_id, "%s投了骰子：\r\n%s=%s" %
                                   (GroupHelper.getName(data), expression, roll_result))
 
@@ -449,25 +455,29 @@ class IRollGroup(IBaseGroup):
         msg = I18n.format("ra_kantei") % (
             GroupHelper.getName(data), order_str, rc, val)
         if rc <= val:
-            r = IRollGroup.safeRoll(
+            roll_result = IRollGroup.safeRoll(
                 self, RollHelper.evaluateExpression, xdys[0])
-            if r == None:
+            if roll_result == None:
                 return
-            r = int(r)
+            event = Event.EventBus.hookRollResultEvent(data,"arr",roll_result,self.server)
+            roll_result = event.getRollResult()
+            roll_result = int(roll_result)
             msg += I18n.format("ra_meki_huutsuu")
             msg += "\r\n（你的“%s”变更为【%s%s=%s】）" % (
-                order_str, val, "+%s" % r if r >= 0 else "%s" % r, val+r)
-            player.setBindedCardArr({order_str: val+r})
+                order_str, val, "+%s" % roll_result if roll_result >= 0 else "%s" % roll_result, val+roll_result)
+            player.setBindedCardArr({order_str: val+roll_result})
         else:
-            r = IRollGroup.safeRoll(
+            roll_result = IRollGroup.safeRoll(
                 self, RollHelper.evaluateExpression, xdys[1])
-            if r == None:
+            if roll_result == None:
                 return
-            r = int(r)
+            event = Event.EventBus.hookRollResultEvent(data,"arr",roll_result,self.server)
+            roll_result = event.getRollResult()
+            roll_result = int(roll_result)
             msg += I18n.format("ra_meki_shippai")
             msg += "\r\n（你的“%s”变更为【%s%s=%s】）" % (
-                order_str, val, "+%s" % r if r >= 0 else "%s" % r, val+r)
-            player.setBindedCardArr({order_str: val+r})
+                order_str, val, "+%s" % roll_result if roll_result >= 0 else "%s" % roll_result, val+roll_result)
+            player.setBindedCardArr({order_str: val+roll_result})
         self.server.sendGroup(self.group_id, msg)
 
     @BaseGroup.register
@@ -482,6 +492,8 @@ class IRollGroup(IBaseGroup):
                 arg_2 = int(arg_2) if arg_2 != None else 2
                 rc_list = (random.randint(1, 100) for _ in range(arg_2))
                 rc = min(rc_list)
+                event = Event.EventBus.hookRollResultEvent(data,"rb",rc,self.server)
+                rc = event.getRollResult()
                 if rc <= value:
                     msg = I18n.format("rb_meki_seikou")
                 else:
@@ -504,6 +516,8 @@ class IRollGroup(IBaseGroup):
                 arg_2 = int(arg_2) if arg_2 != None else 2
                 rc_list = (random.randint(1, 100) for _ in range(arg_2))
                 rc = max(rc_list)
+                event = Event.EventBus.hookRollResultEvent(data,"rp",rc,self.server)
+                rc = event.getRollResult()
                 if rc >= value:
                     msg = I18n.format("rp_meki_shippai")
                 else:

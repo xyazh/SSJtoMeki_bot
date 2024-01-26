@@ -30,6 +30,8 @@ class Event:
         GROUP_BAN_EVENT = 9
         #添加好友事件
         FRIEND_ADD_EVENT = 10
+        #骰子结果事件
+        ROLL_RESULT_EVENT = 11
 
         EVENT_BUS_MAP = {
             FUNC_GROUP_MSG_EVENT:[],
@@ -41,29 +43,39 @@ class Event:
             SELF_GROUP_EVENT:[],
             INVITED_TO_GROUP_EVENT:[],
             GROUP_BAN_EVENT:[],
-            FRIEND_ADD_EVENT:[]
+            FRIEND_ADD_EVENT:[],
+            ROLL_RESULT_EVENT:[]
+
         }
 
         @staticmethod
         def hookFucGroupMsgEvent(data:dict,t:str,s:Cqserver):
             fuc_group_msg_event:Event.FucGroupMsgEvent = Event.FucGroupMsgEvent(data,t,s)
-            for i in Event.EventBus.EVENT_BUS_MAP[Event.EventBus.FUNC_GROUP_MSG_EVENT]:
-                i(fuc_group_msg_event)
+            for func in Event.EventBus.EVENT_BUS_MAP[Event.EventBus.FUNC_GROUP_MSG_EVENT]:
+                func(fuc_group_msg_event)
             return fuc_group_msg_event
 
         @staticmethod
         def hookPrivateMsgEvent(data:dict,t:str,s:Cqserver):
             private_msg_event:Event.PrivateMsgEvent = Event.PrivateMsgEvent(data,t,s)
-            for i in Event.EventBus.EVENT_BUS_MAP[Event.EventBus.PRIVATE_MSG_EVENT]:
-                i(private_msg_event)
+            for func in Event.EventBus.EVENT_BUS_MAP[Event.EventBus.PRIVATE_MSG_EVENT]:
+                func(private_msg_event)
             return private_msg_event
 
         @staticmethod
         def hookGruopRegisterEvent(group_id:int,fucs:list[object],s:Cqserver):
             gruop_register_event:Event.GruopRegisterEvent = Event.GruopRegisterEvent(group_id,fucs,s)
-            for i in Event.EventBus.EVENT_BUS_MAP[Event.EventBus.GROUP_REGISTER_EVENT]:
-                i(gruop_register_event)
+            for func in Event.EventBus.EVENT_BUS_MAP[Event.EventBus.GROUP_REGISTER_EVENT]:
+                func(gruop_register_event)
             return gruop_register_event
+        
+        @staticmethod
+        def hookRollResultEvent(data:dict,t:str,result:float,s:Cqserver):
+            roll_result_event:Event.RollResultEvent = Event.RollResultEvent(data,result,s)
+            for func in Event.EventBus.EVENT_BUS_MAP[Event.EventBus.ROLL_RESULT_EVENT]:
+                func(roll_result_event)
+            return roll_result_event
+
 
         def register(t:int):
             def _r(fuc:object):
@@ -168,3 +180,16 @@ class Event:
             self.group_id = group_id
             self.fucs = fucs
             self.s = s
+
+    class RollResultEvent(BaseEvent):
+        def __init__(self,data:dict,result:float,s:Cqserver):
+            super().__init__()
+            self.data = data
+            self.result = result
+            self.s = s
+
+        def getRollResult(self)->float:
+            return self.result
+        
+        def setRollResult(self,result:float)->None:
+            self.result = result

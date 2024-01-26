@@ -65,3 +65,8 @@ class DisEvent:
                         event.s.dis_register_list[event.group_id].append(event.fucs.pop(i))
                     else:
                         event.s.dis_register_list[event.group_id] = [event.fucs.pop(i)]        
+
+    @staticmethod
+    @Event.EventBus.register(Event.EventBus.ROLL_RESULT_EVENT)
+    def disGroupRegister(event:Event.RollResultEvent):
+        event.setRollResult(6)

@@ -28,8 +28,8 @@ class BaseGroup:
         self.data_manager = DataManager()
         self._getHelpsData()
 
-    def setSender(self,s):
-        self.server:Cqserver = s
+    def setSender(self,server):
+        self.server:Cqserver = server
     
     def _getHelpsData(self):
         self.helps_class: dict[str:list[str]] = {i:[] for i in HELP_CLASS_DATA}
