@@ -305,7 +305,6 @@ class IRollGroup(IBaseGroup):
         if not order.checkOrder("coc"):
             return
         number, point = order.getArgs(1, 2)
-        number = 1
         if isinstance(number, str) and number.isdigit():
             number = min(int(number), 5)
         card_list = []
