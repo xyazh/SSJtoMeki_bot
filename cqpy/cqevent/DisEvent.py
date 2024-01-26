@@ -69,4 +69,5 @@ class DisEvent:
     @staticmethod
     @Event.EventBus.register(Event.EventBus.ROLL_RESULT_EVENT)
     def disGroupRegister(event:Event.RollResultEvent):
-        event.setRollResult(6)
+        #event.setRollResult(6)
+        pass
