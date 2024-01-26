@@ -319,12 +319,12 @@ class IRollGroup(IBaseGroup):
             if point < min_point:
                 n = int(point // 5)
                 card_list.append(
-                    tuple(map(lambda x: x*5, RollHelper.randomSplitInt(n, 8, 90))))
+                    tuple(map(lambda x: x*5, RollHelper.randomSplitInt(n, 8, 14))))
             else:
                 lost_point = point - min_point
                 n = int(lost_point // 5)
                 card_list.append(
-                    tuple(map(lambda x: x*5 + 20, RollHelper.randomSplitInt(n, 8, 90))))
+                    tuple(map(lambda x: x*5 + 20, RollHelper.randomSplitInt(n, 8, 14))))
         msg = "%s的角色卡作成：" % GroupHelper.getName(data)
         for card in card_list:
             roll_result = int(RollHelper.bestRandomGuass(50, 25, 2))
