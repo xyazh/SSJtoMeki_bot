@@ -310,7 +310,6 @@ class IRollGroup(IBaseGroup):
         card_list = []
         for card in range(number):
             min_point = 8 * 20
-            point = 0
             if isinstance(point, str) and point.isdigit():
                 point = int(point)
             else:
@@ -320,12 +319,12 @@ class IRollGroup(IBaseGroup):
             if point < min_point:
                 n = int(point // 5)
                 card_list.append(
-                    tuple(map(lambda x: x*5, RollHelper.randomSplitInt(n, 8, 15))))
+                    tuple(map(lambda x: x*5, RollHelper.randomSplitInt(n, 8, 90))))
             else:
                 lost_point = point - min_point
                 n = int(lost_point // 5)
                 card_list.append(
-                    tuple(map(lambda x: x*5 + 20, RollHelper.randomSplitInt(n, 8, 15))))
+                    tuple(map(lambda x: x*5 + 20, RollHelper.randomSplitInt(n, 8, 90))))
         msg = "%s的角色卡作成：" % GroupHelper.getName(data)
         for card in card_list:
             roll_result = int(RollHelper.bestRandomGuass(50, 25, 2))
