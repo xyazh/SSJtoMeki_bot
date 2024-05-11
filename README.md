@@ -14,9 +14,20 @@ work work
 
     @BaseGroup.register
     def test(self, data: dict, order: Order):
-        #self.s.sendGroup(self.group_id,GroupHelper.getMsg(data))
-        #self.s.sendImgToGroupFromPath(self.group_id,"C:\\Users\\hhz\\Desktop\\XyaEngine.png")
-        pass
+        if order.checkOrder("test"):
+            name = GroupHelper.getName(data)
+            arg = order.getArg(1)
+            self.server.sendGroup(self.group_id, "%s发送的指令test的第一个参数为%s"%(name,arg))
+
+使用@BaseGroup.register装饰的方法会被加入消息回调，在每次收到消息时会被触发。
+
+被装饰的方法接受两个参数data: dict, order: Order
+
+data包含消息原始数据，可通过GroupHelper里的一些静态封装方法来获取聚体数据
+
+order是一个内置的指令解析器，用于解析诸如"/test 你是一个一个一个"这样的指令
+
+BaseGroup类中带有一个Cqserver的实例，为self.server。通过调用sendGroup方法往群里发送消息
 
 ### 基于消息的处理
 此功能还未完善
