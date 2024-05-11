@@ -10,8 +10,9 @@ work work
 ## 如何发送消息
 
 ### 发送群消息
-获取Cqserver的实例，调用其中的sendGroup(self, group_id:str|int, msg:str)方法可发送消息
-在BaseGroup类中Cqserver的实例为self.server
-在部分Event中Cqserver的实例为self.s
+获取Cqserver的实例，调用其中的sendGroup(self, group_id:str|int, msg:str)方法可发送消息。
 
+在BaseGroup类中Cqserver的实例为self.server。
+
+在部分Event中Cqserver的实例为self.s。
 ### 发送私聊消息
