@@ -23,7 +23,7 @@ work work
 
 被装饰的方法接受两个参数data: dict, order: Order
 
-data包含消息原始数据，可通过GroupHelper里的一些静态封装方法来获取聚体数据
+data包含消息原始数据，可通过GroupHelper里的一些静态封装方法来获取具体数据
 
 order是一个内置的指令解析器，用于解析诸如"/test 你是一个一个一个"这样的指令
 
