@@ -8,9 +8,6 @@ except ImportError:
     os.system("pip install openai")
     from openai import OpenAI
 
-api_key = "sk-5662eda30f014fb39036aa0e1855269b"
-
-
 def createClient(api_key: str, base_url: str = "https://api.deepseek.com"):
     return OpenAI(api_key=api_key, base_url=base_url)
 
