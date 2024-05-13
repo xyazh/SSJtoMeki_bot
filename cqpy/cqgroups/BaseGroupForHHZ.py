@@ -6,6 +6,7 @@ import html
 import logging
 import threading
 import json
+import inspect
 from ..CQCode import CQCodeHelper,CQCode
 from ..GameSystem.PlayerSystem.Player import Player
 from ..Order import Order
@@ -22,6 +23,7 @@ from .BaseGroup import BaseGroup
 BOT_NAME = "meki酱"
 BOT_NAME_SELF = "meki"
 HELP_CLASS_DATA = {"n":"常用命令","r":"跑团命令","o":"其他命令","i":"RPG系统"}
+ALIAS = {"normal":"n","roll":"r","other":"o","item":"i"}
 
 class BaseGroupForHHZ(BaseGroup):
     BOT_NAME = BOT_NAME
@@ -29,6 +31,22 @@ class BaseGroupForHHZ(BaseGroup):
 
     ai_chating = False
 
+    def _getHelpsData(self):
+        self.helps_class: dict[str:list[str]] = {i:[] for i in HELP_CLASS_DATA}
+        self.helps: dict[str:list[str]] = {}
+        for fuc in inspect.getmembers(self):
+            if hasattr(fuc[1], "help_data"):
+                help_data: list = fuc[1].help_data
+                ord_classes, tx, ord, usg, datdetails = tuple(help_data)
+                ord_classes = [ALIAS.get(i, i) for i in ord_classes]
+                li = [tx, ord, usg, datdetails]
+                for i in ord_classes:
+                    i = i if i in HELP_CLASS_DATA else "o"
+                    if i in self.helps_class:
+                        self.helps_class[i].append(li)
+                    else:
+                        self.helps_class.update({i: [li]})
+                self.helps.update({ord: li})
 
 
     @BaseGroup.register
@@ -39,12 +57,12 @@ class BaseGroupForHHZ(BaseGroup):
             arg = order.getArg(1)
             if arg == None:
                 msg += "命令："
-                for i in BaseGroupForHHZ.HELP_CLASS_DATA:
-                    msg += "\r\n%s：help %s" % (BaseGroupForHHZ.HELP_CLASS_DATA[i], i)
+                for i in HELP_CLASS_DATA:
+                    msg += "\r\n%s：help %s" % (HELP_CLASS_DATA[i], i)
                 msg += I18n.format("help_exit_group_msg") % (
                     BOT_NAME_SELF, BOT_NAME)
-            elif arg in BaseGroupForHHZ.HELP_CLASS_DATA:
-                msg += "%s：" % BaseGroupForHHZ.HELP_CLASS_DATA[arg]
+            elif arg in HELP_CLASS_DATA:
+                msg += "%s：" % HELP_CLASS_DATA[arg]
                 for i in self.helps_class[arg]:
                     msg += "\r\n%s：%s" % (i[0], i[1])
             elif arg in self.helps:
