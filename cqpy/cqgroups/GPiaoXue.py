@@ -16,6 +16,14 @@ class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
         self.chatArgsType = {'model':str, 'max_tokens':int, 'temperature':float, 'AI_role':str, 'user_role':str, 'AI_content':str}
         self.debug_mode = False
 
+    @BaseGroup.register
+    @BaseGroup.helpData(["o"], "测试指令", "test", "test (msg)", "测试指令")
+    def test(self,data,order):
+        if order.checkOrder("test"):
+            name = GroupHelper.getName(data)
+            arg = order.getArg(1)
+            self.server.sendGroup(self.group_id, "%s发送的指令test的第一个参数为%s"%(name,arg))
+
         @BaseGroup.register
         def chat(self, data, cmd):
             if cmd.checkOrder("chat"):
