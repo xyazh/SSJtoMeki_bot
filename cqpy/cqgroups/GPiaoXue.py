@@ -1,5 +1,5 @@
-from BaseGroupForHHZ import BaseGroupForHHZ
-from BaseGroup import BaseGroup
+from .BaseGroupForHHZ import BaseGroupForHHZ
+from .BaseGroup import BaseGroup
 from .I.IRollGroup import IRollGroup
 from .I.IItemGroup import IItemGroup
 from .I.ITTKGroup import ITTKGroup
