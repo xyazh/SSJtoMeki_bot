@@ -21,7 +21,7 @@ from .BaseGroup import BaseGroup
 
 BOT_NAME = "meki酱"
 BOT_NAME_SELF = "meki"
-
+HELP_CLASS_DATA = {"n":"常用命令","r":"跑团命令","o":"其他命令","i":"RPG系统"}
 
 class BaseGroupForHHZ(BaseGroup):
     BOT_NAME = BOT_NAME
@@ -39,12 +39,12 @@ class BaseGroupForHHZ(BaseGroup):
             arg = order.getArg(1)
             if arg == None:
                 msg += "命令："
-                for i in BaseGroup.HELP_CLASS_DATA:
-                    msg += "\r\n%s：help %s" % (BaseGroup.HELP_CLASS_DATA[i], i)
+                for i in BaseGroupForHHZ.HELP_CLASS_DATA:
+                    msg += "\r\n%s：help %s" % (BaseGroupForHHZ.HELP_CLASS_DATA[i], i)
                 msg += I18n.format("help_exit_group_msg") % (
                     BOT_NAME_SELF, BOT_NAME)
-            elif arg in BaseGroup.HELP_CLASS_DATA:
-                msg += "%s：" % BaseGroup.HELP_CLASS_DATA[arg]
+            elif arg in BaseGroupForHHZ.HELP_CLASS_DATA:
+                msg += "%s：" % BaseGroupForHHZ.HELP_CLASS_DATA[arg]
                 for i in self.helps_class[arg]:
                     msg += "\r\n%s：%s" % (i[0], i[1])
             elif arg in self.helps:
