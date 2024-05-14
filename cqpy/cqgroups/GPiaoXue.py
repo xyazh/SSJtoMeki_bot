@@ -31,8 +31,8 @@ class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
                 self.server.sendGroup(self.group_id, "API key is not set, please set it first.")
                 return
 
-            message = cmd.getArg(1)
-
+            # 拼接消息
+            message = " ".join(cmd.o_li[1:])
             client = createClient(**self.clientArgs)
             response = get_response(client, message, **self.chatArgs)
             str = extract_response(response, self.debug_mode)
@@ -73,4 +73,12 @@ class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
     @BaseGroup.register
     def showChatArgs(self, data, cmd):
         if cmd.checkOrder("showChatArgs"):
-            self.server.sendGroup(self.group_id, str(self.chatArgs))
+            strToSend = "聊天参数:\n" + "\n".join([f"{k}: {v}" for k, v in self.chatArgs.items()])
+            strToSend += "\n参数解释:\n"
+            strToSend += "model: 模型名称，可选项有deepseek-chat,deepseek-coder\n"
+            strToSend += "max_tokens: 生成的最大长度\n"
+            strToSend += "temperature: 生成的温度\n对于代码/数学解题，推荐温度0.0；对于数据抽取/分析，推荐温度0.7；对于通用对话，推荐温度1.0；对于翻译，推荐温度1.1；对于创意类写作/诗歌创作，推荐温度1.25\n"
+            strToSend += "AI_role: AI的角色\n"
+            strToSend += "user_role: 用户的角色\n"
+            strToSend += "AI_content: AI的角色描述\n"
+            self.server.sendGroup(self.group_id, strToSend)
