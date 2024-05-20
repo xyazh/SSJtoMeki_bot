@@ -228,7 +228,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
     def meiunn(self,data,order:Order):
         if GroupHelper.getMsg(data) in ["占卜","未来视","✧未来视✧"] or order.checkOrder("fate"):
             player = Player(GroupHelper.getId(data))
-            pt = player.get("point")
+            pt = player.findGet("point")
             def change_point(min,max):
                 if (fate_last_time + 8 * 3600) // (24 * 3600) != (time.time() + 8 * 3600) // (24 * 3600):
                     change_pt = random.randint(min,max)

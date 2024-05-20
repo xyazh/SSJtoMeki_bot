@@ -79,141 +79,141 @@ class G558335813(YxBaseGroup):
                 case 6:
                     self.server.sendGroup(self.group_id,t.strftime(msg_dict["wanshang"]))
 
-    # #三色堇的各种回复
-    # @YxBaseGroup.register
-    # def strSSJ(self,data):
-    #     get_msg = GroupHelper.getMsg(data)
-    #     msg_list = None
-    #     #对于"三色堇抱抱"的回复
-    #     if get_msg == "三色堇抱抱":
-    #         player = Player(GroupHelper.getId(data))
-    #         if self.timeCheck(data,"SSJBaobao_last_time"):
-    #             n = 1
-    #         else:
-    #             n =  player.findGet("SSJBaobao_n",0)
-    #             n += 1
-    #         player.set("SSJBaobao_n",n)
-    #         if n <= 5:
-    #             msg_list = [
-    #                 "阁下还真是爱撒娇呢，真是拿阁下没有办法呢，只……只限这一次的说哦。",
-    #                 "睡在怀里的阁下真可爱呢，这件事可不要告诉大家哦。",
-    #                 "怀里的阁下睡得真熟呢，就像小宝宝一样的说，今天一定是累坏了吧……",
-    #                 "只要阁下不嫌弃三色堇的话……三色堇会静静安抚阁下的。",
-    #                 "阁下一定累了吧，嘘~~~，没关系的哦，三色堇都知道的……",
-    #                 "至少现在，请阁下放轻松……在我的膝上静静地休息吧……",
-    #                 "没关系的，我不会像别人一样忘记阁下的，我会【永远】地记住阁下的……",
-    #                 "阁下,我还在意着你的说，请不要这么难过……这样子…这样子三色堇也会伤心的……",
-    #                 "都会没事的说，三色堇永远都会在这里等着阁下哦……"
-    #                 "就让三色堇来施展一个消除伤心的魔法，把阁下的烦恼都放飞吧。"]
-    #         elif n > 5:
-    #             msg_list = ["今天的阁下…怎么这么爱撒娇呢……",
-    #                 "阁下这是在是在戏弄三色堇吗…？",
-    #                 "请阁下不要这样子捉弄三色堇的说……",
-    #                 "阁下怎么这么爱撒娇……"]
-    #     #对于【三色堇|跳楼】的回复
-    #     elif "三色堇" in get_msg and "跳楼" in get_msg:
-    #         player = Player(GroupHelper.getId(data))
-    #         e =  player.getet("emotion")
-    #         sub_e = random.randint(-5,0)
-    #         player.set("emotion",e + sub_e)
-    #         msg_list = [
-    #             "嗯……感觉不是什么有意思的话题呢……（好感下降【%g◈】）"%sub_e,
-    #             "那个……三色堇不是很想听这些的说……（好感下降【%g◈】）"%sub_e,
-    #             "可以不要这样子嘛……突然感觉好难受的说……（好感下降【-%g◈】）"%sub_e,
-    #             "突然有点想吐了……（好感下降【%g◈】）"%sub_e,
-    #             "……嗯额……（好感下降【%g◈】）"%sub_e,
-    #             "#三色堇扭扭捏捏的，看起来好像不太舒服。（好感下降【%g◈】）"%sub_e,
-    #             "脚好痛……像被子弹打中了一样……为什么会痛的说……（好感下降【%g◈】）"%sub_e,
-    #             "好冷的说……是我衣服穿少了吗……（好感下降【%g◈】）"%sub_e,
-    #             "啊……那个……不是……（好感下降【%g◈】）"%sub_e,
-    #             "人死之后才能变得幸福吗…………。嘿哈……开玩笑的说……（好感下降【%g◈】）"%sub_e,
-    #             "三色堇感觉身体不是很舒服的说……（好感下降【%g◈】）"%sub_e]
-    #     #对于【三色堇】的回复
-    #     elif "三色堇" in get_msg:
-    #         msg_list = [
-    #             "嗯额……那个……\r\n找三色堇有什么事吗……",
-    #             "嗯……额……要找三色堇吗？",
-    #             "三色堇一直呆在这里的说……",
-    #             "欸……在叫三色堇吗？",
-    #             "Ciallo～(∠·ω< )⌒☆\r\n三色堇在这里。"]
-    #     #对于【灰茉莉】的回复
-    #     elif "灰茉莉" in get_msg:
-    #         msg_list = [
-    #             "灰茉莉……那是谁？",
-    #             "灰茉莉……我不认识的说……",
-    #             "……",
-    #             "欸？什么？",
-    #             "",]#如果没有那样的幼年，或许一切都会不一样的吧……
-    #     elif "行" in get_msg or "彳亍" in get_msg or "可以" in get_msg:
-    #         msg_list = [
-    #             "还好啦……",
-    #             "真的要这样子吗……",
-    #             "这样子好吗……",
-    #             "这样子可以吗？…",
-    #             "……",
-    #             "没有问题……"]
-    #     elif  "是不是" in get_msg:
-    #         msg_list = [
-    #         "三色堇觉得应该……是……",
-    #         "三色堇觉得不应该……是……"]
-    #     elif ("三色堇" in get_msg and "是" in get_msg) or "三色堇是不是" in get_msg:
-    #         msg_list = [
-    #         "请不要评价三色堇……",
-    #         "咦？",
-    #         "额嗯？",
-    #         "……"]
-    #     if msg_list is not None:
-    #         self.server.sendGroup(self.group_id,random.choice(msg_list))
+    #三色堇的各种回复
+    @YxBaseGroup.register
+    def strSSJ(self,data):
+        get_msg = GroupHelper.getMsg(data)
+        msg_list = None
+        #对于"三色堇抱抱"的回复
+        if get_msg == "三色堇抱抱":
+            player = Player(GroupHelper.getId(data))
+            if self.timeCheck(data,"SSJBaobao_last_time"):
+                n = 1
+            else:
+                n =  player.findGet("SSJBaobao_n",0)
+                n += 1
+            player.set("SSJBaobao_n",n)
+            if n <= 5:
+                msg_list = [
+                    "阁下还真是爱撒娇呢，真是拿阁下没有办法呢，只……只限这一次的说哦。",
+                    "睡在怀里的阁下真可爱呢，这件事可不要告诉大家哦。",
+                    "怀里的阁下睡得真熟呢，就像小宝宝一样的说，今天一定是累坏了吧……",
+                    "只要阁下不嫌弃三色堇的话……三色堇会静静安抚阁下的。",
+                    "阁下一定累了吧，嘘~~~，没关系的哦，三色堇都知道的……",
+                    "至少现在，请阁下放轻松……在我的膝上静静地休息吧……",
+                    "没关系的，我不会像别人一样忘记阁下的，我会【永远】地记住阁下的……",
+                    "阁下,我还在意着你的说，请不要这么难过……这样子…这样子三色堇也会伤心的……",
+                    "都会没事的说，三色堇永远都会在这里等着阁下哦……"
+                    "就让三色堇来施展一个消除伤心的魔法，把阁下的烦恼都放飞吧。"]
+            elif n > 5:
+                msg_list = ["今天的阁下…怎么这么爱撒娇呢……",
+                    "阁下这是在是在戏弄三色堇吗…？",
+                    "请阁下不要这样子捉弄三色堇的说……",
+                    "阁下怎么这么爱撒娇……"]
+        #对于【三色堇|跳楼】的回复
+        elif "三色堇" in get_msg and "跳楼" in get_msg:
+            player = Player(GroupHelper.getId(data))
+            e =  player.getet("emotion")
+            sub_e = random.randint(-5,0)
+            player.set("emotion",e + sub_e)
+            msg_list = [
+                "嗯……感觉不是什么有意思的话题呢……（好感下降【%g◈】）"%sub_e,
+                "那个……三色堇不是很想听这些的说……（好感下降【%g◈】）"%sub_e,
+                "可以不要这样子嘛……突然感觉好难受的说……（好感下降【-%g◈】）"%sub_e,
+                "突然有点想吐了……（好感下降【%g◈】）"%sub_e,
+                "……嗯额……（好感下降【%g◈】）"%sub_e,
+                "#三色堇扭扭捏捏的，看起来好像不太舒服。（好感下降【%g◈】）"%sub_e,
+                "脚好痛……像被子弹打中了一样……为什么会痛的说……（好感下降【%g◈】）"%sub_e,
+                "好冷的说……是我衣服穿少了吗……（好感下降【%g◈】）"%sub_e,
+                "啊……那个……不是……（好感下降【%g◈】）"%sub_e,
+                "人死之后才能变得幸福吗…………。嘿哈……开玩笑的说……（好感下降【%g◈】）"%sub_e,
+                "三色堇感觉身体不是很舒服的说……（好感下降【%g◈】）"%sub_e]
+        #对于【三色堇】的回复
+        elif "三色堇" in get_msg:
+            msg_list = [
+                "嗯额……那个……\r\n找三色堇有什么事吗……",
+                "嗯……额……要找三色堇吗？",
+                "三色堇一直呆在这里的说……",
+                "欸……在叫三色堇吗？",
+                "Ciallo～(∠·ω< )⌒☆\r\n三色堇在这里。"]
+        #对于【灰茉莉】的回复
+        elif "灰茉莉" in get_msg:
+            msg_list = [
+                "灰茉莉……那是谁？",
+                "灰茉莉……我不认识的说……",
+                "……",
+                "欸？什么？",
+                "",]#如果没有那样的幼年，或许一切都会不一样的吧……
+        # elif "行" in get_msg or "彳亍" in get_msg or "可以" in get_msg:
+        #     msg_list = [
+        #         "还好啦……",
+        #         "真的要这样子吗……",
+        #         "这样子好吗……",
+        #         "这样子可以吗？…",
+        #         "……",
+        #         "没有问题……"]
+        # elif  "是不是" in get_msg:
+        #     msg_list = [
+        #     "三色堇觉得应该……是……",
+        #     "三色堇觉得不应该……是……"]
+        # elif ("三色堇" in get_msg and "是" in get_msg) or "三色堇是不是" in get_msg:
+        #     msg_list = [
+        #     "请不要评价三色堇……",
+        #     "咦？",
+        #     "额嗯？",
+        #     "……"]
+        if msg_list is not None:
+            self.server.sendGroup(self.group_id,random.choice(msg_list))
         
-    # #对于【三色堇】的肢体互动
-    # @YxBaseGroup.register
-    # def SSJTouch(self,data):
-    #     player = Player(GroupHelper.getId(data))
-    #     e = player.findGet("emotion",0)
-    #     get_msg = GroupHelper.getMsg(data)
-    #     msg,add_e_list = None,""
-    #     def msgChoice(low,mid,high):
-    #         lim_e,add_lim_e,low_up_lim,mid_up_lim,add_e = 50,50,90,99,0
-    #         if e <= 0:
-    #             return "",-1
-    #         while True:
-    #             if e < lim_e:
-    #                 n = random.randint(0,99)
-    #                 if n < low_up_lim:
-    #                     msg = low
-    #                 elif n < mid_up_lim:
-    #                     msg = mid
-    #                 else:
-    #                     msg = high
-    #                     if self.timeCheck(data,"SSJTouch_last_time",True):
-    #                         add_e = e // 24 if e < 2400 else 100
-    #                         player.set("emotion",e + add_e)
-    #                 return I18n.format(msg),add_e
-    #             add_lim_e += 50
-    #             lim_e += add_lim_e
-    #             low_up_lim = low_up_lim - 15 if low_up_lim > 15 else 1
-    #             mid_up_lim = mid_up_lim - 10 if mid_up_lim > 9 else 9
-    #     if   get_msg in ("捏三色堇脸","捏捏脸"):
-    #         msg = msgChoice("kao_low","kao_mid","kao_high")
-    #     elif get_msg in ("摸三色堇头","摸摸头",):
-    #         msg = msgChoice("atama_low","atama_mid","atama_high")
-    #     elif get_msg in ("摸三色堇毒牙","摸摸毒牙","摸毒牙"):
-    #         msg = msgChoice("dokuga_low","dokuga_mid","dokuga_high")
-    #     elif get_msg in ("摸三色堇尾巴","摸摸尾巴","摸尾巴"):
-    #         msg = msgChoice("shippo_low","shippo_mid","shippo_high")
-    #     if msg is not None:
-    #         if msg[1] < 0:
-    #             self.server.sendGroup(self.group_id,"咿呀！你是谁！？不要碰三色堇！？（你的手被警惕的三色堇弹开了）")
-    #         elif msg[1] > 0:
-    #             add_e_list = "（好感上升【+%g◈】）"%msg[1]
-    #         self.server.sendGroup(self.group_id,msg[0] + add_e_list)
+    #对于【三色堇】的肢体互动
+    @YxBaseGroup.register
+    def SSJTouch(self,data):
+        player = Player(GroupHelper.getId(data))
+        e = player.findGet("emotion",0)
+        get_msg = GroupHelper.getMsg(data)
+        msg,add_e_list = None,""
+        def msgChoice(low,mid,high):
+            lim_e,add_lim_e,low_up_lim,mid_up_lim,add_e = 50,50,90,99,0
+            if e <= 0:
+                return "",-1
+            while True:
+                if e < lim_e:
+                    n = random.randint(0,99)
+                    if n < low_up_lim:
+                        msg = low
+                    elif n < mid_up_lim:
+                        msg = mid
+                    else:
+                        msg = high
+                        if self.timeCheck(data,"SSJTouch_last_time",True):
+                            add_e = e // 24 if e < 2400 else 100
+                            player.set("emotion",e + add_e)
+                    return I18n.format(msg),add_e
+                add_lim_e += 50
+                lim_e += add_lim_e
+                low_up_lim = low_up_lim - 15 if low_up_lim > 15 else 1
+                mid_up_lim = mid_up_lim - 10 if mid_up_lim > 9 else 9
+        if   get_msg in ("捏三色堇脸","捏捏脸"):
+            msg = msgChoice("kao_low","kao_mid","kao_high")
+        elif get_msg in ("摸三色堇头","摸摸头",):
+            msg = msgChoice("atama_low","atama_mid","atama_high")
+        elif get_msg in ("摸三色堇毒牙","摸摸毒牙","摸毒牙"):
+            msg = msgChoice("dokuga_low","dokuga_mid","dokuga_high")
+        elif get_msg in ("摸三色堇尾巴","摸摸尾巴","摸尾巴"):
+            msg = msgChoice("shippo_low","shippo_mid","shippo_high")
+        if msg is not None:
+            if msg[1] < 0:
+                self.server.sendGroup(self.group_id,"咿呀！你是谁！？不要碰三色堇！？（你的手被警惕的三色堇弹开了）")
+            elif msg[1] > 0:
+                add_e_list = "（好感上升【+%g◈】）"%msg[1]
+            self.server.sendGroup(self.group_id,msg[0] + add_e_list)
 
-#三色堇未来功能预定：
-    #1.三色堇属性系统，对于群友的互动的反馈系统（投喂次数-体重，……）。
-    #2.三色堇每天随机挑选一位群友进行【出行(晒太阳，爬山，吃饭，游乐园，看电影……)、读书、魔法研究、森林聆听妖精的歌声】（计数器记录一周内触发三色堇发言的人从中选择）。
-    #3.举行活动到三色堇这里报名【魔法切磋（……）、】。
-#魔法体系：
-    #1.魔素是生命力量人人皆有，但能通过魔素经络来操控魔素的人全世界不过一二,一般来说这种人在太古时期被人称之为【原初者】。
-    #2.消耗魔素使用魔法。
-    #3.魔素容量（天生决定），用了部分魔素可以自行回复，过度使用到极限值会对身体造成负担虚弱很长一段时间甚至死亡。
-    #4.已知太古时期所改造出来的亚人是人类人工创造魔素经络的唯一方法，但是为了创造亚人很多人沦为了牺牲品和实验品。
+三色堇未来功能预定：
+    1.三色堇属性系统，对于群友的互动的反馈系统（投喂次数-体重，……）。
+    2.三色堇每天随机挑选一位群友进行【出行(晒太阳，爬山，吃饭，游乐园，看电影……)、读书、魔法研究、森林聆听妖精的歌声】（计数器记录一周内触发三色堇发言的人从中选择）。
+    3.举行活动到三色堇这里报名【魔法切磋（……）、】。
+魔法体系：
+    1.魔素是生命力量人人皆有，但能通过魔素经络来操控魔素的人全世界不过一二,一般来说这种人在太古时期被人称之为【原初者】。
+    2.消耗魔素使用魔法。
+    3.魔素容量（天生决定），用了部分魔素可以自行回复，过度使用到极限值会对身体造成负担虚弱很长一段时间甚至死亡。
+    4.已知太古时期所改造出来的亚人是人类人工创造魔素经络的唯一方法，但是为了创造亚人很多人沦为了牺牲品和实验品。
