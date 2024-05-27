@@ -1,4 +1,5 @@
 import inspect,random,time,threading
+from ..CQCode import CQCodeHelper
 from ..GameSystem.PlayerSystem.Player import Player
 from ..Order import Order
 from ..Cqserver import Cqserver
@@ -331,6 +332,21 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                 msg = I18n.format("pass_text")
             self.server.sendGroup(self.group_id,msg)
 
+# #test
+#     @register
+#     @helpData(["normal"],"✧未来启✧","fate_change","fate_change","吾が名はパンジー↑！随一の魔法使いにして身に魔神✦↑『デイアブロス』↑✦を封印されし、根源の力を↑引き継げり、そしていつか魔法の真理に辿り着きも↓の↑！\r\n")
+#     def ccoTest(self,data,order:Order):
+#          if GroupHelper.getMsg(data) in ["ccoTest"] or order.checkOrder("ccoTest"):
+#             cqcodes = CQCodeHelper.creatCQCodeFromMsg(GroupHelper.getMsg(data))
+#             at_ids = []
+#             for i in cqcodes:
+#                 if i.t == "at":
+#                     at_ids.append(i.data["qq"])
+#             if len(at_ids) != 2:
+#                 return
+#             qqid = at_ids[1]
+#             self.server.groupBan(self.group_id,qqid,)
+            
     #获取当日动漫资讯
     @register
     @helpData(["normal"],"动画资讯","anime_news","anime_news","获取当日动漫新闻。资讯来源于网络，每小时会尝试更新，直接发送动漫新闻、动画新闻、二次元新闻、anime新闻、动漫资讯、动画资讯、二次元资讯、anime资讯有同样效果。")
