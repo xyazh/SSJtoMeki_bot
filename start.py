@@ -12,3 +12,6 @@ I18nConfig.LANG = "cn"
 LoopEvent.start()
 cq_server = Cqserver("127.0.0.1", 5700, 5710)
 cq_server.serverRun()
+
+while True:
+    msg = input("消息：")

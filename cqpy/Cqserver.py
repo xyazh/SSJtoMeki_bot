@@ -72,6 +72,10 @@ class Cqserver:
         self.mainMsgHandler(cqhttp_data)
         server.sendTextPage("ok")
 
+    def testMsg(self,msg:str):
+        data={}
+
+
     def mainMsgHandler(self,data:dict):
         if not "message_type" in data:
             return
@@ -103,7 +107,8 @@ class Cqserver:
 
     def serverRun(self):
         self.printTitleVison()
-        self.web_and_listen.runHTTP(self.initFunc)
+        fuc = self.web_and_listen.runHTTP
+        self.web_and_listen.runThead(fuc,(self.initFunc,))
 
     def get(self, path:str) -> bytes:
         result = b""
