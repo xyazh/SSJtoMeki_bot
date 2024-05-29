@@ -16,5 +16,5 @@ cq_server.serverRun()
 time.sleep(1)
 
 while True:
-    msg = input("消息：")
+    msg = input(">>")
     cq_server.testMsg(553066134,msg)

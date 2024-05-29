@@ -21,7 +21,13 @@ class Cqserver:
     def patch(fuc):
         def newFuc(*args,**kw):
             if(threading.current_thread() == threading.main_thread()):
-                print(">> %s:|%s||%s|"%(fuc.__name__,args,kw))
+                print("\r\n/*----------------------------------------------------------------")
+                print(">> %s:"%fuc.__name__)
+                for i in args:
+                    print(">> %s"%i)
+                for i in kw:
+                    print(">> %s=%s"%(i,kw[i]))
+                print("/*----------------------------------------------------------------\r\n")
                 return
             fuc(*args,**kw)
         return newFuc
@@ -122,6 +128,10 @@ class Cqserver:
         fuc = self.web_and_listen.runHTTP
         self.web_and_listen.runThead(fuc, (self.initFunc,))
 
+    def escapeMsg(self, msg: str) -> str:
+        msg = urllib.parse.quote(msg)
+        return msg
+
     def get(self, path: str) -> bytes:
         result = b""
         f: BinaryIO
@@ -129,6 +139,7 @@ class Cqserver:
             result = f.read()
         return result
 
+    @patch
     def sendGroup(self, group_id: str | int, msg: str):
         fuc_group_msg_event: Event.FucGroupMsgEvent = Event.EventBus.hookFucGroupMsgEvent(
             {"raw_message": msg, "group_id": group_id}, "send", self)
@@ -139,6 +150,7 @@ class Cqserver:
             self.get("/send_msg?message_type=group&group_id=%s&message=%s" %
                      (group_id, msg))
 
+    @patch
     def sendPrivate(self, id: str | int, msg: str):
         private_msg_event: Event.PrivateMsgEvent = Event.EventBus.hookPrivateMsgEvent(
             {"raw_message": msg, "user_id": id, "sub_type": "sender"}, "send", self)
@@ -148,35 +160,39 @@ class Cqserver:
             self.get(
                 "/send_msg?message_type=private&user_id=%s&message=%s" % (id, msg))
 
-    def escapeMsg(self, msg: str) -> str:
-        msg = urllib.parse.quote(msg)
-        return msg
-
+    @patch
     def setGroupLeave(self, group_id: str | int):
         self.get("/set_group_leave?group_id=%s" % (group_id))
 
+    @patch
     def sendImgToGroupFromPath(self, group_id: str | int, path: str):
         cq = "[CQ:image,file=%s,cache=0]" % ("file:///" + path)
         self.get("/send_msg?message_type=group&group_id=%s&message=%s" %
                  (group_id, cq))
 
+    @patch
     def sendImgToGroupFromUrl(self, group_id: str | int, url: str):
         cq = "[CQ:image,file=%s,cache=0]" % url
         self.get("/send_msg?message_type=group&group_id=%s&message=%s" %
                  (group_id, cq))
 
+    @patch
     def getGroupList(self):
         return self.get("/get_group_list")
 
+    @patch
     def getForwardMsg(self, msg_id: str | int) -> bytes:
         return self.get("/get_forward_msg?message_id=%s" % msg_id)
 
+    @patch
     def groupBan(self, group_id: str | int, qqid: int, time: int):
         self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d" %
                  (group_id, qqid, time))
     
+    @patch
     def getForwardMsg(self,msg_id:str|int)->bytes:
         return self.get("/get_forward_msg?message_id=%s"%msg_id)
     
+    @patch
     def groupBan(self,group_id:str|int,qqid:int,sec:int):
         self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d"%(group_id,qqid,sec))
