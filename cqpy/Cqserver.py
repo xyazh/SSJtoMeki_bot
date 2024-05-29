@@ -174,3 +174,9 @@ class Cqserver:
     def groupBan(self, group_id: str | int, qqid: int, time: int):
         self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d" %
                  (group_id, qqid, time))
+    
+    def getForwardMsg(self,msg_id:str|int)->bytes:
+        return self.get("/get_forward_msg?message_id=%s"%msg_id)
+    
+    def groupBan(self,group_id:str|int,qqid:int,sec:int):
+        self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d"%(group_id,qqid,sec))
