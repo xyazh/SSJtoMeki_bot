@@ -332,31 +332,26 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                 msg = I18n.format("pass_text")
             self.server.sendGroup(self.group_id,msg)
 
-#test
-    @register
-    @helpData(["normal"],"✧未来启✧","fate_change","fate_change","吾が名はパンジー↑！随一の魔法使いにして身に魔神✦↑『デイアブロス』↑✦を封印されし、根源の力を↑引き継げり、そしていつか魔法の真理に辿り着きも↓の↑！\r\n")
-    def ccoTest(self,data,order:Order):
-         if GroupHelper.getMsg(data) in ["ccoTest"] or order.checkOrder("ccoTest"):
-            cqcodes = CQCodeHelper.creatCQCodeFromMsg(GroupHelper.getMsg(data))
-            at_ids = []
-            for i in cqcodes:
-                if i.t == "at":
-                    at_ids.append(i.data["qq"])
-            if len(at_ids) != 2:
-                return
-            else:
-                return at_ids
-            
-#test
-    @register
-    @helpData(["normal"],"✧未来启✧","fate_change","fate_change","吾が名はパンジー↑！随一の魔法使いにして身に魔神✦↑『デイアブロス』↑✦を封印されし、根源の力を↑引き継げり、そしていつか魔法の真理に辿り着きも↓の↑！\r\n")
-    def cco2Test(self,data,order:Order):
-            qqid = at_ids[0] #qqid1
-            qqid = at_ids[1] #qqid2
-            sec = 300 #禁言
-            sec = 0 #解禁
-            while True:
-                self.server.groupBan(self.group_id,qqid,sec)
+# #test
+#     @register
+#     @helpData(["normal"],"✧未来启✧","fate_change","fate_change","")
+#     def ccoTest(self,data,order:Order):
+#          if GroupHelper.getMsg(data) in ["ccoTest"] or order.checkOrder("ccoTest"):
+#             cqcodes = CQCodeHelper.creatCQCodeFromMsg(GroupHelper.getMsg(data))
+#             at_ids = []
+#             for i in cqcodes:
+#                 if i.t == "at":
+#                     at_ids.append(i.data["qq"])
+#             if len(at_ids) != 2:
+#                 return
+#             else:
+#                 return at_ids
+#             qqid = at_ids[0] #qqid1
+#             qqid = at_ids[1] #qqid2
+#             sec = 300 #禁言
+#             sec = 0 #解禁
+#             while True:
+#                 self.server.groupBan(self.group_id,qqid,sec)
             
     #获取当日动漫资讯
     @register

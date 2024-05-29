@@ -8,3 +8,6 @@ class Apple(FoodItem):
         super().__init__()
         self.name = "苹果"
         self.tizhong = 0.05
+
+apple1 = Apple()
+apple1.tizhong = 10
