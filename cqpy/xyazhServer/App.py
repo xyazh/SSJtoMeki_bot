@@ -1,4 +1,5 @@
 import ssl
+import threading
 
 from .ihttp import server
 from .Server import Server
@@ -20,6 +21,11 @@ class App:
         print(" * Server is runing on %s:%s"%(self.host,self.port))
         print(" * HTTP url is %s://%s:%s/ (Press CTRL+C to quit)"%(t,self.host,self.port))
         print(" * ---------------------------------\r\n\r\n")
+
+    def runThead(self,func:Callable=None,args:tuple = ()):
+        thread = threading.Thread(target=func,args=args)
+        thread.start()
+        
 
     def runHTTP(self,func:Callable=None):
         self.pTitleVison("http")
