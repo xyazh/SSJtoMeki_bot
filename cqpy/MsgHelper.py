@@ -1,3 +1,5 @@
+import time
+
 ORDER_SPLIT_LIST =  [".","/","。","\\"]
 
 class MsgHelper:
@@ -30,3 +32,34 @@ class MsgHelper:
             if "nickname" in data["sender"]:
                 return data["sender"]["nickname"]
         return ""
+    
+    @staticmethod
+    def createMsg(group_id:int, msg:str,self_id:int=-1,user_id:int=-1)->dict:
+        data = {
+            'self_id': self_id,
+            'user_id': user_id,
+            'time': int(time.time()),
+            'message_id': -1,
+            'real_id': -1,
+            'message_seq': -1,
+            'message_type': 'group',
+            'sender': {
+                'user_id': -1,
+                'nickname': 'consle_test',
+                'card': '控制台测试',
+                'role': 'test'
+            },
+            'raw_message': msg,
+            'font': 14,
+            'sub_type': 'normal',
+            'message': [
+                {
+                    'data': {'text': msg},
+                    'type': 'text'
+                }
+            ],
+            'message_format': 'array',
+            'post_type': 'message',
+            'group_id': group_id
+        }
+        return data

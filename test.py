@@ -1,16 +1,28 @@
-import os
+class Status:
+    status_dict1 = {}
+    status_dict2 = {}
 
-# 指定要检查的文件夹路径
-folder_path = 'C:\\data\\cqpy\\SSJtoMeki_bot\\cqpy'
+    @staticmethod
+    def getStatus(id:int):
+        status = Status.status_dict1.get(id)
+        if status is None:
+            status = Status.status_dict2.get(id)
+        return status
 
-# 使用 os.listdir 获取文件夹中的所有项（包括文件和文件夹）
-items = os.listdir(folder_path)
+    def __init__(self,id1:int,id2:int):
+        self.id1:int = id1
+        self.id2:int = id2
+        self.banId1 = False
+        Status.status_dict1[id1] = self
+        Status.status_dict2[id2] = self
 
-# 过滤出文件夹
-subfolders = [item for item in items if os.path.isdir(os.path.join(folder_path, item))]
+    def id1IsBan(self)->bool:
+        return self.banId1
+    
+    def id2IsBan(self)->bool:
+        return not self.banId1
+    
+    def banning(self)->int:
+        return self.id1 if self.id1IsBan() else self.id2
+    
 
-r = []
-# 遍历每个子文件夹
-for subfolder in subfolders:
-    subfolder_path = os.path.join(folder_path, subfolder)
-    init_file_exists = os.path.isfile(os.path.join(subfolder_path, '__init__.py'))

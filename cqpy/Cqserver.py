@@ -1,11 +1,13 @@
 import inspect
 import json
 import urllib.parse
+import threading
 
 from .Event import Event
 from .GroupHelper import GroupHelper
 from .ServerHelper import ServerHelper
 from .WebApp.MyWebApp import MyWebApp
+from .MsgHelper import MsgHelper
 from .xyazhServer import App
 from .xyazhServer import PageManager
 from .xyazhServer import Server
@@ -15,34 +17,44 @@ from urllib import request
 
 
 class Cqserver:
+    @staticmethod
+    def patch(fuc):
+        def newFuc(*args,**kw):
+            if(threading.current_thread() == threading.main_thread()):
+                print(">> %s:|%s||%s|"%(fuc.__name__,args,kw))
+                return
+            fuc(*args,**kw)
+        return newFuc
+
     def __init__(self, ip: str, port: int, post_port: int):
         self.ip = ip
         self.port = port
         self.post_port = post_port
         self.reg_func: dict[int:list[Callable]] = {}
         self.ban_func: dict[int:list[Callable]] = {}
-        self.newWebAndListenApp(ip,post_port)
+        self.newWebAndListenApp(ip, post_port)
         self.register()
 
     def printTitleVison(self):
         print(" * ---------------------------------")
         print(" * Multi functional dice rolling bot made with Python by Xyazh")
-        print(" * 在浏览器打开 http://%s:%s/res/index.html 进行可视化后台管理" %(self.ip, self.post_port))
+        print(" * 在浏览器打开 http://%s:%s/res/index.html 进行可视化后台管理" %
+              (self.ip, self.post_port))
         print(" * アトリは、高性能ですから!")
         print(" * ---------------------------------")
 
-    def newWebAndListenApp(self,ip: str, post_port: int):
-        self.web_and_listen:App = App(ip,post_port)
+    def newWebAndListenApp(self, ip: str, post_port: int):
+        self.web_and_listen: App = App(ip, post_port)
         self.web_and_listen.http_server.cqserver = self
         real_root = "./web/public"
         virtual_root = "/res"
+
         def virtualPath(server: Server):
             path = server.virtual_path.replace(virtual_root, real_root, 1)
             server.sendFile(path)
         PageManager.addFileTree(real_root, virtual_root, virtualPath)
         PageManager.addPath("/", self.cqhttpApiConnector, "POST")
         MyWebApp()
-
 
     def register(self):
         from . import cqgroups
@@ -72,11 +84,11 @@ class Cqserver:
         self.mainMsgHandler(cqhttp_data)
         server.sendTextPage("ok")
 
-    def testMsg(self,msg:str):
-        data={}
+    def testMsg(self, group_id:int,msg: str):
+        msg = MsgHelper.createMsg(group_id,msg)
+        self.mainMsgHandler(msg)
 
-
-    def mainMsgHandler(self,data:dict):
+    def mainMsgHandler(self, data: dict):
         if not "message_type" in data:
             return
         message_type = data["message_type"]
@@ -108,17 +120,16 @@ class Cqserver:
     def serverRun(self):
         self.printTitleVison()
         fuc = self.web_and_listen.runHTTP
-        self.web_and_listen.runThead(fuc,(self.initFunc,))
+        self.web_and_listen.runThead(fuc, (self.initFunc,))
 
-    def get(self, path:str) -> bytes:
+    def get(self, path: str) -> bytes:
         result = b""
-        f:BinaryIO
-        with request.urlopen("http://%s:%s%s"%(self.ip,self.port,path)) as f:
+        f: BinaryIO
+        with request.urlopen("http://%s:%s%s" % (self.ip, self.port, path)) as f:
             result = f.read()
         return result
 
-
-    def sendGroup(self, group_id:str|int, msg:str):
+    def sendGroup(self, group_id: str | int, msg: str):
         fuc_group_msg_event: Event.FucGroupMsgEvent = Event.EventBus.hookFucGroupMsgEvent(
             {"raw_message": msg, "group_id": group_id}, "send", self)
         msg = fuc_group_msg_event.getMsg()
@@ -128,7 +139,7 @@ class Cqserver:
             self.get("/send_msg?message_type=group&group_id=%s&message=%s" %
                      (group_id, msg))
 
-    def sendPrivate(self, id:str|int, msg:str):
+    def sendPrivate(self, id: str | int, msg: str):
         private_msg_event: Event.PrivateMsgEvent = Event.EventBus.hookPrivateMsgEvent(
             {"raw_message": msg, "user_id": id, "sub_type": "sender"}, "send", self)
         msg = private_msg_event.getMsg()
@@ -141,24 +152,25 @@ class Cqserver:
         msg = urllib.parse.quote(msg)
         return msg
 
-    def setGroupLeave(self, group_id:str|int):
+    def setGroupLeave(self, group_id: str | int):
         self.get("/set_group_leave?group_id=%s" % (group_id))
 
-    def sendImgToGroupFromPath(self, group_id:str|int, path:str):
+    def sendImgToGroupFromPath(self, group_id: str | int, path: str):
         cq = "[CQ:image,file=%s,cache=0]" % ("file:///" + path)
         self.get("/send_msg?message_type=group&group_id=%s&message=%s" %
                  (group_id, cq))
 
-    def sendImgToGroupFromUrl(self, group_id:str|int, url:str):
+    def sendImgToGroupFromUrl(self, group_id: str | int, url: str):
         cq = "[CQ:image,file=%s,cache=0]" % url
         self.get("/send_msg?message_type=group&group_id=%s&message=%s" %
                  (group_id, cq))
 
     def getGroupList(self):
         return self.get("/get_group_list")
-    
-    def getForwardMsg(self,msg_id:str|int)->bytes:
-        return self.get("/get_forward_msg?message_id=%s"%msg_id)
-    
-    def groupBan(self,group_id:str|int,qqid:int,time:int):
-        self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d"%(group_id,qqid,time))
+
+    def getForwardMsg(self, msg_id: str | int) -> bytes:
+        return self.get("/get_forward_msg?message_id=%s" % msg_id)
+
+    def groupBan(self, group_id: str | int, qqid: int, time: int):
+        self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d" %
+                 (group_id, qqid, time))
