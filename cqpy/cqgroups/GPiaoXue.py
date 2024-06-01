@@ -4,6 +4,7 @@ from .I.IRollGroup import IRollGroup
 from .I.IItemGroup import IItemGroup
 from .I.ITTKGroup import ITTKGroup
 from ..GroupHelper import GroupHelper
+from ..DataManager import DataManager
 from ..LLMChat import LLMAPI, DeepseekAPI, ERNIEAPI, QwenAPI
 import base64
 import pickle
@@ -13,8 +14,9 @@ class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
         super().__init__()
         self.group_id = int(base64.b64decode(b'NTUzMDY2MTM0').decode())
         self.debug_mode = False
-
-        with open('key.pkl', 'rb') as f:
+        
+        self.data_manager:DataManager = DataManager("\\PiaoXue\\")
+        with self.data_manager.openFile('key.pkl', 'rb') as f:
             key_dict = pickle.load(f)
 
         self.API_dict = {
