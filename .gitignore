@@ -1,5 +1,7 @@
 
 # for python
 *.py[cod]
+temp*
 
 LLMChatTest.ipynb
+key.pkl
