@@ -12,6 +12,7 @@ from .MsgHelper import MsgHelper
 from .xyazhServer import App
 from .xyazhServer import PageManager
 from .xyazhServer import Server
+from .xyazhServer import ConsoleMessage
 from typing import Callable
 from typing import BinaryIO
 from urllib import request
@@ -20,17 +21,19 @@ from urllib import request
 class Cqserver:
     @staticmethod
     def patch(fuc):
-        def newFuc(*args,**kw):
-            if(threading.current_thread() == threading.main_thread()):
-                print("\r\n/*----------------------------------------------------------------")
-                print(">> %s:"%fuc.__name__)
+        def newFuc(*args, **kw):
+            if (threading.current_thread() == threading.main_thread()):
+                print(
+                    "\r\n/*----------------------------------------------------------------")
+                print(">> %s:" % fuc.__name__)
                 for i in args:
-                    print(">> %s"%i)
+                    print(">> %s" % i)
                 for i in kw:
-                    print(">> %s=%s"%(i,kw[i]))
-                print("/*----------------------------------------------------------------\r\n")
+                    print(">> %s=%s" % (i, kw[i]))
+                print(
+                    "/*----------------------------------------------------------------\r\n")
                 return
-            fuc(*args,**kw)
+            fuc(*args, **kw)
         return newFuc
 
     def __init__(self, ip: str, port: int, post_port: int):
@@ -64,12 +67,14 @@ class Cqserver:
         MyWebApp()
 
     def register(self):
-        try:
-            from . import cqgroups
-            from .cqgroups.BaseGroup import BaseGroup
-            class_list = ServerHelper.getFullClassesFormModul(
-                cqgroups, lambda clazz: issubclass(clazz, BaseGroup))
-            for ClassGroup in class_list:
+        clazz = None
+        from . import cqgroups
+        from .cqgroups.BaseGroup import BaseGroup
+        class_list = ServerHelper.getFullClassesFormModul(
+            cqgroups, lambda clazz: issubclass(clazz, BaseGroup))
+        for ClassGroup in class_list:
+            try:
+                clazz = ClassGroup
                 group_obj: BaseGroup = ClassGroup()
                 group_obj.setSender(self)
                 func_list = []
@@ -81,8 +86,11 @@ class Cqserver:
                 if event.getCancel():
                     continue
                 self.reg_func.update({event.group_id: event.fucs})
-        except BaseException as e:
-            logging.exception(e)
+            except BaseException as e:
+                ConsoleMessage.printError("加载%s|%s时出错" % (
+                    "初始化" if clazz == None else clazz.__name__, clazz))
+                logging.exception(e)
+
 
     def cqhttpApiConnector(self, server: Server):
         data: bytes = server.readPostData(max_size=10240)
@@ -94,8 +102,8 @@ class Cqserver:
         self.mainMsgHandler(cqhttp_data)
         server.sendTextPage("ok")
 
-    def testMsg(self, group_id:int,msg: str):
-        msg = MsgHelper.createMsg(group_id,msg)
+    def testMsg(self, group_id: int, msg: str):
+        msg = MsgHelper.createMsg(group_id, msg)
         self.mainMsgHandler(msg)
 
     def mainMsgHandler(self, data: dict):
@@ -192,11 +200,12 @@ class Cqserver:
     def groupBan(self, group_id: str | int, qqid: int, time: int):
         self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d" %
                  (group_id, qqid, time))
-    
+
     @patch
-    def getForwardMsg(self,msg_id:str|int)->bytes:
-        return self.get("/get_forward_msg?message_id=%s"%msg_id)
-    
+    def getForwardMsg(self, msg_id: str | int) -> bytes:
+        return self.get("/get_forward_msg?message_id=%s" % msg_id)
+
     @patch
-    def groupBan(self,group_id:str|int,qqid:int,sec:int):
-        self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d"%(group_id,qqid,sec))
+    def groupBan(self, group_id: str | int, qqid: int, sec: int):
+        self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d" %
+                 (group_id, qqid, sec))
