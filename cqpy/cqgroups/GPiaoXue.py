@@ -15,9 +15,12 @@ class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
         self.group_id = int(base64.b64decode(b'NTUzMDY2MTM0').decode())
         self.debug_mode = False
         
-        self.data_manager:DataManager = DataManager("\\PiaoXue\\")
-        with self.data_manager.openFile('key.pkl', 'rb') as f:
-            key_dict = pickle.load(f)
+        try:
+            self.data_manager:DataManager = DataManager("\\PiaoXue\\")
+            with self.data_manager.openFile('key.pkl', 'rb') as f:
+                key_dict = pickle.load(f)
+        except BaseException:
+            pass
 
         self.API_dict = {
             "DeepseekAPI": DeepseekAPI(key_dict['deepseek']), 

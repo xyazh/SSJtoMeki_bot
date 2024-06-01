@@ -2,6 +2,7 @@ import inspect
 import json
 import urllib.parse
 import threading
+import logging
 
 from .Event import Event
 from .GroupHelper import GroupHelper
@@ -63,22 +64,25 @@ class Cqserver:
         MyWebApp()
 
     def register(self):
-        from . import cqgroups
-        from .cqgroups.BaseGroup import BaseGroup
-        class_list = ServerHelper.getFullClassesFormModul(
-            cqgroups, lambda clazz: issubclass(clazz, BaseGroup))
-        for ClassGroup in class_list:
-            group_obj: BaseGroup = ClassGroup()
-            group_obj.setSender(self)
-            func_list = []
-            for fuc in inspect.getmembers(group_obj):
-                if hasattr(fuc[1], "sign_reg"):
-                    func_list.append(fuc[1])
-            event: Event.GruopRegisterEvent = Event.EventBus.hookGruopRegisterEvent(
-                group_obj.group_id, func_list, self)
-            if event.getCancel():
-                continue
-            self.reg_func.update({event.group_id: event.fucs})
+        try:
+            from . import cqgroups
+            from .cqgroups.BaseGroup import BaseGroup
+            class_list = ServerHelper.getFullClassesFormModul(
+                cqgroups, lambda clazz: issubclass(clazz, BaseGroup))
+            for ClassGroup in class_list:
+                group_obj: BaseGroup = ClassGroup()
+                group_obj.setSender(self)
+                func_list = []
+                for fuc in inspect.getmembers(group_obj):
+                    if hasattr(fuc[1], "sign_reg"):
+                        func_list.append(fuc[1])
+                event: Event.GruopRegisterEvent = Event.EventBus.hookGruopRegisterEvent(
+                    group_obj.group_id, func_list, self)
+                if event.getCancel():
+                    continue
+                self.reg_func.update({event.group_id: event.fucs})
+        except BaseException as e:
+            logging.exception(e)
 
     def cqhttpApiConnector(self, server: Server):
         data: bytes = server.readPostData(max_size=10240)
