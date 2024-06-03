@@ -17,4 +17,4 @@ time.sleep(1)
 
 while True:
     msg = input(">>")
-    cq_server.testMsg(-1,msg)
+    cq_server.testMsg(582897932,msg)

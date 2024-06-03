@@ -2,8 +2,6 @@ import inspect,random,time,threading
 from ..CQCode import CQCodeHelper
 from ..GameSystem.PlayerSystem.Player import Player
 from ..Order import Order
-from ..Cqserver import Cqserver
-from ..DataManager import DataManager
 from ..LoopEvent import LoopEvent 
 from ..GroupHelper import GroupHelper
 from ..GroupHelper import ORDER_SPLIT_LIST
@@ -15,6 +13,8 @@ from .I.ISSJGroup import ISSJGroup
 from .I.IRollGroup import IRollGroup
 from .I.ITTKGroup import ITTKGroup
 from .I.IItemGroup import IItemGroup
+from ..GameSystem.YxClass.UserStatus import UserStatus
+from ..MsgHelper import MsgHelper
 
 BOT_NAME_SELF = "三色堇"
 BOT_NAME = "三色堇"
@@ -334,8 +334,11 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
 
 # #test
 #     @register
-#     @helpData(["normal"],"✧未来启✧","fate_change","fate_change","")
+#     @helpData(["normal"],"✧裁判✧","saiban","saiban","开庭辩论")
 #     def ccoTest(self,data,order:Order):
+#         qqid = MsgHelper.getId(data)
+#         if qqid == UserStatus.:
+#             self.server.groupBan(self.group_id,qqid,sec)
 #          if GroupHelper.getMsg(data) in ["ccoTest"] or order.checkOrder("ccoTest"):
 #             cqcodes = CQCodeHelper.creatCQCodeFromMsg(GroupHelper.getMsg(data))
 #             at_ids = []

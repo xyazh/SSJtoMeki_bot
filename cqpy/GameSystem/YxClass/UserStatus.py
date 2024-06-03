@@ -6,3 +6,5 @@ class UserStatus:
         self.qqid1 = qqid1
         self.qqid1 = qqid2
         self.ban = False
+    
+    
