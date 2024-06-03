@@ -336,10 +336,9 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
 #     @register
 #     @helpData(["normal"],"✧裁判✧","saiban","saiban","开庭辩论")
 #     def ccoTest(self,data,order:Order):
-#         qqid = MsgHelper.getId(data)
 #         if qqid == UserStatus.:
 #             self.server.groupBan(self.group_id,qqid,sec)
-#          if GroupHelper.getMsg(data) in ["ccoTest"] or order.checkOrder("ccoTest"):
+#         if GroupHelper.getMsg(data) in ["ccoTest"] or order.checkOrder("ccoTest"):
 #             cqcodes = CQCodeHelper.creatCQCodeFromMsg(GroupHelper.getMsg(data))
 #             at_ids = []
 #             for i in cqcodes:
@@ -348,7 +347,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
 #             if len(at_ids) != 2:
 #                 return
 #             else:
-#                 return at_ids
+#                 UserStatus.useBan(at_ids(0),at_ids(1))
 #             qqid = at_ids[0] #qqid1
 #             qqid = at_ids[1] #qqid2
 #             sec = 300 #禁言
