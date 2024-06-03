@@ -8,6 +8,7 @@ from ..DataManager import DataManager
 from ..LLMChat import LLMAPI, DeepseekAPI, ERNIEAPI, QwenAPI
 import base64
 import pickle
+import threading
 
 
 class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
@@ -42,13 +43,25 @@ class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
 
     @BaseGroup.register
     def chat(self, data, cmd):
-        if cmd.checkOrder("chat"):
-            # 拼接消息
-            message = " ".join(cmd.o_li[1:])
+        if not cmd.checkOrder("chat"):
+            return
+        
+        # 拼接消息
+        # message = " ".join(cmd.o_li[1:])
+
+        # 使用GroupHelper.getMsg(data)获取原消息
+        message = GroupHelper.getMsg(data)
+        # 截去指令/chat 开头部分
+        message = message[6:]
+        def sendMsg():
             # 调用API
             response = self.activeAPI.chat(message, debug_mode=self.debug_mode)
 
             self.server.sendGroup(self.group_id, response)
+
+        threading.Thread(target=sendMsg).start()
+
+
 
     @BaseGroup.register
     def changeAPI(self, data, cmd):
