@@ -21,6 +21,10 @@ class DataManager:
             f = open(full_path, type)
             return f
         return None
+    
+    def openFile(self, path: str, mode: str, *args, **kw) -> io.IOBase:
+        f = open(self.getFileFullPath(path), mode, *args, **kw)
+        return f
 
     def getFileFullPath(self, file_name: str) -> str:
         full_path = self.path + file_name

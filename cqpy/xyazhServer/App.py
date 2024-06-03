@@ -14,6 +14,7 @@ class App:
         self.http_server.socket.settimeout(5)
         self.http_server.timeout
         self.context = None
+        self.ready = False
 
     def pTitleVison(self,t:str):
         print(" * ---------------------------------")
@@ -25,12 +26,12 @@ class App:
     def runThead(self,func:Callable=None,args:tuple = ()):
         thread = threading.Thread(target=func,args=args)
         thread.start()
-        
 
     def runHTTP(self,func:Callable=None):
         self.pTitleVison("http")
         if func is not None:
             func()
+        self.ready = True
         self.http_server.serve_forever()
 
     def runHTTPS(self,cert_chain:tuple[str],func:Callable=None):
@@ -40,4 +41,5 @@ class App:
         self.pTitleVison("https")
         if func is not None:
             func()
+        self.ready = True
         self.http_server.serve_forever()
