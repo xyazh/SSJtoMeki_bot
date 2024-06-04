@@ -9,18 +9,18 @@ import json
 class AnimeHTMLParser(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.__parsedata = ''  # 设置一个空的标志位
+        self.__parsedata = False  # 设置一个空的标志位
         self.info = []
 
     def handle_starttag(self, tag, attrs):
         if ("class", "ptxt") in attrs:
-            self.__parsedata = "n"
+            self.__parsedata = True
 
     def handle_endtag(self, tag):
-        self.__parsedata = ''  # 在HTML 标签结束时，把标志位清空
+        self.__parsedata = False  # 在HTML 标签结束时，把标志位还原
 
     def handle_data(self, data):
-        if self.__parsedata == "n":
+        if self.__parsedata:
             data = data.replace("\r", "")
             data = data.replace("\n", "")
             flag = False
