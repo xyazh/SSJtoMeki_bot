@@ -26,7 +26,8 @@ class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
                 self.API_dict = {
                     "DeepseekAPI": DeepseekAPI(key_dict['deepseek']),
                     "ERNIEApi": ERNIEAPI(key_dict['ERNIE']['api_key'], key_dict['ERNIE']['secret_key']),
-                    "QwenAPI": QwenAPI(key_dict['Qwen'])}
+                    "QwenAPI": QwenAPI(key_dict['Qwen'])
+                    }
 
             self.activeAPI: LLMAPI = self.API_dict["QwenAPI"]
         except BaseException:
@@ -105,6 +106,32 @@ class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
                 self.group_id, f"当前模型为{self.activeAPI.model}")
             self.server.sendGroup(
                 self.group_id, f"可用模型有{', '.join(self.activeAPI.model_list)}")
+
+    @BaseGroup.register
+    def changeAPIArgs(self, data, cmd):
+        if cmd.checkOrder("changeAPIArgs"):
+            arg1 = cmd.getArg(1)
+            arg2 = cmd.getArg(2)
+
+            if arg1 in self.activeAPI.__dict__:
+                self.activeAPI.__dict__[arg1] = arg2
+                self.server.sendGroup(
+                    self.group_id, f"参数{arg1}已修改为{arg2}")
+            else:
+                self.server.sendGroup(self.group_id, f"参数{arg1}不存在")
+
+    @BaseGroup.register
+    def showAPIArgs(self, data, cmd):
+        if cmd.checkOrder("showAPIArgs"):
+            message = f"当前API为{self.activeAPI}\n"
+            message += f"API参数：\nsystem_prompt: {self.activeAPI.system_prompt}\nmax_tokens: {self.activeAPI.max_tokens}\ntemperature: {self.activeAPI.temperature}\nmax_memory_in_turns: {self.activeAPI.max_memory_in_turns}\n"
+            self.server.sendGroup(self.group_id, message)
+
+    @BaseGroup.register
+    def cleanContext(self, data, cmd):
+        if cmd.checkOrder("cleanContext"):
+            self.activeAPI.messages = []
+            self.server.sendGroup(self.group_id, "上下文已清空")
 
     @BaseGroup.register
     def debugMode(self, data, cmd):

@@ -31,7 +31,6 @@ class DeepseekAPI(LLMAPI):
                  model: str = "deepseek-chat",
                  max_memory_in_turns: int = 5):
         super().__init__(api_key, base_url, system_prompt, max_tokens, temperature, model, max_memory_in_turns)
-        self.system_prompt = {"role": "system", "content": system_prompt}
 
         self.model_list = ["deepseek-chat", "deepseek-coder"]
 
@@ -83,11 +82,12 @@ class DeepseekAPI(LLMAPI):
 
     def chat(self, user_message, one_turn = False, debug_mode=False) -> str:
         user_message_prompt = {"role": "user", "content": user_message}
+        system_message_prompt = {"role": "system", "content": self.system_prompt}
 
         if one_turn:
-            messages = [self.system_prompt, user_message_prompt]
+            messages = [system_message_prompt, user_message_prompt]
         else:
-            messages = [self.system_prompt] + self.messages + [user_message_prompt]
+            messages = [system_message_prompt] + self.messages + [user_message_prompt]
         
         response = self.get_response(messages)
 
@@ -207,7 +207,6 @@ class QwenAPI(LLMAPI):
                  model: str = "qwen-long",
                  max_memory_in_turns: int = 5):
         super().__init__(api_key, base_url, system_prompt, max_tokens, temperature, model, max_memory_in_turns)
-        self.system_prompt = {"role": "system", "content": system_prompt}
 
         self.model_list = ["qwen-long", "qwen-turbo", "qwen-plus", "qwen-max", "qwen-max-longcontext",
                            "qwen1.5-110b-chat", "qwen1.5-72b-chat", "qwen1.5-32b-chat", "qwen1.5-14b-chat", 
@@ -247,11 +246,12 @@ class QwenAPI(LLMAPI):
 
     def chat(self, user_message, one_turn = False, debug_mode=False) -> str:
         user_message_prompt = {"role": "user", "content": user_message}
+        system_message_prompt = {"role": "system", "content": self.system_prompt}
 
         if one_turn:
-            messages = [self.system_prompt, user_message_prompt]
+            messages = [system_message_prompt, user_message_prompt]
         else:
-            messages = [self.system_prompt] + self.messages + [user_message_prompt]
+            messages = [system_message_prompt] + self.messages + [user_message_prompt]
         
         response = self.get_response(messages)
         response_json = response.json()
