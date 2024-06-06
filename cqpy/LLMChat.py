@@ -122,13 +122,13 @@ class ERNIEAPI(LLMAPI):
         'Content-Type': 'application/json',
         }
 
-        self.model_list = ["ERNIE-Speed-8K", "ERNIE-Speed-128K", "ERNIE 4.0 8K", "ERNIE 3.5 8K", "ERNIE-Lite-8K", "ERNIE-Tiny-8K"]
+        self.model_list = ["ERNIE-Speed-8K", "ERNIE-Speed-128K", "ERNIE-4.0-8K", "ERNIE-3.5-8K", "ERNIE-Lite-8K", "ERNIE-Tiny-8K"]
 
         self.model_url = {
             "ERNIE-Speed-8K": "ernie_speed",
             "ERNIE-Speed-128K": "ernie-speed-128k",
-            "ERNIE 4.0 8K": "ernie-4.0-8k-preview",
-            "ERNIE 3.5 8K": "ernie-3.5-8k-preview",
+            "ERNIE-4.0-8K": "ernie-4.0-8k-preview",
+            "ERNIE-3.5-8K": "ernie-3.5-8k-preview",
             "ERNIE-Lite-8K": "ernie-lite-8k",
             "ERNIE-Tiny-8K": "ernie-tiny-8k"
         }

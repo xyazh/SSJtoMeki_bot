@@ -82,8 +82,7 @@ class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
             self.server.sendGroup(self.group_id, f"当前API为{self.activeAPI}")
             self.server.sendGroup(
                 self.group_id, f"可用API有{', '.join(self.API_dict.keys())}")
-            message = "API介绍：\nDeepseekAPI：由deepseek公司开发的开源模型deepseek v2，性能优秀，推理成本低\nERNIEApi：由百度开发的ERNIE系列模型，4和3.5 \
-                        性能不错，但是API贵。免费的speed和lite模型有点憨憨。\nQwenAPI：由阿里开发的Qwen模型，分闭源的qwen系列和开源的qwen1.5系列，性能优秀，送了一大堆免费额度，建议用这个\n"
+            message = "API介绍：\nDeepseekAPI：由deepseek公司开发的开源模型deepseek v2，性能优秀，推理成本低\nERNIEApi：由百度开发的ERNIE系列模型，4和3.5性能不错，但是API贵。免费的speed和lite模型有点憨憨。\nQwenAPI：由阿里开发的Qwen模型，分闭源的qwen系列和开源的qwen1.5系列，性能优秀，送了一大堆免费额度，建议用这个\n"
             self.server.sendGroup(self.group_id, message)
 
     @BaseGroup.register
