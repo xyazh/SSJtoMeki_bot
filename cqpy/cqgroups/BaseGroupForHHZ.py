@@ -274,12 +274,12 @@ class BaseGroupForHHZ(BaseGroup):
                 str(self.group_id) + ".json", "ppp")
             da: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "add")
-            if type(da) == dict:
+            if isinstance(da,dict):
                 if a1 in da:
                     da.pop(a1)
                     self.data_manager.set(
                         str(self.group_id) + ".json", "add", da)
-            if type(dp) == dict:
+            if isinstance(dp,dict):
                 dp.update({a1: p_li})
                 self.data_manager.set(str(self.group_id) + ".json", "ppp", dp)
                 self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
@@ -299,14 +299,14 @@ class BaseGroupForHHZ(BaseGroup):
                 return
             dp: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "ppp")
-            if type(dp) == dict:
+            if isinstance(dp,dict):
                 if a1 in dp:
                     dp.pop(a1)
                     self.data_manager.set(
                         str(self.group_id) + ".json", "ppp", dp)
             da: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "add")
-            if type(da) == dict:
+            if isinstance(da,dict):
                 da.update({a1: a2})
                 self.data_manager.set(str(self.group_id) + ".json", "add", da)
                 self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
@@ -326,7 +326,7 @@ class BaseGroupForHHZ(BaseGroup):
             flag = True
             dp: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "ppp")
-            if type(dp) == dict:
+            if isinstance(dp,dict):
                 if a1 in dp:
                     dp.pop(a1)
                     self.data_manager.set(
@@ -336,7 +336,7 @@ class BaseGroupForHHZ(BaseGroup):
                     flag = False
             da: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "add")
-            if type(da) == dict:
+            if isinstance(da,dict):
                 if a1 in da:
                     da.pop(a1)
                     self.data_manager.set(
@@ -353,7 +353,7 @@ class BaseGroupForHHZ(BaseGroup):
         if order.checkOrder("point"):
             p = self.data_manager.get(
                 str(GroupHelper.getId(data))+".json", "point")
-            if type(p) == int:
+            if isinstance(p,dict):
                 self.server.sendGroup(self.group_id, "%s当前拥有点数：%dP" %
                                  (GroupHelper.getName(data), p))
             else:
@@ -366,12 +366,12 @@ class BaseGroupForHHZ(BaseGroup):
     def autoMsg(self, data: dict):
         msg = GroupHelper.getMsg(data)
         da: dict = self.data_manager.get(str(self.group_id) + ".json", "add")
-        if type(da) == dict:
+        if isinstance(da,dict):
             if msg in da:
                 self.server.sendGroup(self.group_id, da[msg])
                 return
         dp: dict = self.data_manager.get(str(self.group_id) + ".json", "ppp")
-        if type(dp) == dict:
+        if isinstance(dp,dict):
             if msg in dp:
                 li = dp[msg]
                 r_m = li[random.randint(0, len(li)-1)]

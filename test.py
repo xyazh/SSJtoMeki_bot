@@ -26,6 +26,8 @@ class Status:
         return self.id1 if self.id1IsBan() else self.id2
     
 
+
+
 """r = []
 # 遍历每个子文件夹
 for subfolder in subfolders:

@@ -5,6 +5,18 @@ ORDER_SPLIT_LIST = [".", "/", "。", "\\"]
 
 class GroupHelper:
     ORDER_SPLIT_LIST = ORDER_SPLIT_LIST
+
+    @staticmethod
+    def addActiveGroups(*group_ids:int):
+        def dec(cls:object):
+            if hasattr(cls,"active_groups") and isinstance(cls.active_groups,list):
+                cls.active_groups.extend(group_ids)
+            else:
+                cls.active_groups = [id for id in group_ids]
+            return cls
+        return dec
+        
+
     @staticmethod
     def getNickname(data: dict) -> str:
         if "sender" in data:
@@ -51,7 +63,7 @@ class GroupHelper:
 
     @staticmethod
     def getMsg(data: dict) -> str:
-        if type(data) == dict:
+        if isinstance(data,dict):
             if 'raw_message' in data:
                 return data['raw_message']
         return ""

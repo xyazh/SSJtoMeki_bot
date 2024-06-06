@@ -3,10 +3,12 @@ import json
 import urllib.parse
 import threading
 import logging
+import typing
 
 from .Event import Event
 from .GroupHelper import GroupHelper
 from .ServerHelper import ServerHelper
+from .MsgData import MsgData
 from .WebApp.MyWebApp import MyWebApp
 from .MsgHelper import MsgHelper
 from .xyazhServer import App
@@ -16,6 +18,10 @@ from .xyazhServer import ConsoleMessage
 from typing import Callable
 from typing import BinaryIO
 from urllib import request
+
+if typing.TYPE_CHECKING:
+    from . import cqgroups
+    from .cqgroups.BaseGroup import BaseGroup
 
 
 class Cqserver:
@@ -66,6 +72,18 @@ class Cqserver:
         PageManager.addPath("/", self.cqhttpApiConnector, "POST")
         MyWebApp()
 
+    def registerGObj(self, group_obj: "BaseGroup"):
+        group_obj.setSender(self)
+        func_list = []
+        for fuc in inspect.getmembers(group_obj):
+            if hasattr(fuc[1], "sign_reg"):
+                func_list.append(fuc[1])
+        event: Event.GruopRegisterEvent = Event.EventBus.hookGruopRegisterEvent(
+            group_obj.group_id, func_list, self)
+        if event.getCancel():
+            return
+        self.reg_func.update({event.group_id: event.fucs})
+
     def register(self):
         clazz = None
         from . import cqgroups
@@ -75,22 +93,25 @@ class Cqserver:
         for ClassGroup in class_list:
             try:
                 clazz = ClassGroup
-                group_obj: BaseGroup = ClassGroup()
-                group_obj.setSender(self)
-                func_list = []
-                for fuc in inspect.getmembers(group_obj):
-                    if hasattr(fuc[1], "sign_reg"):
-                        func_list.append(fuc[1])
-                event: Event.GruopRegisterEvent = Event.EventBus.hookGruopRegisterEvent(
-                    group_obj.group_id, func_list, self)
-                if event.getCancel():
-                    continue
-                self.reg_func.update({event.group_id: event.fucs})
+                group_obj: BaseGroup = None
+                if hasattr(clazz, "active_groups") and isinstance(clazz.active_groups, list):
+                    for i in clazz.active_groups:
+                        if (not isinstance(i, int)):
+                            continue
+                        group_obj = ClassGroup()
+                        group_obj.group_id = i
+                        self.registerGObj(group_obj)
+                        group_obj = None
+                group_obj = ClassGroup()
+                self.registerGObj(group_obj)
+                group_obj = None
             except BaseException as e:
-                ConsoleMessage.printError("加载%s|%s时出错" % (
-                    "初始化" if clazz == None else clazz.__name__, clazz))
+                log = "加载%s|%s时出错" % (
+                    "初始化" if clazz == None else clazz.__name__, clazz)
+                if group_obj != None:
+                    log += "|当前群号：%s" % group_obj.group_id
+                ConsoleMessage.printError(log)
                 logging.exception(e)
-
 
     def cqhttpApiConnector(self, server: Server):
         data: bytes = server.readPostData(max_size=10240)
@@ -103,10 +124,10 @@ class Cqserver:
         server.sendTextPage("ok")
 
     def testMsg(self, group_id: int, msg: str):
-        msg = MsgHelper.createMsg(group_id, msg)
-        self.mainMsgHandler(msg)
+        self.mainMsgHandler(MsgHelper.createMsg(group_id, msg))
 
-    def mainMsgHandler(self, data: dict):
+    def mainMsgHandler(self, raw_data: dict):
+        data = MsgData(raw_data)
         if not "message_type" in data:
             return
         message_type = data["message_type"]

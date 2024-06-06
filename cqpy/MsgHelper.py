@@ -18,7 +18,7 @@ class MsgHelper:
         """
         传入数据，获取消息
         """
-        if type(data)==dict: 
+        if isinstance(data,dict): 
             if 'raw_message' in data:
                 return data['raw_message']
         return ""

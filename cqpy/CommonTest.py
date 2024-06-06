@@ -45,7 +45,7 @@ class CommonTest:
 
     @register
     def select(self, msg: str, order: Order):
-        if not order.checkOrder("cq_select_group_id"):
+        if not order.checkOrder("cq_group"):
             return
         arg = order.getArg(1, int)
         arg = -1 if arg is None else arg

@@ -54,7 +54,7 @@ class DataManager:
         if j != None:
             if key == None:
                 return j
-            if type(j) == dict and key in j:
+            if isinstance(j,dict) and key in j:
                 return j[key]
         return None
 
@@ -72,7 +72,7 @@ class DataManager:
         except BaseException as e:
             logging.exception(e)
         if j != None:
-            if type(j) == dict:
+            if isinstance(j,dict):
                 j[key] = val
                 try:
                     with open(self.getFileFullPath(file_name), "wb") as f:
@@ -92,8 +92,7 @@ class DataManager:
         except BaseException as e:
             logging.exception(e)
         if j != None:
-            f_t = type(keys)
-            if f_t != list and f_t != tuple:
+            if not isinstance(keys,list) and not isinstance(keys,tuple):
                 return r
             for i in keys:
                 if i in j:
@@ -110,7 +109,7 @@ class DataManager:
         except BaseException as e:
             logging.exception(e)
         if j != None:
-            if type(j) == dict:
+            if isinstance(j,dict):
                 for key in key_vals:
                     j[key] = key_vals[key]
                 try:
