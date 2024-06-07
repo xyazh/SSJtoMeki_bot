@@ -5,14 +5,14 @@ ORDER_SPLIT_LIST = [".", "/", "。", "\\"]
 
 class GroupHelper:
     ORDER_SPLIT_LIST = ORDER_SPLIT_LIST
+    ACTIVE_GROUPS = {}
 
     @staticmethod
     def addActiveGroups(*group_ids:int):
         def dec(cls:object):
-            if hasattr(cls,"active_groups") and isinstance(cls.active_groups,list):
-                cls.active_groups.extend(group_ids)
-            else:
-                cls.active_groups = [id for id in group_ids]
+            li:list[int] = GroupHelper.ACTIVE_GROUPS.get(cls,[])
+            li.extend(group_ids)
+            GroupHelper.ACTIVE_GROUPS[cls] = li
             return cls
         return dec
         

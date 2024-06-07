@@ -25,6 +25,7 @@ BOT_NAME_SELF = "meki"
 HELP_CLASS_DATA = {"n":"常用命令","r":"跑团命令","o":"其他命令","i":"RPG系统"}
 ALIAS = {"normal":"n","roll":"r","other":"o","item":"i"}
 
+@GroupHelper.addActiveGroups(318793491)
 class BaseGroupForHHZ(BaseGroup):
     BOT_NAME = BOT_NAME
     BOT_NAME_SELF = BOT_NAME_SELF
