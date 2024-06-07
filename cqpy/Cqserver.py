@@ -11,6 +11,7 @@ from .ServerHelper import ServerHelper
 from .MsgData import MsgData
 from .WebApp.MyWebApp import MyWebApp
 from .MsgHelper import MsgHelper
+from .CQCode import CQCode
 from .xyazhServer import App
 from .xyazhServer import PageManager
 from .xyazhServer import Server
@@ -22,6 +23,7 @@ from urllib import request
 if typing.TYPE_CHECKING:
     from . import cqgroups
     from .cqgroups.BaseGroup import BaseGroup
+
 
 
 class Cqserver:
@@ -39,7 +41,7 @@ class Cqserver:
                 print(
                     "/*----------------------------------------------------------------\r\n")
                 return
-            fuc(*args, **kw)
+            return fuc(*args, **kw)
         return newFuc
 
     def __init__(self, ip: str, port: int, post_port: int):
@@ -89,17 +91,15 @@ class Cqserver:
         from . import cqgroups
         from .cqgroups.BaseGroup import BaseGroup
         class_list = ServerHelper.getFullClassesFormModul(
-            cqgroups, lambda clazz: issubclass(clazz, BaseGroup))
+            cqgroups, lambda clazz:issubclass(clazz, BaseGroup))
         for ClassGroup in class_list:
             try:
                 clazz = ClassGroup
                 group_obj: BaseGroup = None
-                if hasattr(clazz, "active_groups") and isinstance(clazz.active_groups, list):
-                    for i in clazz.active_groups:
-                        if (not isinstance(i, int)):
-                            continue
+                if clazz in GroupHelper.ACTIVE_GROUPS:
+                    for group_id in GroupHelper.ACTIVE_GROUPS[ClassGroup]:
                         group_obj = ClassGroup()
-                        group_obj.group_id = i
+                        group_obj.group_id = group_id
                         self.registerGObj(group_obj)
                         group_obj = None
                 group_obj = ClassGroup()
@@ -171,6 +171,24 @@ class Cqserver:
         with request.urlopen("http://%s:%s%s" % (self.ip, self.port, path)) as f:
             result = f.read()
         return result
+    
+    def _getImgRaw(self, img_cqcode:CQCode)->dict|None:
+        if "file" not in img_cqcode.data:
+            return None
+        path = self.get("/get_image?file=%s"%img_cqcode.data["file"])
+        path_json:dict
+        try:
+            path_json = json.loads(path)
+        except json.decoder.JSONDecodeError as e:
+            return None
+        return path_json
+    
+    def _getImgPath(self, img_raw:dict)->str:
+        if img_raw is None:
+            return ""
+        if "data" in img_raw and "file" in img_raw["data"]:
+            return img_raw["data"]["file"]
+        return ""
 
     @patch
     def sendGroup(self, group_id: str | int, msg: str):
@@ -230,3 +248,26 @@ class Cqserver:
     def groupBan(self, group_id: str | int, qqid: int, sec: int):
         self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d" %
                  (group_id, qqid, sec))
+    
+    
+    @patch
+    def getImgRaw(self, img_cqcode:CQCode)->dict|None:
+        return self._getImgRaw(img_cqcode)
+
+    @patch
+    def getImgPath(self, img_cqcode:CQCode)->str:
+        img_raw = self._getImgRaw(img_cqcode)
+        return self._getImgPath(img_raw)
+
+    @patch
+    def getImgData(self, img_cqcode:CQCode)->bytes:
+        img_raw = self._getImgRaw(img_cqcode)
+        img_path = self._getImgPath(img_raw)
+        img_data = b""
+        try:
+            with open(img_path, "rb") as f:
+                img_data = f.read()
+        except BaseException as e:
+            ConsoleMessage.printWarning("获取图片失败：%s"%e)
+            logging.exception(e)
+        return img_data

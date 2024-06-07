@@ -15,6 +15,7 @@ from ..GroupHelper import GroupHelper
 from ..GroupHelper import ORDER_SPLIT_LIST
 from ..GenVoice import GenVoice
 from ..I18n.I18n import I18n
+from ..MsgData import MsgData
 from ..xyazhServer.BestXor import BestXor
 from .BaseGroup import BaseGroup
 
@@ -88,6 +89,14 @@ class BaseGroupForHHZ(BaseGroup):
                 self.server.sendGroup(self.group_id, arg)
             else:
                 self.server.sendGroup(self.group_id, "test")
+
+    @BaseGroup.register
+    def testImg(self, data: MsgData, order: Order):
+        cq_codes = CQCodeHelper.creatCQCodeFromMsg(data.getMsg())
+        for cq_code in cq_codes:
+            if cq_code.t != "image":
+                continue
+
 
     @BaseGroup.register
     @BaseGroup.helpData(["o"], "退出该群", "bye", "bye", "让机器人退出该群")
