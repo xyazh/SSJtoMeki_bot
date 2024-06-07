@@ -250,7 +250,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                     if (fate_last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
                         end_msg = "\r\n------------------\r\n“%s”阁下，那、那个…… 【%.2f】秒前已经占卜了的说……不满意的话要三色堇使用『✧未来启✧』吗？……"%(GroupHelper.getName(data),time.time() - fate_last_time)
                         _fate = player.findGet("fate",0)
-                        if type(_fate) == int:
+                        if isinstance(_fate,int):
                             fate = _fate
                             flag = False
                 if flag:

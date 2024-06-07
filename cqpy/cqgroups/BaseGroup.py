@@ -23,7 +23,7 @@ class BaseGroup:
         return r
 
     def __init__(self):
-        self.group_id = -1
+        self.group_id:int = -1
         self.unnsei_once_a_day = True
         self.data_manager = DataManager()
         self._getHelpsData()
