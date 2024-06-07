@@ -347,11 +347,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
 #             if len(at_ids) != 2:
 #                 return
 #             else:
-#                 UserStatus.useBan(at_ids(0),at_ids(1))
-#             qqid = at_ids[0] #qqid1
-#             qqid = at_ids[1] #qqid2
-#             sec = 300 #禁言
-#             sec = 0 #解禁
+#                 UserStatus.useBan(at_ids[0],at_ids[1])
 #             while True:
 #                 self.server.groupBan(self.group_id,qqid,sec)
             
