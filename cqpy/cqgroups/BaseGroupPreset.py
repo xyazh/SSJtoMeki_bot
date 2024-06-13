@@ -414,7 +414,8 @@ class BaseGroupPreset(BaseGroup):
                     self.data_manager.set(
                         str(GroupHelper.getId(data))+".json", "point", p - n)
                 elif o == "p_ban":
-                    self.server.groupBan(self.group_id, GroupHelper.getId(data), n)
+                    self.server.groupBan(
+                        self.group_id, GroupHelper.getId(data), n)
                 self.server.sendGroup(self.group_id, msg)
 
     @BaseGroup.register
@@ -468,7 +469,8 @@ class BaseGroupPreset(BaseGroup):
     def sExec(self, data: dict, order: Order):
         if order.checkOrder("exec") and GroupHelper.getId(data) in [330237917, 2132196134, 629233064]:
             try:
-                arg = order.getArg(1)
+                msg = GroupHelper.getMsg(data)
+                arg = msg[6:]
                 if not arg:
                     return
                 co = html.unescape(arg)
