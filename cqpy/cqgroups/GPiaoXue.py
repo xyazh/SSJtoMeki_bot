@@ -26,8 +26,7 @@ class GPiaoXue(BaseGroupPreset, IRollGroup, IItemGroup, ITTKGroup):
                 self.API_dict = {
                     "DeepseekAPI": DeepseekAPI(key_dict['deepseek']),
                     "ERNIEApi": ERNIEAPI(key_dict['ERNIE']['api_key'], key_dict['ERNIE']['secret_key']),
-                    "QwenAPI": QwenAPI(key_dict['Qwen'])
-                    }
+                    "QwenAPI": QwenAPI(key_dict['Qwen'])}
 
             self.activeAPI: LLMAPI = self.API_dict["QwenAPI"]
         except BaseException:
@@ -83,7 +82,8 @@ class GPiaoXue(BaseGroupPreset, IRollGroup, IItemGroup, ITTKGroup):
             self.server.sendGroup(self.group_id, f"当前API为{self.activeAPI}")
             self.server.sendGroup(
                 self.group_id, f"可用API有{', '.join(self.API_dict.keys())}")
-            message = "API介绍：\nDeepseekAPI：由deepseek公司开发的开源模型deepseek v2，性能优秀，推理成本低\nERNIEApi：由百度开发的ERNIE系列模型，4和3.5性能不错，但是API贵。免费的speed和lite模型有点憨憨。\nQwenAPI：由阿里开发的Qwen模型，分闭源的qwen系列和开源的qwen1.5系列，性能优秀，送了一大堆免费额度，建议用这个\n"
+            message = "API介绍：\nDeepseekAPI：由deepseek公司开发的开源模型deepseek v2，性能优秀，推理成本低\nERNIEApi：由百度开发的ERNIE系列模型，4和3.5 \
+                        性能不错，但是API贵。免费的speed和lite模型有点憨憨。\nQwenAPI：由阿里开发的Qwen模型，分闭源的qwen系列和开源的qwen1.5系列，性能优秀，送了一大堆免费额度，建议用这个\n"
             self.server.sendGroup(self.group_id, message)
 
     @BaseGroup.register
@@ -106,32 +106,6 @@ class GPiaoXue(BaseGroupPreset, IRollGroup, IItemGroup, ITTKGroup):
                 self.group_id, f"当前模型为{self.activeAPI.model}")
             self.server.sendGroup(
                 self.group_id, f"可用模型有{', '.join(self.activeAPI.model_list)}")
-
-    @BaseGroup.register
-    def changeAPIArgs(self, data, cmd):
-        if cmd.checkOrder("changeAPIArgs"):
-            arg1 = cmd.getArg(1)
-            arg2 = cmd.getArg(2)
-
-            if arg1 in self.activeAPI.__dict__:
-                self.activeAPI.__dict__[arg1] = arg2
-                self.server.sendGroup(
-                    self.group_id, f"参数{arg1}已修改为{arg2}")
-            else:
-                self.server.sendGroup(self.group_id, f"参数{arg1}不存在")
-
-    @BaseGroup.register
-    def showAPIArgs(self, data, cmd):
-        if cmd.checkOrder("showAPIArgs"):
-            message = f"当前API为{self.activeAPI}\n"
-            message += f"API参数：\nsystem_prompt: {self.activeAPI.system_prompt}\nmax_tokens: {self.activeAPI.max_tokens}\ntemperature: {self.activeAPI.temperature}\nmax_memory_in_turns: {self.activeAPI.max_memory_in_turns}\n"
-            self.server.sendGroup(self.group_id, message)
-
-    @BaseGroup.register
-    def cleanContext(self, data, cmd):
-        if cmd.checkOrder("cleanContext"):
-            self.activeAPI.messages = []
-            self.server.sendGroup(self.group_id, "上下文已清空")
 
     @BaseGroup.register
     def debugMode(self, data, cmd):

@@ -2,6 +2,8 @@ import inspect,random,time,threading
 from ..CQCode import CQCodeHelper
 from ..GameSystem.PlayerSystem.Player import Player
 from ..Order import Order
+from ..Cqserver import Cqserver
+from ..DataManager import DataManager
 from ..LoopEvent import LoopEvent 
 from ..GroupHelper import GroupHelper
 from ..GroupHelper import ORDER_SPLIT_LIST
@@ -13,8 +15,6 @@ from .I.ISSJGroup import ISSJGroup
 from .I.IRollGroup import IRollGroup
 from .I.ITTKGroup import ITTKGroup
 from .I.IItemGroup import IItemGroup
-from ..GameSystem.YxClass.UserStatus import UserStatus
-from ..MsgHelper import MsgHelper
 
 BOT_NAME_SELF = "三色堇"
 BOT_NAME = "三色堇"
@@ -250,7 +250,7 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
                     if (fate_last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
                         end_msg = "\r\n------------------\r\n“%s”阁下，那、那个…… 【%.2f】秒前已经占卜了的说……不满意的话要三色堇使用『✧未来启✧』吗？……"%(GroupHelper.getName(data),time.time() - fate_last_time)
                         _fate = player.findGet("fate",0)
-                        if isinstance(_fate,int):
+                        if type(_fate) == int:
                             fate = _fate
                             flag = False
                 if flag:
@@ -334,11 +334,9 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
 
 # #test
 #     @register
-#     @helpData(["normal"],"✧裁判✧","saiban","saiban","开庭辩论")
+#     @helpData(["normal"],"✧未来启✧","fate_change","fate_change","")
 #     def ccoTest(self,data,order:Order):
-#         if qqid == UserStatus.:
-#             self.server.groupBan(self.group_id,qqid,sec)
-#         if GroupHelper.getMsg(data) in ["ccoTest"] or order.checkOrder("ccoTest"):
+#          if GroupHelper.getMsg(data) in ["ccoTest"] or order.checkOrder("ccoTest"):
 #             cqcodes = CQCodeHelper.creatCQCodeFromMsg(GroupHelper.getMsg(data))
 #             at_ids = []
 #             for i in cqcodes:
@@ -347,7 +345,11 @@ class YxBaseGroup(BaseGroup,IRollGroup,ISSJGroup,ITTKGroup,IItemGroup):
 #             if len(at_ids) != 2:
 #                 return
 #             else:
-#                 UserStatus.useBan(at_ids[0],at_ids[1])
+#                 return at_ids
+#             qqid = at_ids[0] #qqid1
+#             qqid = at_ids[1] #qqid2
+#             sec = 300 #禁言
+#             sec = 0 #解禁
 #             while True:
 #                 self.server.groupBan(self.group_id,qqid,sec)
             
