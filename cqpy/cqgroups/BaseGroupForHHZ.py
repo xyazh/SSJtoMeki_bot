@@ -143,6 +143,7 @@ class BaseGroupForHHZ(BaseGroup):
         player = Player(qq_id)
         ys_last_time = player.findGet("ys_last_time", 0)
         ys = RollHelper.bestRandomGuassRange(50, 35, 0, 100)
+        ys = int(round(ys))
         flag = True
         if ys_last_time and self.unnsei_once_a_day:
             if ys_last_time//(24*3600) == time.time()//(24*3600):
