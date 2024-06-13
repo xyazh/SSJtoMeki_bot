@@ -1,4 +1,4 @@
-from .BaseGroupForHHZ import BaseGroupForHHZ
+from .BaseGroupPreset import BaseGroupPreset
 from .BaseGroup import BaseGroup
 from .I.IRollGroup import IRollGroup
 from .I.IItemGroup import IItemGroup
@@ -11,7 +11,7 @@ import pickle
 import threading
 
 
-class GPiaoXue(BaseGroupForHHZ, IRollGroup, IItemGroup, ITTKGroup):
+class GPiaoXue(BaseGroupPreset, IRollGroup, IItemGroup, ITTKGroup):
     def __init__(self):
         super().__init__()
         self.group_id = int(base64.b64decode(b'NTUzMDY2MTM0').decode())

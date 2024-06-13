@@ -28,7 +28,7 @@ ALIAS = {"normal": "n", "roll": "r", "other": "o", "item": "i"}
 
 
 @GroupHelper.addActiveGroups(114514)
-class BaseGroupForHHZ(BaseGroup):
+class BaseGroupPreset(BaseGroup):
     BOT_NAME = BOT_NAME
     BOT_NAME_SELF = BOT_NAME_SELF
 
@@ -189,7 +189,7 @@ class BaseGroupForHHZ(BaseGroup):
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "动漫资讯", "anime_news", "anime_news", "获取当日动漫新闻。资讯来源于网络，每小时会尝试更新，直接发送动漫新闻、动画新闻、二次元新闻、anime新闻、动漫资讯、动画资讯、二次元资讯、anime资讯有同样效果")
     def getAnimeNews(self, data: dict, order: Order):
-        if GroupHelper.getMsg(data) in ["动漫新闻", "动画新闻", "二次元新闻", "anime新闻", "动漫资讯", "动画资讯", "二次元资讯", "anime资讯"]:
+        if GroupHelper.getMsg(data) in ("动漫新闻", "动画新闻", "anime新闻", "动漫资讯", "动画资讯", "anime资讯", "anime", "动漫", "动画"):
             order = GroupHelper.getOrderFromStr(
                 ORDER_SPLIT_LIST[0] + "anime_news")
         if order.checkOrder("anime_news"):
@@ -203,7 +203,7 @@ class BaseGroupForHHZ(BaseGroup):
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "游戏资讯", "gal_news", "gal_news (0-9*|all)", "获取当日gal新闻。资讯来源于网络，每小时会尝试更新。参数为空随机，为all输出全部，数字输出当前条数，发送gal新闻、galgame新闻、gal资讯、galgame资讯也可随机获取一条")
     def getGalNews(self, data: dict, order: Order):
-        if GroupHelper.getMsg(data) in ["gal新闻", "galgame新闻", "gal资讯", "galgame资讯"]:
+        if GroupHelper.getMsg(data) in ("gal新闻", "galgame新闻", "gal资讯", "galgame资讯", "旮旯", "gal", "galgame"):
             order = GroupHelper.getOrderFromStr(
                 ORDER_SPLIT_LIST[0] + "gal_news")
         if order.checkOrder("gal_news"):
@@ -236,7 +236,7 @@ class BaseGroupForHHZ(BaseGroup):
             self.server.sendGroup(self.group_id, I18n.format("has_help"))
 
     @BaseGroup.register
-    @BaseGroup.helpData(["n"], "添加回复", "ppp", "ppp [msg] [{dosomething}*t1|...]", "ppp指令是add指令的升级版。ppp设置参数1为关键词。参数2为机器人随机回复的语料组，{dosomething}表示当机器人随机选中当前这条语料后额外执行的操作（仅群主或管理员可用）\r\n\r\n操作列表：\r\n增加点数：p_add([number])\r\n减少点数：p_sub([number])")
+    @BaseGroup.helpData(["n"], "添加回复", "ppp", "ppp [msg] [{dosomething}*t1|...]", "ppp(push posted plus)指令是add指令的升级版。ppp设置参数1为关键词。参数2为机器人随机回复的语料组，{dosomething}表示当机器人随机选中当前这条语料后额外执行的操作（仅群主或管理员可用）\r\n\r\n操作列表：\r\n增加点数：p_add([number])\r\n减少点数：p_sub([number])\r\n设置禁言：p_ban([number])")
     def ppp(self, data: dict, order: Order):
         if order.checkOrder("ppp"):
             a1 = order.getArg(1)
@@ -272,6 +272,13 @@ class BaseGroupForHHZ(BaseGroup):
                         arg = m_order.getArg(1)
                         if arg and arg.isdigit():
                             p_li.append([tx, "p_sub", int(arg)])
+                        else:
+                            self.server.sendGroup(self.group_id, "操作用法好像不对")
+                            return
+                    elif m_order.checkOrder("p_ban"):
+                        arg = m_order.getArg(1)
+                        if arg and arg.isdigit():
+                            p_li.append([tx, "p_ban", int(arg)])
                         else:
                             self.server.sendGroup(self.group_id, "操作用法好像不对")
                             return
@@ -406,6 +413,8 @@ class BaseGroupForHHZ(BaseGroup):
                     p = p if p else 1
                     self.data_manager.set(
                         str(GroupHelper.getId(data))+".json", "point", p - n)
+                elif o == "p_ban":
+                    self.server.groupBan(self.group_id, GroupHelper.getId(data), n)
                 self.server.sendGroup(self.group_id, msg)
 
     @BaseGroup.register
