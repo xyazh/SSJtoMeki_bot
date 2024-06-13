@@ -7,7 +7,7 @@ import logging
 import threading
 import json
 import inspect
-from ..CQCode import CQCodeHelper,CQCode
+from ..CQCode import CQCodeHelper, CQCode
 from ..GameSystem.PlayerSystem.Player import Player
 from ..Order import Order
 from ..LoopEvent import LoopEvent
@@ -17,16 +17,17 @@ from ..GenVoice import GenVoice
 from ..I18n.I18n import I18n
 from ..MsgData import MsgData
 from ..xyazhServer.BestXor import BestXor
+from ..GameSystem.Helper import RollHelper
 from .BaseGroup import BaseGroup
-
 
 
 BOT_NAME = "meki酱"
 BOT_NAME_SELF = "meki"
-HELP_CLASS_DATA = {"n":"常用命令","r":"跑团命令","o":"其他命令","i":"RPG系统"}
-ALIAS = {"normal":"n","roll":"r","other":"o","item":"i"}
+HELP_CLASS_DATA = {"n": "常用命令", "r": "跑团命令", "o": "其他命令", "i": "RPG系统"}
+ALIAS = {"normal": "n", "roll": "r", "other": "o", "item": "i"}
 
-@GroupHelper.addActiveGroups(318793491)
+
+@GroupHelper.addActiveGroups(114514)
 class BaseGroupForHHZ(BaseGroup):
     BOT_NAME = BOT_NAME
     BOT_NAME_SELF = BOT_NAME_SELF
@@ -34,7 +35,8 @@ class BaseGroupForHHZ(BaseGroup):
     ai_chating = False
 
     def _getHelpsData(self):
-        self.helps_class: dict[str:list[str]] = {i:[] for i in HELP_CLASS_DATA}
+        self.helps_class: dict[str:list[str]] = {
+            i: [] for i in HELP_CLASS_DATA}
         self.helps: dict[str:list[str]] = {}
         for fuc in inspect.getmembers(self):
             if hasattr(fuc[1], "help_data"):
@@ -49,7 +51,6 @@ class BaseGroupForHHZ(BaseGroup):
                     else:
                         self.helps_class.update({i: [li]})
                 self.helps.update({ord: li})
-
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "获取帮助", "help", "help (name)|/page/", "help指令用于查看一般常用指令列表，可以添加一个参数作为需要查找的指令名字，来获取此指令的详细信息")
@@ -97,7 +98,6 @@ class BaseGroupForHHZ(BaseGroup):
             if cq_code.t != "image":
                 continue
 
-
     @BaseGroup.register
     @BaseGroup.helpData(["o"], "退出该群", "bye", "bye", "让机器人退出该群")
     def bye(self, data: dict, order: Order):
@@ -142,11 +142,7 @@ class BaseGroupForHHZ(BaseGroup):
         qq_id = GroupHelper.getId(data)
         player = Player(qq_id)
         ys_last_time = player.findGet("ys_last_time", 0)
-        ys = int(random.gauss(50, 35))
-        if ys < 0:
-            ys = 0
-        if ys > 100:
-            ys = 100
+        ys = RollHelper.bestRandomGuassRange(50, 35, 0, 100)
         flag = True
         if ys_last_time and self.unnsei_once_a_day:
             if ys_last_time//(24*3600) == time.time()//(24*3600):
@@ -159,13 +155,16 @@ class BaseGroupForHHZ(BaseGroup):
             player.set("ys", ys)
         if ys <= 5:
             r = '大吉，'
-            r += "今天已经测过运势了" if not flag else random.choice(["在好运的帮助下不断努力吧", "运气真好", "今天运气一定非常好"])
+            r += "今天已经测过运势了" if not flag else random.choice(
+                ["在好运的帮助下不断努力吧", "运气真好", "今天运气一定非常好"])
         elif ys <= 20:
             r = '吉，'
-            r += "今天已经测过运势了" if not flag else random.choice(["运气不错", "今天或许能做出一些改变"])
+            r += "今天已经测过运势了" if not flag else random.choice(
+                ["运气不错", "今天或许能做出一些改变"])
         elif ys <= 35:
             r = '半吉，'
-            r += "今天已经测过运势了" if not flag else random.choice(["运气还行", "在外面转转也许不错"])
+            r += "今天已经测过运势了" if not flag else random.choice(
+                ["运气还行", "在外面转转也许不错"])
         elif ys <= 50:
             r = '小吉，'
             r += "今天已经测过运势了" if not flag else random.choice(["普通的运气", "所谓日常"])
@@ -174,14 +173,15 @@ class BaseGroupForHHZ(BaseGroup):
             r += "今天已经测过运势了" if not flag else random.choice(["有些糟糕", "问题不大"])
         elif ys <= 80:
             r = '末吉，'
-            r += "今天已经测过运势了" if not flag else random.choice(["小心一点就没有问题了吧", "可能不适合出去吧", "可能不适合待在家里吧"])
+            r += "今天已经测过运势了" if not flag else random.choice(
+                ["小心一点就没有问题了吧", "可能不适合出去吧", "可能不适合待在家里吧"])
         elif ys <= 95:
             r = '凶，'
             r += "今天已经测过运势了" if not flag else random.choice(["悲", "好像不太妙呢"])
         else:
             r = '大凶，'
             r += "今天已经测过运势了" if not flag else random.choice(["街上好安静啊", "大哥哥......", "打完这场仗我就会老家结婚", "听好，在我回来之前不要乱走", "已经没什么好怕的了",
-                               "你们先走我马上就来", "身体好轻", "因为我不再是一个人了", "什么声音，我去看看", "完了，这次真的完了", "没关系，问题不大（", "嗯？是错觉吗"])
+                                                             "你们先走我马上就来", "身体好轻", "因为我不再是一个人了", "什么声音，我去看看", "完了，这次真的完了", "没关系，问题不大（", "嗯？是错觉吗"])
         msg = "%s今日的幸运指数是%i %s" % (GroupHelper.getName(data), 100-ys, r)
         self.server.sendGroup(self.group_id, msg)
 
@@ -284,19 +284,21 @@ class BaseGroupForHHZ(BaseGroup):
                 str(self.group_id) + ".json", "ppp")
             da: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "add")
-            if isinstance(da,dict):
+            if isinstance(da, dict):
                 if a1 in da:
                     da.pop(a1)
                     self.data_manager.set(
                         str(self.group_id) + ".json", "add", da)
-            if isinstance(dp,dict):
+            if isinstance(dp, dict):
                 dp.update({a1: p_li})
                 self.data_manager.set(str(self.group_id) + ".json", "ppp", dp)
-                self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+                self.server.sendGroup(
+                    self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
             else:
                 dp = {a1: p_li}
                 self.data_manager.set(str(self.group_id) + ".json", "ppp", dp)
-                self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+                self.server.sendGroup(
+                    self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "添加回复", "add", "add [msg1] [msg2]", "当机器人收到msg1时回复msg2")
@@ -309,21 +311,23 @@ class BaseGroupForHHZ(BaseGroup):
                 return
             dp: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "ppp")
-            if isinstance(dp,dict):
+            if isinstance(dp, dict):
                 if a1 in dp:
                     dp.pop(a1)
                     self.data_manager.set(
                         str(self.group_id) + ".json", "ppp", dp)
             da: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "add")
-            if isinstance(da,dict):
+            if isinstance(da, dict):
                 da.update({a1: a2})
                 self.data_manager.set(str(self.group_id) + ".json", "add", da)
-                self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+                self.server.sendGroup(
+                    self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
             else:
                 da = {a1: a2}
                 self.data_manager.set(str(self.group_id) + ".json", "add", da)
-                self.server.sendGroup(self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+                self.server.sendGroup(
+                    self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "删除回复", "del", "del [del]", "删除add和ppp设置的自动回复")
@@ -336,7 +340,7 @@ class BaseGroupForHHZ(BaseGroup):
             flag = True
             dp: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "ppp")
-            if isinstance(dp,dict):
+            if isinstance(dp, dict):
                 if a1 in dp:
                     dp.pop(a1)
                     self.data_manager.set(
@@ -346,7 +350,7 @@ class BaseGroupForHHZ(BaseGroup):
                     flag = False
             da: dict = self.data_manager.get(
                 str(self.group_id) + ".json", "add")
-            if isinstance(da,dict):
+            if isinstance(da, dict):
                 if a1 in da:
                     da.pop(a1)
                     self.data_manager.set(
@@ -355,7 +359,8 @@ class BaseGroupForHHZ(BaseGroup):
                         self.group_id, "%s不会再这样子说了" % BOT_NAME_SELF)
                     flag = False
             if flag:
-                self.server.sendGroup(self.group_id, "%s好像没有这样过" % BOT_NAME_SELF)
+                self.server.sendGroup(
+                    self.group_id, "%s好像没有这样过" % BOT_NAME_SELF)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "查看点数", "point", "point", "查看当前点数")
@@ -363,25 +368,25 @@ class BaseGroupForHHZ(BaseGroup):
         if order.checkOrder("point"):
             p = self.data_manager.get(
                 str(GroupHelper.getId(data))+".json", "point")
-            if isinstance(p,dict):
+            if isinstance(p, dict):
                 self.server.sendGroup(self.group_id, "%s当前拥有点数：%dP" %
-                                 (GroupHelper.getName(data), p))
+                                      (GroupHelper.getName(data), p))
             else:
                 self.data_manager.set(
                     str(GroupHelper.getId(data))+".json", "point", 1)
                 self.server.sendGroup(self.group_id, "%s当前拥有点数：1P" %
-                                 GroupHelper.getName(data))
+                                      GroupHelper.getName(data))
 
     @BaseGroup.register
     def autoMsg(self, data: dict):
         msg = GroupHelper.getMsg(data)
         da: dict = self.data_manager.get(str(self.group_id) + ".json", "add")
-        if isinstance(da,dict):
+        if isinstance(da, dict):
             if msg in da:
                 self.server.sendGroup(self.group_id, da[msg])
                 return
         dp: dict = self.data_manager.get(str(self.group_id) + ".json", "ppp")
-        if isinstance(dp,dict):
+        if isinstance(dp, dict):
             if msg in dp:
                 li = dp[msg]
                 r_m = li[random.randint(0, len(li)-1)]
@@ -430,7 +435,8 @@ class BaseGroupForHHZ(BaseGroup):
                 self.server.sendGroup(self.group_id, I18n.format("gen_loss"))
                 return
             r = r.replace("C:\\", "C:\\\\")
-            self.server.sendGroup(self.group_id, "[CQ:record,file=file:///%s]" % r)
+            self.server.sendGroup(
+                self.group_id, "[CQ:record,file=file:///%s]" % r)
         th = threading.Thread(target=t, args=(self, data, order))
         th.start()
 
@@ -464,33 +470,34 @@ class BaseGroupForHHZ(BaseGroup):
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "随机食物", "/what_do_eat", "what_do_eat", "看看吃什么")
     def whatDoEatT(self, data: dict, order: Order):
-        if not order.checkOrder("what_do_eat") and GroupHelper.getMsg(data) not in ("吃什么", "今天吃什么","吃什么好","看看吃什么"):
+        if not order.checkOrder("what_do_eat") and GroupHelper.getMsg(data) not in ("吃什么", "今天吃什么", "吃什么好", "看看吃什么"):
             return
         today = datetime.date.today()
         m_d = "%s-%s" % (today.month, today.day)
-        if random.randint(1,100) == 50:
-            foods = ("纵连","交互")
-            msgs = ("请您吃%s","%s，请")
+        if random.randint(1, 100) == 50:
+            foods = ("纵连", "交互")
+            msgs = ("请您吃%s", "%s，请")
         elif m_d in ("1-14", "5-14", "8-10", "11-4"):
-            foods = ("雪", "〇堡肉", "林檎", "红茶", "布丁", "秘制酱料", "极霸矛","蔬菜棒","迎宾酒","爱心便当","金液","秘制酱拌面")
-            msgs = ("那你就吃%s罢","吃%s挺适合你的","吃%s完了有奖励，吃不完有惩罚")
+            foods = ("雪", "〇堡肉", "林檎", "红茶", "布丁", "秘制酱料",
+                     "极霸矛", "蔬菜棒", "迎宾酒", "爱心便当", "金液", "秘制酱拌面")
+            msgs = ("那你就吃%s罢", "吃%s挺适合你的", "吃%s完了有奖励，吃不完有惩罚")
         else:
             foods = ("东坡肉", "冷锅鱼", "豆花", "甜皮鸭", "卤鸭子", "鱼香肉丝", "回锅肉", "麻婆豆腐", "炝炒大白菜", "金沙玉米",
-                           "辣子鸡", "酸菜鱼", "水煮鱼", "毛血旺", "夫妻肺片", "火锅", "红烧排骨", "烧烤脑花", "锅巴肉片", "蒸鱼",
-                           "糖醋鲤鱼", "葱烧海参", "九转大肠", "油爆双脆", "油焖大虾", "醋椒鱼", "糟熘鱼片", "苦瓜烘蛋", "小煎兔",
-                           "温炝鳜鱼片", "芫爆鱿鱼卷", "清汤银耳", "糖醋里脊", "红烧大虾", "招远蒸丸", "清蒸加吉鱼", "把子肉",
-                           "葱椒鱼片", "糖酱鸡块",  "乌鱼蛋汤", "锅烧鸭", "香酥鸡",  "黄焖鸡", "烧鸡", "长寿面", "香肠", "红烧狮子头",
-                           "奶汤鲫鱼", "虾饺", "烧卖", "糯米鸡", "叉烧包", "鸡蛋卷", "肠粉", "炒河粉", "凤爪", "卤牛杂", "薄脆",
-                           "煎饼", "烤鸭", "老鸭汤", "盐水鸭", "板鸭", "松鼠鳜鱼", "叫花鸡", "卤鸡", "清炖甲鱼", "糖醋鳜鱼", "文思豆腐",
+                     "辣子鸡", "酸菜鱼", "水煮鱼", "毛血旺", "夫妻肺片", "火锅", "红烧排骨", "烧烤脑花", "锅巴肉片", "蒸鱼",
+                     "糖醋鲤鱼", "葱烧海参", "九转大肠", "油爆双脆", "油焖大虾", "醋椒鱼", "糟熘鱼片", "苦瓜烘蛋", "小煎兔",
+                     "温炝鳜鱼片", "芫爆鱿鱼卷", "清汤银耳", "糖醋里脊", "红烧大虾", "招远蒸丸", "清蒸加吉鱼", "把子肉",
+                     "葱椒鱼片", "糖酱鸡块",  "乌鱼蛋汤", "锅烧鸭", "香酥鸡",  "黄焖鸡", "烧鸡", "长寿面", "香肠", "红烧狮子头",
+                     "奶汤鲫鱼", "虾饺", "烧卖", "糯米鸡", "叉烧包", "鸡蛋卷", "肠粉", "炒河粉", "凤爪", "卤牛杂", "薄脆",
+                     "煎饼", "烤鸭", "老鸭汤", "盐水鸭", "板鸭", "松鼠鳜鱼", "叫花鸡", "卤鸡", "清炖甲鱼", "糖醋鳜鱼", "文思豆腐",
                            "粉蒸肉", "烧白", "辣椒炒肉", "剁椒鱼头", "泡椒鳝段", "花椒鸡", "红烧牛肉", "肝腰合炒", "宫保鸡丁", "干煸四季豆",
                            "番茄炒蛋", "青椒肉丝", "蛋炒饭", "兰州拉面", "泡椒腰花", "小炒肉", "羊肉串", "石锅拌饭", "冬瓜排骨", "美蛙鱼头",
                            "惠灵顿牛排", "意大利面", "春卷", "寿司", "照烧鸡", "墨西哥卷", "仰望星空", "炸鸡", "秋葵鸡", "沙拉", "三明治", "苹果派",
                            "面包", "蛋糕", "汉堡", "披萨")
-            msgs = ("我觉得%s还不错","那就尝尝%s吧","试试%s如何")
-        msg = random.choice(msgs)%random.choice(foods)
-        self.server.sendGroup(self.group_id,msg)
+            msgs = ("我觉得%s还不错", "那就尝尝%s吧", "试试%s如何")
+        msg = random.choice(msgs) % random.choice(foods)
+        self.server.sendGroup(self.group_id, msg)
 
-    #@BaseGroup.register
+    # @BaseGroup.register
     def fireStar(self, data: dict, order: Order):
         msg = GroupHelper.getMsg(data)
         cqs = CQCodeHelper.creatCQCodeFromMsg(msg)
@@ -505,7 +512,7 @@ class BaseGroupForHHZ(BaseGroup):
             return
         msg_id = data["meta"]["detail"]["resid"]
         f_msg = self.server.getForwardMsg(msg_id)
-        j_f_msg:dict = json.loads(f_msg)
+        j_f_msg: dict = json.loads(f_msg)
         d = j_f_msg["data"]["messages"]
         for i in d:
             t = None
@@ -516,4 +523,5 @@ class BaseGroupForHHZ(BaseGroup):
             year = dt_object.year
             month = dt_object.month
             day = dt_object.day
-            self.server.sendGroup(self.group_id,"此聊天记录记录于%s-%s-%s"%(year,month,day))
+            self.server.sendGroup(
+                self.group_id, "此聊天记录记录于%s-%s-%s" % (year, month, day))

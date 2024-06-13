@@ -249,15 +249,21 @@ class RollHelper:
     @staticmethod
     def bestRandomGuass(mu: float, sigma: float, n: float):
         """
-        更好的高斯分布
-
-        可以定义上下边界的高斯分布
+        生成范围大小为n的高斯分布随机数
+        """
+        lower = mu - n
+        upper = mu + n
+        return RollHelper.bestRandomGuassRange(mu, sigma, lower, upper)
+    
+    def bestRandomGuassRange(mu: float, sigma: float, lower: float, upper: float):
+        """
+        生成在[lower, upper]范围内的高斯分布随机数
         """
         r = random.gauss(mu, sigma)
-        f = -1 if r < mu else 1
-        dr = abs(mu-r)
-        dr %= n*sigma
-        return mu + f * dr
+        lower,upper = min(lower, upper),max(lower, upper)
+        while r < lower or r > upper:
+            r = random.gauss(mu, sigma)
+        return r
 
     @staticmethod
     def randomSplitInt(n: int, m: int, l: int) -> list[int]:
