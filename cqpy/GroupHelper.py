@@ -8,14 +8,13 @@ class GroupHelper:
     ACTIVE_GROUPS = {}
 
     @staticmethod
-    def addActiveGroups(*group_ids:int):
-        def dec(cls:object):
-            li:list[int] = GroupHelper.ACTIVE_GROUPS.get(cls,[])
+    def addActiveGroups(*group_ids: int):
+        def dec(cls: object):
+            li: list[int] = GroupHelper.ACTIVE_GROUPS.get(cls, [])
             li.extend(group_ids)
             GroupHelper.ACTIVE_GROUPS[cls] = li
             return cls
         return dec
-        
 
     @staticmethod
     def getNickname(data: dict) -> str:
@@ -63,7 +62,7 @@ class GroupHelper:
 
     @staticmethod
     def getMsg(data: dict) -> str:
-        if isinstance(data,dict):
+        if isinstance(data, dict):
             if 'raw_message' in data:
                 return data['raw_message']
         return ""
@@ -81,8 +80,9 @@ class GroupHelper:
 
     @staticmethod
     def getOrderFromData(data: dict) -> Order:
-        return Order(GroupHelper.orderSplit(GroupHelper.getMsg(data)))
+        msg = GroupHelper.getMsg(data)
+        return Order(GroupHelper.orderSplit(msg), msg)
 
     @staticmethod
     def getOrderFromStr(msg: str) -> Order:
-        return Order(GroupHelper.orderSplit(msg))
+        return Order(GroupHelper.orderSplit(msg), msg)

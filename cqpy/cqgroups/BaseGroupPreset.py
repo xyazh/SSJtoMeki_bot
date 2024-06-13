@@ -18,6 +18,7 @@ from ..I18n.I18n import I18n
 from ..MsgData import MsgData
 from ..xyazhServer.BestXor import BestXor
 from ..GameSystem.Helper import RollHelper
+from ..GameSystem.ToolClass.BaseData import BaseData
 from .BaseGroup import BaseGroup
 
 
@@ -201,13 +202,16 @@ class BaseGroupPreset(BaseGroup):
             self.server.sendGroup(self.group_id, "当前没有资讯力")
 
     @BaseGroup.register
-    @BaseGroup.helpData(["n"], "游戏资讯", "gal_news", "gal_news (0-9*|all)", "获取当日gal新闻。资讯来源于网络，每小时会尝试更新。参数为空随机，为all输出全部，数字输出当前条数，发送gal新闻、galgame新闻、gal资讯、galgame资讯也可随机获取一条")
+    @BaseGroup.helpData(["n"], "游戏资讯", "gal_news", "gal_news (0-9*|all|msg) (hour)", "获取当日gal新闻。资讯来源于网络，每小时会尝试更新，也可自行添加新闻，第一个参数为新闻内容，第二个参数为新闻存在的小时数。参数为空随机，为all输出全部，数字输出当前条数，发送gal新闻、galgame新闻、gal资讯、galgame资讯也可随机获取一条")
     def getGalNews(self, data: dict, order: Order):
-        if GroupHelper.getMsg(data) in ("gal新闻", "galgame新闻", "gal资讯", "galgame资讯", "旮旯", "gal", "galgame"):
-            order = GroupHelper.getOrderFromStr(
-                ORDER_SPLIT_LIST[0] + "gal_news")
-        if order.checkOrder("gal_news"):
-            li = LoopEvent.today_galgame_news
+        if order.checkOrderRe(r"^(gal_news|gal新闻|galgame新闻|gal资讯|galgame资讯|旮旯|gal|galgame)$", True):
+            group_data = BaseData(self.group_id)
+            saved_news: dict[str:int] = group_data.data.get("gal_news", {})
+            date_time = time.time()
+            for i in [del_key for del_key in saved_news if saved_news[del_key] < date_time]:
+                del saved_news[i]
+            li = LoopEvent.today_galgame_news[:]
+            li.extend(saved_news.keys())
             arg = order.getArg(1)
             if len(li) <= 0:
                 self.server.sendGroup(self.group_id, "当前没有资讯力")
@@ -227,11 +231,17 @@ class BaseGroupPreset(BaseGroup):
                     return
             if arg.isdigit():
                 i = int(arg)
-                if i > 0 and i < len(li):
+                if i > 0 and i <= len(li):
                     msg = "%d.%s" % (i, li[i-1])
                     self.server.sendGroup(self.group_id, msg)
                     return
                 self.server.sendGroup(self.group_id, "好像没有这条资讯")
+                return
+            hour = order.getArg(2, float)
+            if hour is not None:
+                saved_news[arg] = date_time + hour*3600
+                group_data.data["gal_news"] = saved_news
+                self.server.sendGroup(self.group_id, I18n.format("已经添加资讯"))
                 return
             self.server.sendGroup(self.group_id, I18n.format("has_help"))
 
@@ -467,7 +477,7 @@ class BaseGroupPreset(BaseGroup):
     @BaseGroup.register
     @BaseGroup.helpData(["o"], "执行语句", "exec", "exec [code]", "执行一段代码，仅限机器人所有者可用")
     def sExec(self, data: dict, order: Order):
-        if order.checkOrder("exec") and GroupHelper.getId(data) in [330237917, 2132196134, 629233064]:
+        if order.checkOrder("exec") and GroupHelper.getId(data) in (330237917, 2132196134, 629233064):
             try:
                 msg = GroupHelper.getMsg(data)
                 arg = msg[6:]

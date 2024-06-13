@@ -1,10 +1,10 @@
 from ..I import IRoll
 from ..I import IItemSystem
-from .BaseDataPlayer import BaseDataPlayer
+from ..ToolClass.BaseData import BaseData
 from ..Helper import DictHelper
 
 
-class BasePlayer(BaseDataPlayer, IRoll, IItemSystem):
+class BasePlayer(BaseData, IRoll, IItemSystem):
     def __init__(self, qq_id: int):
         super().__init__(qq_id)
 

@@ -1,9 +1,9 @@
 import weakref
 from ...xyazhServer.DataManager import DataManager
-from ..ToolClass.RollDict import RollDict
+from .RollDict import RollDict
 
 
-class BaseDataPlayer:
+class BaseData:
     data_manager = DataManager()
     instances = {}
 
@@ -11,12 +11,12 @@ class BaseDataPlayer:
         return hash(self.qq_id)
 
     def __new__(cls,qq_id:int):
-        if qq_id in BaseDataPlayer.instances:
-            r:BaseDataPlayer = BaseDataPlayer.instances[qq_id]()
+        if qq_id in BaseData.instances:
+            r:BaseData = BaseData.instances[qq_id]()
             if r != None and r.deteled == False:
                 return r
         self = super().__new__(cls)
-        BaseDataPlayer.instances[qq_id] = weakref.ref(self)
+        BaseData.instances[qq_id] = weakref.ref(self)
         self.inited = False
         return self
 
@@ -41,10 +41,10 @@ class BaseDataPlayer:
         self.deteled = True
 
     def load(self):
-        self.data = BaseDataPlayer.data_manager.get(str(self.qq_id)+".json")
+        self.data = BaseData.data_manager.get(str(self.qq_id)+".json")
         if "chara_cards" in self.data:
             for i in self.data["chara_cards"]:
                 self.data["chara_cards"][i] = RollDict(self.data["chara_cards"][i])
 
     def save(self):
-        BaseDataPlayer.data_manager.setMenbers(str(self.qq_id)+".json",self.data)
+        BaseData.data_manager.setMenbers(str(self.qq_id)+".json",self.data)
