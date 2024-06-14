@@ -64,6 +64,7 @@ class LoopEvent:
                         data_dict = json.loads(data)
                         if "data" in data_dict:
                             if isinstance(data_dict["data"],list):
+                                LoopEvent.today_galgame_news.clear()
                                 for i in data_dict["data"]:
                                     if "title" in i:
                                         LoopEvent.today_galgame_news.append(
