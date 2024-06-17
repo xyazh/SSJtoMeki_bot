@@ -121,7 +121,7 @@ class BaseGroupPreset(BaseGroup):
         qq_id = GroupHelper.getId(data)
         player = Player(qq_id)
         last_time = player.findGet("last_time", 0)
-        if last_time//(24*3600) == time.time()//(24*3600):
+        if last_time//(24*3600) == time.time()//(24*3600) and False:
             self.server.sendGroup(self.group_id, "%s，%.2f秒前才签到过。这么快就忘了" % (
                 GroupHelper.getName(data), time.time()-last_time))
         else:

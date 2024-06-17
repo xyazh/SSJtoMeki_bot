@@ -19,7 +19,7 @@ class CommonTest:
 
     def __init__(self, server: Cqserver):
         self.server = server
-        self.select_group_id = -1
+        self.select_group_id = 114514
         self.do_send_group = False
         self.common_type = 0
         self.common_desc = "使用/cq_change切换"
