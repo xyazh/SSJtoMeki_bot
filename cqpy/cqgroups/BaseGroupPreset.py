@@ -121,6 +121,18 @@ class BaseGroupPreset(BaseGroup):
         qq_id = GroupHelper.getId(data)
         player = Player(qq_id)
         last_time = player.findGet("last_time", 0)
+
+        #修复
+        n = player.findGet("n", 1)
+        p = player.findGet("point", 1)
+        ap = 0
+        if p==1 and n != 1:
+            for i in range(1,n+1):
+                aap = random.randint(int(i//2), i)
+                ap += 1 if aap <= 0 else aap
+            player.set("point", p+ap)
+                
+
         if last_time//(24*3600) == time.time()//(24*3600):
             self.server.sendGroup(self.group_id, "%s，%.2f秒前才签到过。这么快就忘了" % (
                 GroupHelper.getName(data), time.time()-last_time))
@@ -134,6 +146,8 @@ class BaseGroupPreset(BaseGroup):
             player.set("n", n+1)
             player.set("point", p+ap)
             player.set("last_time", time.time())
+
+
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "今日运势", "jrrp", "jrrp", "查询当前运势，图一乐。直接发送运势或指令的方式就可以使用")
@@ -385,6 +399,17 @@ class BaseGroupPreset(BaseGroup):
     def point(self, data: dict, order: Order):
         if order.checkOrder("point"):
             player = Player(GroupHelper.getId(data))
+
+            #修复
+            n = player.findGet("n", 1)
+            p = player.findGet("point", 1)
+            ap = 0
+            if p==1 and n != 1:
+                for i in range(1,n+1):
+                    aap = random.randint(int(i//2), i)
+                    ap += 1 if aap <= 0 else aap
+                player.set("point", p+ap)
+                
             point = player.findGet("point", 1)
             self.server.sendGroup(self.group_id, "%s当前拥有点数：%s" %
                                   (GroupHelper.getName(data), point))
