@@ -1,8 +1,3 @@
-from .BaseServer import BaseServer
-from .lzstring import *
-from .PageManager import PageManager
-from .ServerHelper import ServerHelper
-from cqpy import Cqserver
 import logging
 import re
 import ssl
@@ -11,6 +6,14 @@ import threading
 import time
 import os
 import urllib.parse
+import typing
+from .BaseServer import BaseServer
+from .lzstring import *
+from .PageManager import PageManager
+from .ServerHelper import ServerHelper
+
+if typing.TYPE_CHECKING:
+    from cqpy import Cqserver
 
 #自义定一个处理模块
 class Server(BaseServer,ServerHelper):
