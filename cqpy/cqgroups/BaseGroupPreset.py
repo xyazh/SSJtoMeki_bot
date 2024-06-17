@@ -312,25 +312,17 @@ class BaseGroupPreset(BaseGroup):
                         return
                 else:
                     p_li.append([a, "", 0])
-            dp: dict = self.data_manager.get(
-                str(self.group_id) + ".json", "ppp")
-            da: dict = self.data_manager.get(
-                str(self.group_id) + ".json", "add")
-            if isinstance(da, dict):
-                if a1 in da:
-                    da.pop(a1)
-                    self.data_manager.set(
-                        str(self.group_id) + ".json", "add", da)
-            if isinstance(dp, dict):
-                dp.update({a1: p_li})
-                self.data_manager.set(str(self.group_id) + ".json", "ppp", dp)
-                self.server.sendGroup(
-                    self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
-            else:
-                dp = {a1: p_li}
-                self.data_manager.set(str(self.group_id) + ".json", "ppp", dp)
-                self.server.sendGroup(
-                    self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+            group = BaseData(self.group_id)
+            dp: dict = group.data.get("ppp", {})
+            da: dict = group.data.get("add", {})
+            if a1 in da:
+                da.pop(a1)
+                group.data["add"] = da
+
+            dp.update({a1: p_li})
+            group.data["ppp"] = dp
+            self.server.sendGroup(
+                self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "添加回复", "add", "add [msg1] [msg2]", "当机器人收到msg1时回复msg2")
@@ -341,24 +333,16 @@ class BaseGroupPreset(BaseGroup):
             if not (a1 and a2):
                 self.server.sendGroup(self.group_id, I18n.format("has_help"))
                 return
-            dp: dict = self.data_manager.get(
-                str(self.group_id) + ".json", "ppp")
-            if isinstance(dp, dict):
-                if a1 in dp:
-                    dp.pop(a1)
-                    self.data_manager.set(
-                        str(self.group_id) + ".json", "ppp", dp)
-            da: dict = self.data_manager.get(
-                str(self.group_id) + ".json", "add")
-            if isinstance(da, dict):
-                da.update({a1: a2})
-                self.data_manager.set(str(self.group_id) + ".json", "add", da)
-                self.server.sendGroup(
-                    self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
-            else:
-                da = {a1: a2}
-                self.data_manager.set(str(self.group_id) + ".json", "add", da)
-                self.server.sendGroup(
+            group = BaseData(self.group_id)
+            dp: dict = group.data.get("ppp", {})
+            if a1 in dp:
+                dp.pop(a1)
+                group.data["ppp"] = dp
+
+            da: dict = group.data.get("add", {})
+            da.update({a1: a2})
+            group.data["add"] = da
+            self.server.sendGroup(
                     self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
 
     @BaseGroup.register
@@ -370,29 +354,25 @@ class BaseGroupPreset(BaseGroup):
                 self.server.sendGroup(self.group_id, I18n.format("has_help"))
                 return
             flag = True
-            dp: dict = self.data_manager.get(
-                str(self.group_id) + ".json", "ppp")
-            if isinstance(dp, dict):
-                if a1 in dp:
-                    dp.pop(a1)
-                    self.data_manager.set(
-                        str(self.group_id) + ".json", "ppp", dp)
-                    self.server.sendGroup(
-                        self.group_id, "%s不会再这样子说了" % BOT_NAME_SELF)
-                    flag = False
-            da: dict = self.data_manager.get(
-                str(self.group_id) + ".json", "add")
-            if isinstance(da, dict):
-                if a1 in da:
-                    da.pop(a1)
-                    self.data_manager.set(
-                        str(self.group_id) + ".json", "add", da)
-                    self.server.sendGroup(
-                        self.group_id, "%s不会再这样子说了" % BOT_NAME_SELF)
-                    flag = False
+            group = BaseData(self.group_id)
+            dp: dict = group.data.get("ppp", {})
+            da: dict = group.data.get("add", {})
+            if a1 in dp:
+                dp.pop(a1)
+                group.data["ppp"] = dp
+                flag = False
+
+            if a1 in da:
+                da.pop(a1)
+                group.data["add"] = da
+                flag = False
+
             if flag:
                 self.server.sendGroup(
                     self.group_id, "%s好像没有这样过" % BOT_NAME_SELF)
+            else:
+                self.server.sendGroup(
+                    self.group_id, "%s不会再这样子说了" % BOT_NAME_SELF)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "查看点数", "point", "point", "查看当前点数")
@@ -417,35 +397,32 @@ class BaseGroupPreset(BaseGroup):
     @BaseGroup.register
     def autoMsg(self, data: dict):
         msg = GroupHelper.getMsg(data)
-        da: dict = self.data_manager.get(str(self.group_id) + ".json", "add")
-        if isinstance(da, dict):
-            if msg in da:
-                self.server.sendGroup(self.group_id, da[msg])
-                return
-        dp: dict = self.data_manager.get(str(self.group_id) + ".json", "ppp")
-        if isinstance(dp, dict):
-            if msg in dp:
-                li = dp[msg]
-                r_m = li[random.randint(0, len(li)-1)]
-                msg = r_m[0]
-                o = r_m[1]
-                n = r_m[2]
-                if o == "p_add":
-                    p = self.data_manager.get(
-                        str(GroupHelper.getId(data))+".json", "point")
-                    p = p if p else 1
-                    self.data_manager.set(
-                        str(GroupHelper.getId(data))+".json", "point", p + n)
-                elif o == "p_sub":
-                    p = self.data_manager.get(
-                        str(GroupHelper.getId(data))+".json", "point")
-                    p = p if p else 1
-                    self.data_manager.set(
-                        str(GroupHelper.getId(data))+".json", "point", p - n)
-                elif o == "p_ban":
-                    self.server.groupBan(
-                        self.group_id, GroupHelper.getId(data), n)
-                self.server.sendGroup(self.group_id, msg)
+        group = BaseData(self.group_id)
+        dp: dict = group.data.get("ppp", {})
+        da: dict = group.data.get("add", {})
+
+        if msg in da:
+            self.server.sendGroup(self.group_id, da[msg])
+            return
+            
+        if msg in dp:
+            li = dp[msg]
+            plus_msg = li[random.randint(0, len(li)-1)]
+            msg = plus_msg[0]
+            cmd = plus_msg[1]
+            n = plus_msg[2]
+            if cmd == "p_add":
+                player = Player(GroupHelper.getId(data))
+                point = player.findGet("point", 1)
+                player.set("point", point + n)
+            elif cmd == "p_sub":
+                player = Player(GroupHelper.getId(data))
+                point = player.findGet("point", 1)
+                player.set("point", point - n)
+            elif cmd == "p_ban":
+                self.server.groupBan(
+                    self.group_id, GroupHelper.getId(data), n)
+            self.server.sendGroup(self.group_id, msg)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "随机图片", "roll_img", "roll_img", "随机获取涩图")
@@ -514,11 +491,11 @@ class BaseGroupPreset(BaseGroup):
         if not order.checkOrder("what_do_eat") and GroupHelper.getMsg(data) not in ("吃什么", "今天吃什么", "吃什么好", "看看吃什么"):
             return
         today = datetime.date.today()
-        m_d = "%s-%s" % (today.month, today.day)
+        md = "%s-%s" % (today.month, today.day)
         if random.randint(1, 100) == 50:
             foods = ("纵连", "交互")
             msgs = ("请您吃%s", "%s，请")
-        elif m_d in ("1-14", "5-14", "8-10", "11-4"):
+        elif md in ("1-14", "5-14", "8-10", "11-4"):
             foods = ("雪", "〇堡肉", "林檎", "红茶", "布丁", "秘制酱料",
                      "极霸矛", "蔬菜棒", "迎宾酒", "爱心便当", "金液", "秘制酱拌面")
             msgs = ("那你就吃%s罢", "吃%s挺适合你的", "吃%s完了有奖励，吃不完有惩罚")
@@ -530,10 +507,10 @@ class BaseGroupPreset(BaseGroup):
                      "葱椒鱼片", "糖酱鸡块",  "乌鱼蛋汤", "锅烧鸭", "香酥鸡",  "黄焖鸡", "烧鸡", "长寿面", "香肠", "红烧狮子头",
                      "奶汤鲫鱼", "虾饺", "烧卖", "糯米鸡", "叉烧包", "鸡蛋卷", "肠粉", "炒河粉", "凤爪", "卤牛杂", "薄脆",
                      "煎饼", "烤鸭", "老鸭汤", "盐水鸭", "板鸭", "松鼠鳜鱼", "叫花鸡", "卤鸡", "清炖甲鱼", "糖醋鳜鱼", "文思豆腐",
-                           "粉蒸肉", "烧白", "辣椒炒肉", "剁椒鱼头", "泡椒鳝段", "花椒鸡", "红烧牛肉", "肝腰合炒", "宫保鸡丁", "干煸四季豆",
-                           "番茄炒蛋", "青椒肉丝", "蛋炒饭", "兰州拉面", "泡椒腰花", "小炒肉", "羊肉串", "石锅拌饭", "冬瓜排骨", "美蛙鱼头",
-                           "惠灵顿牛排", "意大利面", "春卷", "寿司", "照烧鸡", "墨西哥卷", "仰望星空", "炸鸡", "秋葵鸡", "沙拉", "三明治", "苹果派",
-                           "面包", "蛋糕", "汉堡", "披萨")
+                     "粉蒸肉", "烧白", "辣椒炒肉", "剁椒鱼头", "泡椒鳝段", "花椒鸡", "红烧牛肉", "肝腰合炒", "宫保鸡丁", "干煸四季豆",
+                     "番茄炒蛋", "青椒肉丝", "蛋炒饭", "兰州拉面", "泡椒腰花", "小炒肉", "羊肉串", "石锅拌饭", "冬瓜排骨", "美蛙鱼头",
+                     "惠灵顿牛排", "意大利面", "春卷", "寿司", "照烧鸡", "墨西哥卷", "仰望星空", "炸鸡", "秋葵鸡", "沙拉", "三明治", "苹果派",
+                     "面包", "蛋糕", "汉堡", "披萨", "羊杂粉" ,"木桶饭")
             msgs = ("我觉得%s还不错", "那就尝尝%s吧", "试试%s如何")
         msg = random.choice(msgs) % random.choice(foods)
         self.server.sendGroup(self.group_id, msg)
