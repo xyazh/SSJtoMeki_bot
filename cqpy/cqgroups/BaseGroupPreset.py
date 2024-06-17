@@ -121,7 +121,7 @@ class BaseGroupPreset(BaseGroup):
         qq_id = GroupHelper.getId(data)
         player = Player(qq_id)
         last_time = player.findGet("last_time", 0)
-        if last_time//(24*3600) == time.time()//(24*3600) and False:
+        if last_time//(24*3600) == time.time()//(24*3600):
             self.server.sendGroup(self.group_id, "%s，%.2f秒前才签到过。这么快就忘了" % (
                 GroupHelper.getName(data), time.time()-last_time))
         else:
@@ -384,16 +384,10 @@ class BaseGroupPreset(BaseGroup):
     @BaseGroup.helpData(["n"], "查看点数", "point", "point", "查看当前点数")
     def point(self, data: dict, order: Order):
         if order.checkOrder("point"):
-            p = self.data_manager.get(
-                str(GroupHelper.getId(data))+".json", "point")
-            if isinstance(p, dict):
-                self.server.sendGroup(self.group_id, "%s当前拥有点数：%dP" %
-                                      (GroupHelper.getName(data), p))
-            else:
-                self.data_manager.set(
-                    str(GroupHelper.getId(data))+".json", "point", 1)
-                self.server.sendGroup(self.group_id, "%s当前拥有点数：1P" %
-                                      GroupHelper.getName(data))
+            player = Player(GroupHelper.getId(data))
+            point = player.findGet("point", 1)
+            self.server.sendGroup(self.group_id, "%s当前拥有点数：%s" %
+                                  (GroupHelper.getName(data), point))
 
     @BaseGroup.register
     def autoMsg(self, data: dict):

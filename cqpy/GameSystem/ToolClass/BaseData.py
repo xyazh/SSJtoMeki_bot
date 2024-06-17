@@ -47,5 +47,4 @@ class BaseData:
                 self.data["chara_cards"][i] = RollDict(self.data["chara_cards"][i])
 
     def save(self):
-        print(self.data)
         BaseData.data_manager.setMenbers(str(self.qq_id)+".json",self.data)
