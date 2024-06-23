@@ -489,77 +489,76 @@ class YxBaseGroup(BaseGroup, IRollGroup, ISSJGroup, ITTKGroup, IItemGroup):
     def nowTime(self, data):
         get_msg = GroupHelper.getMsg(data)
         if get_msg in ("当前时间", "时间"):
-            t = datetime.datetime.now()
-            all_dict = {  # 回复总目录
-                # 平常
-                "a": "现在是？……【%Y-%m-%d，%H:%M:%S】的说……嗯……应该没搞错吧……",
-                "b": "【%Y-%m-%d，%H:%M:%S】的说……自己也可以看为什么要来问像我这样的人呢……",
-                "c": "【%Y-%m-%d，%H:%M:%S】……希望不会发生什么不好的事就好了……",
-                "d": "【%Y-%m-%d，%H:%M:%S】了呢，感觉好闲呢……吖呜（打哈欠），都不知道该干什么了……(￣▽￣)",
-                "e": "【%Y-%m-%d，%H:%M:%S】的说，这个时间段大家在做什么呢？Ciallo～(∠·ω< )⌒☆",
-                # 凌晨 00.00-05.00
-                "f": "啊~~~哈~~~呜~~~【%Y-%m-%d，%H:%M:%S】，都这么晚了……大家都不睡觉嘛……(´·ω·`)？",
-                "g": "【%Y-%m-%d，%H:%M:%S】，嗷~~~好困的说……嗯嗯呃呃……",
-                "h": "喵呜~~~【%Y-%m-%d，%H:%M:%S】，该睡觉了的说……",
-                # 早晨 05.00-08.00
-                "i": "【%Y-%m-%d，%H:%M:%S】？好困啊……起床……不要……",
-                "j": "(＠￣￢￣＠)zzZ，现在是……【%Y-%m-%d，%H:%M:%S】的说……呼呼……哈……zzZ",
-                "k": "嗯呃……额……啊嗯……吃……真的吃不下了……嘿嘿……（【%Y-%m-%d，%H:%M:%S】）",
-                "i1": "【%Y-%m-%d，%H:%M:%S】？怎么回事……啊呜……不要起床……不要……",
-                # 上午 08.00-11.00
-                "l": "太阳……好烦……（把头埋进被子）嗯呃……（【%Y-%m-%d，%H:%M:%S】)",
-                "m": "【%Y-%m-%d，%H:%M:%S】？还有点困呢，再睡一觉的说……(～￣▽￣)～",
-                "n": "呼……哈……嗯嗯~？【%Y-%m-%d，%H:%M:%S】？等……等等再起床啦……",
-                # 中午 11.00-13.00
-                "o": "【%Y-%m-%d，%H:%M:%S】，果然还是起来早点吃早饭比较好麻……",
-                "p": "早上果然就应该一股脑地睡过去的说！啊，不是……我的意思是……都【%Y-%m-%d，%H:%M:%S】了呢，大家一定要养成早睡早起的好习惯，嗯……",
-                "q": "糟！？都【%Y-%m-%d，%H:%M:%S】这个时间段了，再不去吃饭就要被骂了的说……(っ°Д°;)っ",
-                "o1": "（啪哒）啊呜……（从床上滚到地板）磕到脚趾母了，脚好痛的说……（看向时钟）原来已经%Y-%m-%d，%H:%M:%S了吗……脚还是好痛的说……啊呜……",
-                # 下午 13.00-16.00
-                "r": "【%Y-%m-%d，%H:%M:%S】……我能做些什么呢……果然什么都做不好的样子呢……",
-                "s": "下午【%Y-%m-%d，%H:%M:%S】的说……还要多久这一天才能过去呢？",
-                "t": "加把劲……哦……呃嗯……果然还是提不起劲的说，好想睡觉……（【%Y-%m-%d，%H:%M:%S】）",
-                # 傍晚 16.00-19.00
-                "u": "【%Y-%m-%d，%H:%M:%S】……特地来问我……我也不会有什么特别的想法的说……",
-                "v": "今天有没有夕阳呢？现在是(*°▽°*)【%Y-%m-%d，%H:%M:%S】的说",
-                "w": "晚饭的香味？……肚子有点饿了的说……（【%Y-%m-%d，%H:%M:%S】）",
-                # 晚上 19.00-00.00
-                "x": "都到【%Y-%m-%d，%H:%M:%S】了，不会还有什么没有做完的事情吧……",
-                "y": "【%Y-%m-%d，%H:%M:%S】的说，有点晚了呢……不知道今天夜晚的星星有多少颗呢？",
-                "z": "【%Y-%m-%d，%H:%M:%S】，已经到这个时间了，总感觉晚上好兴奋呢*★,°*:.☆\(￣▽￣)/$:*.°★*"
-            }
+            now_time = datetime.datetime.now()
+            # 平常
+            a = "现在是？……【%Y-%m-%d，%H:%M:%S】的说……嗯……应该没搞错吧……"
+            b = "【%Y-%m-%d，%H:%M:%S】的说……自己也可以看为什么要来问像我这样的人呢……"
+            c = "【%Y-%m-%d，%H:%M:%S】……希望不会发生什么不好的事就好了……"
+            d = "【%Y-%m-%d，%H:%M:%S】了呢，感觉好闲呢……吖呜（打哈欠），都不知道该干什么了……(￣▽￣)"
+            e = "【%Y-%m-%d，%H:%M:%S】的说，这个时间段大家在做什么呢？Ciallo～(∠·ω< )⌒☆"
+            # 凌晨 00.00-05.00
+            f = "啊~~~哈~~~呜~~~【%Y-%m-%d，%H:%M:%S】，都这么晚了……大家都不睡觉嘛……(´·ω·`)？"
+            g = "【%Y-%m-%d，%H:%M:%S】，嗷~~~好困的说……嗯嗯呃呃……"
+            h = "喵呜~~~【%Y-%m-%d，%H:%M:%S】，该睡觉了的说……"
+            # 早晨 05.00-08.00
+            i = "【%Y-%m-%d，%H:%M:%S】？好困啊……起床……不要……"
+            j = "(＠￣￢￣＠)zzZ，现在是……【%Y-%m-%d，%H:%M:%S】的说……呼呼……哈……zzZ"
+            k = "嗯呃……额……啊嗯……吃……真的吃不下了……嘿嘿……（【%Y-%m-%d，%H:%M:%S】）"
+            i1 = "【%Y-%m-%d，%H:%M:%S】？怎么回事……啊呜……不要起床……不要……"
+            # 上午 08.00-11.00
+            l = "太阳……好烦……（把头埋进被子）嗯呃……（【%Y-%m-%d，%H:%M:%S】)"
+            m = "【%Y-%m-%d，%H:%M:%S】？还有点困呢，再睡一觉的说……(～￣▽￣)～"
+            n = "呼……哈……嗯嗯~？【%Y-%m-%d，%H:%M:%S】？等……等等再起床啦……"
+            # 中午 11.00-13.00
+            o = "【%Y-%m-%d，%H:%M:%S】，果然还是起来早点吃早饭比较好麻……",
+            p = "早上果然就应该一股脑地睡过去的说！啊，不是……我的意思是……都【%Y-%m-%d，%H:%M:%S】了呢，大家一定要养成早睡早起的好习惯，嗯……"
+            q = "糟！？都【%Y-%m-%d，%H:%M:%S】这个时间段了，再不去吃饭就要被骂了的说……(っ°Д°;)っ"
+            o1 = "（啪哒）啊呜……（从床上滚到地板）磕到脚趾母了，脚好痛的说……（看向时钟）原来已经%Y-%m-%d，%H:%M:%S了吗……脚还是好痛的说……啊呜……"
+            # 下午 13.00-16.00
+            r = "【%Y-%m-%d，%H:%M:%S】……我能做些什么呢……果然什么都做不好的样子呢……"
+            s = "下午【%Y-%m-%d，%H:%M:%S】的说……还要多久这一天才能过去呢？"
+            t = "加把劲……哦……呃嗯……果然还是提不起劲的说，好想睡觉……（【%Y-%m-%d，%H:%M:%S】）"
+            # 傍晚 16.00-19.00
+            u = "【%Y-%m-%d，%H:%M:%S】……特地来问我……我也不会有什么特别的想法的说……"
+            v = "今天有没有夕阳呢？现在是(*°▽°*)【%Y-%m-%d，%H:%M:%S】的说"
+            w = "晚饭的香味？……肚子有点饿了的说……（【%Y-%m-%d，%H:%M:%S】）"
+            # 晚上 19.00-00.00
+            x = "都到【%Y-%m-%d，%H:%M:%S】了，不会还有什么没有做完的事情吧……"
+            y = "【%Y-%m-%d，%H:%M:%S】的说，有点晚了呢……不知道今天夜晚的星星有多少颗呢？"
+            z = "【%Y-%m-%d，%H:%M:%S】，已经到这个时间了，总感觉晚上好兴奋呢*★,°*:.☆\(￣▽￣)/$:*.°★*"
             msg_dict = {  # 基于总目录的文本根据时间以此分类回复
-                "lingchen": all_dict[random.choice(["f", "g", "h"])],
-                "zaochen": all_dict[random.choice(["i", "j", "k"])],
-                "shangwu": all_dict[random.choice(["l", "m", "n"])],
-                "zhongwu": all_dict[random.choice(["o", "p", "q", "a", "b", "c", "d", "e", "o1"])],
-                "xiawu": all_dict[random.choice(["r", "s", "t", "a", "b", "c", "d", "e"])],
-                "bangwan": all_dict[random.choice(["u", "v", "w", "a", "b", "c", "d", "e"])],
-                "wanshang": all_dict[random.choice(["x", "y", "z", "a", "b", "c", "d", "e"])]
+            "lingchen":random.choice([f, g, h,i1]),
+            "zaochen":random.choice([i, j, k]),
+            "shangwu":random.choice([l, m, n]),
+            "zhongwu":random.choice([o, p, q, a, b, c, d, e, o1]),
+            "xiawu":random.choice([r, s, t, a, b, c, d, e]),
+            "bangwan":random.choice([u, v, w, a, b, c, d, e]),
+            "wanshang":random.choice([x, y, z, a, b, c, d, e])
             }
-            now_hour = int(datetime.datetime.now().strftime("%H"))
-            match {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 1, 6: 1, 7: 1, 8: 2, 9: 2, 10: 2, 11: 3, 12: 3, 13: 4, 14: 4, 15: 4, 16: 5, 17: 5, 18: 5, 19: 6, 20: 6, 21: 6, 22: 6, 23: 6}[now_hour]:
+            now_hour = int(now_time.strftime("%H"))
+            match {0:0,1:0,2:0,3:0,4:0,
+                   5:1,6:1,7:1,
+                   8:2,9:2,10:2,
+                   11:3,12:3,
+                   13:4,14:4,15:4,
+                   16:5,17:5,18:5,
+                   19:6,20:6,21:6,22:6,23:6
+                   }[now_hour]:
                 case 0:
-                    self.server.sendGroup(
-                        self.group_id, t.strftime(msg_dict["lingchen"]))
+                    send_msg = "lincheng"
                 case 1:
-                    self.server.sendGroup(
-                        self.group_id, t.strftime(msg_dict["zaochen"]))
+                    send_msg = "zaochen"
                 case 2:
-                    self.server.sendGroup(
-                        self.group_id, t.strftime(msg_dict["shangwu"]))
+                    send_msg = "shangwu"
                 case 3:
-                    self.server.sendGroup(
-                        self.group_id, t.strftime(msg_dict["zhongwu"]))
+                    send_msg = "zhongwu"
                 case 4:
-                    self.server.sendGroup(
-                        self.group_id, t.strftime(msg_dict["xiawu"]))
+                    send_msg = "xiawu"
                 case 5:
-                    self.server.sendGroup(
-                        self.group_id, t.strftime(msg_dict["bangwan"]))
+                    send_msg = "bangwan"
                 case 6:
-                    self.server.sendGroup(
-                        self.group_id, t.strftime(msg_dict["wanshang"]))
+                    send_msg = "wanshang"
+            self.server.sendGroup(self.group_id, now_time.strftime(msg_dict[send_msg]))
 
     # 三色堇的各种回复
     @register
