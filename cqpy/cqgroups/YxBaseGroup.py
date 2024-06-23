@@ -452,7 +452,7 @@ class YxBaseGroup(BaseGroup, IRollGroup, ISSJGroup, ITTKGroup, IItemGroup):
     @register
     @helpData(["normal"], "随机涩图", "roll_img", "roll_img", "随机获取涩图。")
     def rollImg(self, data: dict, order: Order):
-        if order.checkOrder("roll_img"):
+        if order.checkOrder("roll_img") or GroupHelper.getMsg(data) in ["涩图","色图","随机涩图"]:
             # self.s.sendImgToGroupFromUrl(self.group_id,"https://iw233.cn/api.php?sort=iw233")
             self.server.sendImgToGroupFromUrl(
                 self.group_id, "https://www.dmoe.cc/random.php")
