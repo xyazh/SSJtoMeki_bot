@@ -1,7 +1,7 @@
 import json
 
 class RequestData(bytearray):
-    def __init__(self, h_type, h_path, h_version):
+    def __init__(self, h_type, h_path, h_version="HTTP/1.1"):
         super().__init__()
 
         self.__type: str = h_type
