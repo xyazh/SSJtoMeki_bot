@@ -4,6 +4,7 @@ import urllib.parse
 import threading
 import logging
 import typing
+import os
 
 from .Event import Event
 from .GroupHelper import GroupHelper
@@ -16,6 +17,10 @@ from .xyazhServer import App
 from .xyazhServer import PageManager
 from .xyazhServer import Server
 from .xyazhServer import ConsoleMessage
+from .xyazhRequest import HTTPRequest, HTTPSRequest, RequestData, ResponseData
+from .OpenQQ.OpenQQServer import OpenQQServer
+from .DataManager import DataManager
+
 from typing import Callable
 from typing import BinaryIO
 from urllib import request
@@ -23,7 +28,6 @@ from urllib import request
 if typing.TYPE_CHECKING:
     from . import cqgroups
     from .cqgroups.BaseGroup import BaseGroup
-
 
 
 class Cqserver:
@@ -50,8 +54,29 @@ class Cqserver:
         self.post_port = post_port
         self.reg_func: dict[int:list[Callable]] = {}
         self.ban_func: dict[int:list[Callable]] = {}
+        self.data_manager: DataManager = DataManager("\\config\\")
         self.newWebAndListenApp(ip, post_port)
         self.register()
+
+    def tryRunOpenQQ(self):
+        if not self.data_manager.hasFile("opqq.json"):
+            self.data_manager.craftFile("opqq.json", {
+                "use_open_qq": False,
+                "app_id": 114514,
+                "client_secret": "xxxxxxxxxxxxxxx",
+                "mandatory_use_group": False
+            })
+        if not self.data_manager.findGet("opqq.json", "use_open_qq", False):
+            ConsoleMessage.printMsg("未启用OpenQQ")
+            return
+        app_id = self.data_manager.findGet("opqq.json", "app_id", None)
+        client_secret = self.data_manager.findGet(
+            "opqq.json", "client_secret", None)
+        if app_id is None or client_secret is None:
+            ConsoleMessage.printError("未配置OpenQQ")
+            return
+        self.openqq_server = OpenQQServer(self, app_id, client_secret)
+        threading.Thread(target=self.openqq_server.run).start()
 
     def printTitleVison(self):
         print(" * ---------------------------------")
@@ -91,7 +116,7 @@ class Cqserver:
         from . import cqgroups
         from .cqgroups.BaseGroup import BaseGroup
         class_list = ServerHelper.getFullClassesFormModul(
-            cqgroups, lambda clazz:issubclass(clazz, BaseGroup))
+            cqgroups, lambda clazz: issubclass(clazz, BaseGroup))
         for ClassGroup in class_list:
             try:
                 clazz = ClassGroup
@@ -160,30 +185,30 @@ class Cqserver:
         self.printTitleVison()
         fuc = self.web_and_listen.runHTTP
         self.web_and_listen.runThead(fuc, (self.initFunc,))
+        self.tryRunOpenQQ()
 
     def escapeMsg(self, msg: str) -> str:
         msg = urllib.parse.quote(msg)
         return msg
 
-    def get(self, path: str) -> bytes:
-        result = b""
-        f: BinaryIO
-        with request.urlopen("http://%s:%s%s" % (self.ip, self.port, path)) as f:
-            result = f.read()
+    def get(self, path: str) -> ResponseData:
+        h_requse = HTTPRequest(self.ip, self.port)
+        data = RequestData("GET", path)
+        result = h_requse.execute(data)
         return result
-    
-    def _getImgRaw(self, img_cqcode:CQCode)->dict|None:
+
+    def _getImgRaw(self, img_cqcode: CQCode) -> dict | None:
         if "file" not in img_cqcode.data:
             return None
-        path = self.get("/get_image?file=%s"%img_cqcode.data["file"])
-        path_json:dict
+        path = self.get("/get_image?file=%s" % img_cqcode.data["file"])
+        path_json: dict
         try:
-            path_json = json.loads(path)
+            path_json = path.json()
         except json.decoder.JSONDecodeError as e:
             return None
         return path_json
-    
-    def _getImgPath(self, img_raw:dict)->str:
+
+    def _getImgPath(self, img_raw: dict) -> str:
         if img_raw is None:
             return ""
         if "data" in img_raw and "file" in img_raw["data"]:
@@ -228,11 +253,11 @@ class Cqserver:
                  (group_id, cq))
 
     @patch
-    def getGroupList(self):
+    def getGroupList(self) -> ResponseData:
         return self.get("/get_group_list")
 
     @patch
-    def getForwardMsg(self, msg_id: str | int) -> bytes:
+    def getForwardMsg(self, msg_id: str | int) -> ResponseData:
         return self.get("/get_forward_msg?message_id=%s" % msg_id)
 
     @patch
@@ -241,26 +266,25 @@ class Cqserver:
                  (group_id, qqid, time))
 
     @patch
-    def getForwardMsg(self, msg_id: str | int) -> bytes:
+    def getForwardMsg(self, msg_id: str | int) -> ResponseData:
         return self.get("/get_forward_msg?message_id=%s" % msg_id)
 
     @patch
     def groupBan(self, group_id: str | int, qqid: int, sec: int):
         self.get("/set_group_ban?group_id=%s&user_id=%d&duration=%d" %
                  (group_id, qqid, sec))
-    
-    
+
     @patch
-    def getImgRaw(self, img_cqcode:CQCode)->dict|None:
+    def getImgRaw(self, img_cqcode: CQCode) -> dict | None:
         return self._getImgRaw(img_cqcode)
 
     @patch
-    def getImgPath(self, img_cqcode:CQCode)->str:
+    def getImgPath(self, img_cqcode: CQCode) -> str:
         img_raw = self._getImgRaw(img_cqcode)
         return self._getImgPath(img_raw)
 
     @patch
-    def getImgData(self, img_cqcode:CQCode)->bytes:
+    def getImgData(self, img_cqcode: CQCode) -> bytes:
         img_raw = self._getImgRaw(img_cqcode)
         img_path = self._getImgPath(img_raw)
         img_data = b""
@@ -268,6 +292,6 @@ class Cqserver:
             with open(img_path, "rb") as f:
                 img_data = f.read()
         except BaseException as e:
-            ConsoleMessage.printWarning("获取图片失败：%s"%e)
+            ConsoleMessage.printWarning("获取图片失败：%s" % e)
             logging.exception(e)
         return img_data

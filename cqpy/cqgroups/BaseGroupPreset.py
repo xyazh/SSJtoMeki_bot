@@ -530,7 +530,7 @@ class BaseGroupPreset(BaseGroup):
             return
         msg_id = data["meta"]["detail"]["resid"]
         f_msg = self.server.getForwardMsg(msg_id)
-        j_f_msg: dict = json.loads(f_msg)
+        j_f_msg: dict = f_msg.json()
         d = j_f_msg["data"]["messages"]
         for i in d:
             t = None

@@ -39,10 +39,10 @@ class DataManager:
         full_path = self.path + file_name
         return os.path.exists(full_path)
 
-    def craftFile(self, file_name: str) -> None:
+    def craftFile(self, file_name: str,dis_data:dict={}) -> None:
         full_path = self.path + file_name
         with open(full_path, "wb") as f:
-            f.write(json.dumps({}, ensure_ascii=False, indent=4).encode("utf8"))
+            f.write(json.dumps(dis_data, ensure_ascii=False, indent=4).encode("utf8"))
 
     def get(self, file_name: str, key: str = None) -> dict | list | int | str | float | bool | None:
         j = None

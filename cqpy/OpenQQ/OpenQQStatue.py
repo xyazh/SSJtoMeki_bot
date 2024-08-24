@@ -1,15 +1,15 @@
 import time
 import threading
 
-from .xyazhRequest.HTTPSRequest import HTTPSRequest
-from .xyazhRequest.RequestData import RequestData
-from .xyazhServer.ConsoleMessage import ConsoleMessage
+from ..xyazhRequest.HTTPSRequest import HTTPSRequest
+from ..xyazhRequest.RequestData import RequestData
+from ..xyazhServer.ConsoleMessage import ConsoleMessage
 
 
 class OpenQQStatue:
-    def __init__(self, app_id: str, client_Secret: str, max_try: int = 3, hostname: str = "bots.qq.com", path: str = "/app/getAppAccessToken"):
+    def __init__(self, app_id: str, client_secret: str, max_try: int = 3, hostname: str = "bots.qq.com", path: str = "/app/getAppAccessToken"):
         self.app_id: str = app_id
-        self.client_Secret: str = client_Secret
+        self.client_secret: str = client_secret
         self.max_try: int = max_try
         self.hostname: str = hostname
         self.path: str = path
@@ -32,7 +32,7 @@ class OpenQQStatue:
         })
         request_data.setJsonData({
             "appId": self.app_id,
-            "clientSecret": self.client_Secret
+            "clientSecret": self.client_secret
         })
         self.request_data = request_data
 
@@ -49,7 +49,10 @@ class OpenQQStatue:
                     data = None
                     if response.status_code == 200 and (data := response.json()) is not None and "access_token" in data and "expires_in" in data:
                         self.access_token = data["access_token"]
+                        ConsoleMessage.printMsg("获取access_token成功")
+                        ConsoleMessage.printMsg("access_token: %s" % self.access_token)
                         self.expires_in = float(data["expires_in"])
+                        ConsoleMessage.printMsg("access_token过期时长: %s" % self.expires_in)
                         self.re_req_time = time.time() + self.expires_in - 60
                         break
                     elif i == self.max_try - 1:
@@ -57,7 +60,7 @@ class OpenQQStatue:
                         self.is_stop = True
                         return
                     ConsoleMessage.printWarning(
-                        "获取access_token失败，重试次数%d" % (i + 1))
+                        f"获取access_token失败: {response}，重试次数{i+1}")
                     time.sleep(1)
             time.sleep(30)
         
