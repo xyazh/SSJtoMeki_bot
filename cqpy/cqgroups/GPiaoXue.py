@@ -9,6 +9,7 @@ from ..LLMChat import LLMAPI, DeepseekAPI, ERNIEAPI, QwenAPI
 import base64
 import pickle
 import threading
+import logging
 
 
 class GPiaoXue(BaseGroupPreset, IRollGroup, IItemGroup, ITTKGroup):
@@ -29,8 +30,8 @@ class GPiaoXue(BaseGroupPreset, IRollGroup, IItemGroup, ITTKGroup):
                     "QwenAPI": QwenAPI(key_dict['Qwen'])}
 
             self.activeAPI: LLMAPI = self.API_dict["QwenAPI"]
-        except BaseException:
-            pass
+        except BaseException as e:
+            logging.exception(e)
 
     @BaseGroup.register
     @BaseGroup.helpData(["o"], "测试指令", "test", "test (msg)", "测试指令")
