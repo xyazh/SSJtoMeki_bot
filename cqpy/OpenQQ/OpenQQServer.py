@@ -1,7 +1,6 @@
 import time
 import json
 from types import UnionType
-import websocket
 import logging
 import threading
 import os
