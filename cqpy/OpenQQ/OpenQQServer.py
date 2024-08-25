@@ -5,6 +5,8 @@ import websocket
 import logging
 import threading
 import os
+import subprocess
+import sys
 from .OpenQQStatue import OpenQQStatue
 from .Payload import Payload
 from ..xyazhServer.ConsoleMessage import ConsoleMessage
@@ -13,6 +15,13 @@ from ..xyazhRequest import RequestData, HTTPSRequest
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..Cqserver import Cqserver
+
+try:
+    import websocket
+except ImportError:
+    ConsoleMessage.printWarning("websocket 模块未安装，正在安装...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "websocket-client"])
+    import websocket
 
 
 class OpenQQServer:
