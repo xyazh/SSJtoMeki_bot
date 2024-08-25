@@ -5,6 +5,7 @@ import threading
 import logging
 import typing
 import os
+import time
 
 from .Event import Event
 from .GroupHelper import GroupHelper
@@ -67,7 +68,7 @@ class Cqserver:
                 "mandatory_use_group": False
             })
         if not self.data_manager.findGet("opqq.json", "use_open_qq", False):
-            ConsoleMessage.printMsg("未启用OpenQQ")
+            ConsoleMessage.printC("未启用OpenQQ")
             return
         app_id = self.data_manager.findGet("opqq.json", "app_id", None)
         client_secret = self.data_manager.findGet(
@@ -185,6 +186,7 @@ class Cqserver:
         self.printTitleVison()
         fuc = self.web_and_listen.runHTTP
         self.web_and_listen.runThead(fuc, (self.initFunc,))
+        time.sleep(1)
         self.tryRunOpenQQ()
 
     def escapeMsg(self, msg: str) -> str:

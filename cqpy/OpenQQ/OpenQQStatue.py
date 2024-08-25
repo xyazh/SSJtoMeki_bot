@@ -49,10 +49,10 @@ class OpenQQStatue:
                     data = None
                     if response.status_code == 200 and (data := response.json()) is not None and "access_token" in data and "expires_in" in data:
                         self.access_token = data["access_token"]
-                        ConsoleMessage.printMsg("获取access_token成功")
-                        ConsoleMessage.printMsg("access_token: %s" % self.access_token)
+                        ConsoleMessage.printC("获取access_token成功")
+                        ConsoleMessage.printC("access_token: %s" % self.access_token)
                         self.expires_in = float(data["expires_in"])
-                        ConsoleMessage.printMsg("access_token过期时长: %s" % self.expires_in)
+                        ConsoleMessage.printC("access_token过期时长: %s" % self.expires_in)
                         self.re_req_time = time.time() + self.expires_in - 60
                         break
                     elif i == self.max_try - 1:

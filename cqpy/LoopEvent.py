@@ -1,4 +1,3 @@
-from urllib import request
 from html.parser import HTMLParser
 if __name__ == "__main__":
     from xyazhServer import ConsoleMessage
@@ -8,7 +7,10 @@ import threading
 import time
 import logging
 import json
+
+from .xyazhRequest import RequestData, ResponseData, HTTPRequest, HTTPSRequest
 DO_LOOP: list[threading.Thread] = []
+
 
 class AnimeHTMLParser(HTMLParser):
     def __init__(self):
@@ -61,12 +63,19 @@ class LoopEvent:
     def getAnimeNews():
         try:
             data = None
-            with request.urlopen('https://acg.gamersky.com/news/') as f:
-                data = f.read()
+            request_data = RequestData(
+                "GET", "/news/")
+            request_data.addBodys({
+                "Host": "acg.gamersky.com",
+                "Connection": "close",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0"
+            })
+            https_request = HTTPSRequest("acg.gamersky.com")
+            data = https_request.execute(request_data)
             if data is None:
                 return
             parser = AnimeHTMLParser()
-            parser.feed(str(data, encoding="utf8"))
+            parser.feed(data.text_body)
             LoopEvent.today_anime_news = parser.info
             ConsoleMessage.printDebug(LoopEvent.today_anime_news)
         except BaseException as e:
@@ -77,16 +86,24 @@ class LoopEvent:
     def getGalNews():
         try:
             data = None
-            with request.urlopen('https://www.ymgal.games/co/topic/list?type=NEWS&page=1') as f:
-                data = str(f.read(), encoding="utf8")
+            request_data = RequestData(
+                "GET", "/co/topic/list?type=NEWS&page=1")
+            request_data.addBodys({
+                "Host": "www.ymgal.games",
+                "Connection": "close",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0"
+            })
+            https_request = HTTPSRequest("www.ymgal.games")
+            data = https_request.execute(request_data)
+            data = data.json()
             if data is None:
                 return
-            data_dict = json.loads(data)
-            if "data" not in data_dict:
+            gals_data = data.get("data")
+            if gals_data is None:
                 return
-            if isinstance(data_dict["data"], list):
+            if isinstance(gals_data, list):
                 LoopEvent.today_galgame_news.clear()
-                for i in data_dict["data"]:
+                for i in gals_data:
                     if "title" not in i:
                         continue
                     LoopEvent.today_galgame_news.append(i["title"])

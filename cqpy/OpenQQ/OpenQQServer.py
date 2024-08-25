@@ -53,10 +53,10 @@ class OpenQQServer:
 
     def run(self):
         t = 0
-        ConsoleMessage.printMsg("正在启动...")
-        ConsoleMessage.printMsg("正在获取令牌...")
-        ConsoleMessage.printMsg(f"App id: {self.app_id}")
-        ConsoleMessage.printMsg(f"Client Secret: {self.client_Secret}")
+        ConsoleMessage.printC("正在启动...")
+        ConsoleMessage.printC("正在获取令牌...")
+        ConsoleMessage.printC(f"App id: {self.app_id}")
+        ConsoleMessage.printC(f"Client Secret: {self.client_Secret}")
         self.status = OpenQQStatue(self.app_id, self.client_Secret)
         while self.status.access_token == "":
             time.sleep(1)
@@ -67,12 +67,12 @@ class OpenQQServer:
         if self.status.is_stop:
             ConsoleMessage.printError("连接失败")
             raise Exception("Connection failed")
-        ConsoleMessage.printMsg("正在获取WebSocket地址...")
+        ConsoleMessage.printC("正在获取WebSocket地址...")
         self.url = self.getWebSocketUrl()
         if self.url == "":
             raise Exception("Get WebSocket address failed")
-        ConsoleMessage.printMsg(f"WebSocket地址: {self.url}")
-        ConsoleMessage.printMsg("正在启动websocket...")
+        ConsoleMessage.printC(f"WebSocket地址: {self.url}")
+        ConsoleMessage.printC("正在启动websocket...")
         self.doWsWatch()
         self.createWs()
 
@@ -212,12 +212,12 @@ class OpenQQServer:
         self.is_ws_closed = True
 
     def wsOnClose(self, ws, close_status_code, close_msg):
-        ConsoleMessage.printMsg(
+        ConsoleMessage.printC(
             f"WebSocket connection closed with status code: {close_status_code}")
-        ConsoleMessage.printMsg(
+        ConsoleMessage.printC(
             f"WebSocket connection closed with message: {close_msg}")
         self.is_ws_closed = True
 
     def wsOnOpen(self, ws):
-        ConsoleMessage.printMsg("WebSocket connection opened")
+        ConsoleMessage.printC("WebSocket connection opened")
         self.is_ws_closed = False

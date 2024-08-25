@@ -28,7 +28,7 @@ class HTTPRequest:
             if not data:
                 break
             response += data
-        return response.decode('utf-8')
+        return response
 
     def close(self):
         if self.sock:
