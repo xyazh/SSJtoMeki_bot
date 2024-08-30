@@ -133,7 +133,7 @@ class BaseGroupPreset(BaseGroup):
             player.set("point", p+ap)
                 
 
-        if last_time//(24*3600) == time.time()//(24*3600):
+        if (last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
             self.server.sendGroup(self.group_id, "%s，%.2f秒前才签到过。这么快就忘了" % (
                 GroupHelper.getName(data), time.time()-last_time))
         else:
