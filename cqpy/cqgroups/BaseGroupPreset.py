@@ -161,7 +161,7 @@ class BaseGroupPreset(BaseGroup):
         ys = int(round(ys))
         flag = True
         if ys_last_time and self.unnsei_once_a_day:
-            if ys_last_time//(24*3600) == time.time()//(24*3600):
+            if (ys_last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
                 _ys = player.findGet("ys")
                 if _ys != None:
                     ys = _ys
