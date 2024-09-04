@@ -157,7 +157,13 @@ class BaseGroupPreset(BaseGroup):
         qq_id = GroupHelper.getId(data)
         player = Player(qq_id)
         ys_last_time = player.findGet("ys_last_time", 0)
-        ys = RollHelper.bestRandomGuassRange(50, 35, 0, 100)
+        r = random.randint(1, 100)
+        if r <= 18:
+            ys = RollHelper.bestRandomGuassRange(0, 15,0,99)
+        elif r<=100-18:
+            ys = RollHelper.bestRandomGuassRange(50, 15,0,100)
+        else:
+            ys = RollHelper.bestRandomGuassRange(100, 15,0,99)
         ys = int(round(ys))
         flag = True
         if ys_last_time and self.unnsei_once_a_day:
