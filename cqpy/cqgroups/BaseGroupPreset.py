@@ -157,7 +157,7 @@ class BaseGroupPreset(BaseGroup):
         ys = RollHelper.presetSurpriseDistribution2()
         ys = int(ys)
         flag = True
-        if ys_last_time and self.unnsei_once_a_day:
+        if ys_last_time and self.unnsei_once_a_day and not is_test:
             if (ys_last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
                 _ys = player.findGet("ys")
                 if _ys != None:
@@ -197,6 +197,8 @@ class BaseGroupPreset(BaseGroup):
             r += "今天已经测过运势了" if not flag else random.choice(["街上好安静啊", "大哥哥......", "打完这场仗我就会老家结婚", "听好，在我回来之前不要乱走", "已经没什么好怕的了",
                                                              "你们先走我马上就来", "身体好轻", "因为我不再是一个人了", "什么声音，我去看看", "完了，这次真的完了", "没关系，问题不大（", "嗯？是错觉吗"])
         msg = "%s今日的幸运指数是%i %s" % (GroupHelper.getName(data), 100-ys, r)
+        if is_test:
+            msg = "[test]" + msg
         self.server.sendGroup(self.group_id, msg)
 
     @BaseGroup.register
