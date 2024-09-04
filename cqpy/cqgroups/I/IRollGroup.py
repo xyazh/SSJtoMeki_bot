@@ -529,3 +529,15 @@ class IRollGroup(IBaseGroup):
             msg = I18n.format("rp_kantei") % (
                 GroupHelper.getName(data), arg_1, rc, value) + msg
             self.server.sendGroup(self.group_id, msg)
+
+    @BaseGroup.register
+    @BaseGroup.helpData(["roll"], "骰子测试", "roll100", "roll100 (number)", "投掷number次百面骰")
+    def roll100Test(self, data: dict, order: Order):
+        if not order.checkOrder("roll100"):
+            return
+        arg_1 = order.getArg(1)
+        arg_1 = 10 if arg_1 == None else int(arg_1)
+        arg_1 = min(40, arg_1)
+        msg = " ".join((RollHelper.presetSurpriseDistribution3() for _ in range(arg_1)))
+        msg = f"你的{arg_1}次百面骰结果为：\r\n{msg}"
+        self.server.sendGroup(self.group_id, msg)
