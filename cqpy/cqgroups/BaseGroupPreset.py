@@ -28,7 +28,7 @@ HELP_CLASS_DATA = {"n": "常用命令", "r": "跑团命令", "o": "其他命令"
 ALIAS = {"normal": "n", "roll": "r", "other": "o", "item": "i"}
 
 
-@GroupHelper.addActiveGroups(114514,318793491)
+@GroupHelper.addActiveGroups(114514, 318793491)
 class BaseGroupPreset(BaseGroup):
     BOT_NAME = BOT_NAME
     BOT_NAME_SELF = BOT_NAME_SELF
@@ -122,16 +122,15 @@ class BaseGroupPreset(BaseGroup):
         player = Player(qq_id)
         last_time = player.findGet("last_time", 0)
 
-        #修复
+        # 修复
         n = player.findGet("n", 1)
         p = player.findGet("point", 1)
         ap = 0
-        if p==1 and n != 1:
-            for i in range(1,n+1):
+        if p == 1 and n != 1:
+            for i in range(1, n+1):
                 aap = random.randint(int(i//2), i)
                 ap += 1 if aap <= 0 else aap
             player.set("point", p+ap)
-                
 
         if (last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
             self.server.sendGroup(self.group_id, "%s，%.2f秒前才签到过。这么快就忘了" % (
@@ -147,11 +146,9 @@ class BaseGroupPreset(BaseGroup):
             player.set("point", p+ap)
             player.set("last_time", time.time())
 
-
-
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "今日运势", "jrrp", "jrrp", "查询当前运势，图一乐。直接发送运势或指令的方式就可以使用")
-    def meiunn(self, data: dict, order: Order):
+    def meiunn(self, data: dict, order: Order, is_test: bool = False):
         if not (GroupHelper.getMsg(data) == "运势" or order.checkOrder("运势") or order.checkOrder("jrrp")):
             return
         qq_id = GroupHelper.getId(data)
@@ -166,9 +163,10 @@ class BaseGroupPreset(BaseGroup):
                 if _ys != None:
                     ys = _ys
                     flag = False
-        if flag:
+        if flag and not is_test:
             player.set("ys_last_time", time.time())
             player.set("ys", ys)
+        flag = is_test or flag
         if ys <= 5:
             r = '大吉，'
             r += "今天已经测过运势了" if not flag else random.choice(
@@ -200,6 +198,17 @@ class BaseGroupPreset(BaseGroup):
                                                              "你们先走我马上就来", "身体好轻", "因为我不再是一个人了", "什么声音，我去看看", "完了，这次真的完了", "没关系，问题不大（", "嗯？是错觉吗"])
         msg = "%s今日的幸运指数是%i %s" % (GroupHelper.getName(data), 100-ys, r)
         self.server.sendGroup(self.group_id, msg)
+
+    @BaseGroup.register
+    @BaseGroup.helpData(["o"], "测试运势", "test_jrrp", "test_jrrp", "测试运势，测试结果不会保存。直接发送test_jrrp或指令的方式就可以使用")
+    def testMeiunn(self, data: MsgData, order: Order):
+        if not order.checkOrder("test_jrrp"):
+            return
+        if data.checkOwnerOrAdmin():
+            order = GroupHelper.getOrderFromStr(ORDER_SPLIT_LIST[0] + "jrrp")
+            self.meiunn(data, order, is_test=True)
+            return
+        self.server.sendGroup(self.group_id,"你没有使用此命令的权限")
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "动漫资讯", "anime_news", "anime_news", "获取当日动漫新闻。资讯来源于网络，每小时会尝试更新，直接发送动漫新闻、动画新闻、二次元新闻、anime新闻、动漫资讯、动画资讯、二次元资讯、anime资讯有同样效果")
@@ -343,7 +352,7 @@ class BaseGroupPreset(BaseGroup):
             da.update({a1: a2})
             group.data["add"] = da
             self.server.sendGroup(
-                    self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
+                self.group_id, "嗯，%s记住了！" % BOT_NAME_SELF)
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "删除回复", "del", "del [del]", "删除add和ppp设置的自动回复")
@@ -380,16 +389,16 @@ class BaseGroupPreset(BaseGroup):
         if order.checkOrder("point"):
             player = Player(GroupHelper.getId(data))
 
-            #修复
+            # 修复
             n = player.findGet("n", 1)
             p = player.findGet("point", 1)
             ap = 0
-            if p==1 and n != 1:
-                for i in range(1,n+1):
+            if p == 1 and n != 1:
+                for i in range(1, n+1):
                     aap = random.randint(int(i//2), i)
                     ap += 1 if aap <= 0 else aap
                 player.set("point", p+ap)
-                
+
             point = player.findGet("point", 1)
             self.server.sendGroup(self.group_id, "%s当前拥有点数：%s" %
                                   (GroupHelper.getName(data), point))
@@ -404,7 +413,7 @@ class BaseGroupPreset(BaseGroup):
         if msg in da:
             self.server.sendGroup(self.group_id, da[msg])
             return
-            
+
         if msg in dp:
             li = dp[msg]
             plus_msg = li[random.randint(0, len(li)-1)]
@@ -510,7 +519,7 @@ class BaseGroupPreset(BaseGroup):
                      "粉蒸肉", "烧白", "辣椒炒肉", "剁椒鱼头", "泡椒鳝段", "花椒鸡", "红烧牛肉", "肝腰合炒", "宫保鸡丁", "干煸四季豆",
                      "番茄炒蛋", "青椒肉丝", "蛋炒饭", "兰州拉面", "泡椒腰花", "小炒肉", "羊肉串", "石锅拌饭", "冬瓜排骨", "美蛙鱼头",
                      "惠灵顿牛排", "意大利面", "春卷", "寿司", "照烧鸡", "墨西哥卷", "仰望星空", "炸鸡", "秋葵鸡", "沙拉", "三明治", "苹果派",
-                     "面包", "蛋糕", "汉堡", "披萨", "羊杂粉" ,"木桶饭")
+                     "面包", "蛋糕", "汉堡", "披萨", "羊杂粉", "木桶饭")
             msgs = ("我觉得%s还不错", "那就尝尝%s吧", "试试%s如何")
         msg = random.choice(msgs) % random.choice(foods)
         self.server.sendGroup(self.group_id, msg)
