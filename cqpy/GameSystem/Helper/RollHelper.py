@@ -93,7 +93,7 @@ class RollHelper:
                     if token == "?":
                         if a == None:
                             raise SyntaxError("invalid syntax")
-                        result = random.choice((a,b))
+                        result = random.choice((a, b))
                     if token == "+":
                         result = a + b
                     elif token == "-":
@@ -254,13 +254,13 @@ class RollHelper:
         lower = mu - n
         upper = mu + n
         return RollHelper.bestRandomGuassRange(mu, sigma, lower, upper)
-    
+
     def bestRandomGuassRange(mu: float, sigma: float, lower: float, upper: float):
         """
         生成在[lower, upper]范围内的高斯分布随机数
         """
         r = random.gauss(mu, sigma)
-        lower,upper = min(lower, upper),max(lower, upper)
+        lower, upper = min(lower, upper), max(lower, upper)
         while r < lower or r > upper:
             r = random.gauss(mu, sigma)
         return r
@@ -286,3 +286,54 @@ class RollHelper:
                     else:
                         index = int((index + 1) % m)
         return result
+
+    @staticmethod
+    def surpriseDistribution(p1: float, e1: float, p2: float, e2: float, p3: float, e3: float, lower: float, upper: float, weight1: float, weight2: float, weight3: float) -> float:
+        """
+        节目效果分布
+        
+        有三个峰的组合正态分布，可以实现中低高低中的概率分布
+        """
+        w = weight1 + weight2 + weight3
+        weight1 /= w
+        weight2 /= w
+        weight3 /= w
+        r = random.random()
+        result = 0
+        if r < weight1:
+            result = RollHelper.bestRandomGuassRange(p1, e1, lower, upper)
+        elif r < weight1 + weight2:
+            result = RollHelper.bestRandomGuassRange(p2, e2, lower, upper)
+        else:
+            result = RollHelper.bestRandomGuassRange(p3, e3, lower, upper)
+        return result
+
+    def presetSurpriseDistribution1() -> float:
+        """
+        范围[0,100]
+
+        0.0118-0.0080-0.0117-0.0080-0.0118
+
+        两边几乎与中间一样高
+        """
+        return RollHelper.surpriseDistribution(0, 15, 49.5, 22, 100, 15, 0, 100, 1, 3, 1)
+
+    def presetSurpriseDistribution2() -> float:
+        """
+        范围[0,100]
+
+        0.0100-0.0082-0.0125-0.0082-0.0100
+
+        两边略高中间高
+        """
+        return RollHelper.surpriseDistribution(0, 16, 49.5, 21, 100, 16, 0, 100, 9, 32, 9)
+
+    def presetSurpriseDistribution3() -> float:
+        """
+        范围[1,100]
+
+        0.0105-0.0082-0.0125-0.0082-0.0105
+
+        两边略高中间高
+        """
+        return RollHelper.surpriseDistribution(0, 16, 50, 21, 100, 16, 1, 100, 9, 32, 9)
