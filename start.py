@@ -7,7 +7,7 @@ from cqpy.xyazhServer.ConsoleMessage import ConsoleMessage
 from cqpy.I18n.Config import Config as I18nConfig
 from cqpy import LoopEvent
 
-ConsoleMessage.DEBUG_LEVEL = 6
+ConsoleMessage.DEBUG_LEVEL = 2
 I18nConfig.LANG = "cn"
 
 LoopEvent.start()
