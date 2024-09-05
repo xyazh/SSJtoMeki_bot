@@ -196,6 +196,10 @@ class Cqserver:
     def get(self, path: str) -> ResponseData | None:
         h_requse = HTTPRequest(self.ip, self.port)
         data = RequestData("GET", path)
+        data.setJsonData({
+            "Connection": "close",
+            "Host": self.ip
+        })
         result = h_requse.execute(data)
         if result is None:
             ConsoleMessage.printError(f"Cqserver request failed path: {path}")
