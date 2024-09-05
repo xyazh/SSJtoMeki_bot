@@ -537,8 +537,8 @@ class IRollGroup(IBaseGroup):
             return
         arg_1 = order.getArg(1)
         arg_1 = 10 if arg_1 == None else int(arg_1)
-        gen = (int(RollHelper.presetSurpriseDistribution3()) for _ in range(arg_1))
-        msg = " ".join(map(str, gen)[:100])
+        gen = [int(RollHelper.presetSurpriseDistribution3()) for _ in range(arg_1)]
+        msg = " ".join(map(str, gen[:100]))
         if arg_1 > 100:
             msg += " ..."
         for i in gen:
