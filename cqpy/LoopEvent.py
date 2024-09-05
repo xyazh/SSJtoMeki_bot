@@ -59,7 +59,7 @@ class LoopEvent:
             t.start()
 
     @staticmethod
-    @doLoop(60)
+    @doLoop(3600)
     def getAnimeNews():
         try:
             data = None
@@ -82,7 +82,7 @@ class LoopEvent:
             logging.exception(e)
 
     @staticmethod
-    @doLoop(60)
+    @doLoop(3600)
     def getGalNews():
         try:
             data = None

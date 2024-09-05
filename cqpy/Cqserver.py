@@ -193,10 +193,22 @@ class Cqserver:
         msg = urllib.parse.quote(msg)
         return msg
 
-    def get(self, path: str) -> ResponseData:
+    def get(self, path: str) -> ResponseData | None:
         h_requse = HTTPRequest(self.ip, self.port)
         data = RequestData("GET", path)
         result = h_requse.execute(data)
+        if result is None:
+            ConsoleMessage.printError(f"Cqserver request failed path: {path}")
+            return None
+        if result.status_code // 100 == 2:
+            ConsoleMessage.printDebug(
+                f"Cqserver report succescefully status:{result.status_code} message: {result.reason_phrase} for path: {path}")
+        elif (result.status_code // 100 == 4) or (result.status_code // 100 == 5):
+            ConsoleMessage.printError(
+                f"Cqserver report failed status:{result.status_code} message: {result.reason_phrase} for path: {path}")
+        else:
+            ConsoleMessage.printWarning(
+                f"Cqserver report error status:{result.status_code} message: {result.reason_phrase} for path: {path}")
         return result
 
     def _getImgRaw(self, img_cqcode: CQCode) -> dict | None:

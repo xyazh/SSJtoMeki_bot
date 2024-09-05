@@ -1,5 +1,6 @@
 import socket
 import ssl
+import logging
 
 if __name__ == '__main__':
     from RequestData import RequestData
@@ -38,9 +39,12 @@ class HTTPSRequest:
         if self.ssl_sock:
             self.ssl_sock.close()
 
-    def execute(self, request_data:bytes|RequestData)->ResponseData:
+    def execute(self, request_data:bytes|RequestData)->ResponseData|None:
         try:
             self.sendRequest(request_data)
             return ResponseData(self.receiveResponse())
+        except BaseException as e:
+            logging.exception(e)
+            return None
         finally:
             self.close()

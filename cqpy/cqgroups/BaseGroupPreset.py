@@ -20,6 +20,9 @@ from ..xyazhServer.BestXor import BestXor
 from ..GameSystem.Helper import RollHelper
 from ..GameSystem.ToolClass.BaseData import BaseData
 from .BaseGroup import BaseGroup
+from .I.IRollGroup import IRollGroup
+from .I.ITTKGroup import ITTKGroup
+from .I.IItemGroup import IItemGroup
 
 
 BOT_NAME = "meki酱"
@@ -29,7 +32,7 @@ ALIAS = {"normal": "n", "roll": "r", "other": "o", "item": "i"}
 
 
 @GroupHelper.addActiveGroups(114514, 318793491)
-class BaseGroupPreset(BaseGroup):
+class BaseGroupPreset(BaseGroup,IRollGroup):
     BOT_NAME = BOT_NAME
     BOT_NAME_SELF = BOT_NAME_SELF
 
