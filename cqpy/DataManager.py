@@ -21,14 +21,14 @@ class DataManager:
             f = open(full_path, type)
             return f
         return None
-    
+
     def openFile(self, path: str, mode: str, *args, **kw) -> io.IOBase:
-        f = open(self.getFileFullPath(path), mode, *args, **kw)
+        f = open(self.getFileFullPath(path, create=False), mode, *args, **kw)
         return f
 
-    def getFileFullPath(self, file_name: str) -> str:
+    def getFileFullPath(self, file_name: str, create: bool = True) -> str:
         full_path = self.path + file_name
-        if not os.path.exists(full_path):
+        if not os.path.exists(full_path) and create:
             with open(full_path, "wb") as f:
                 f.write(json.dumps({}, ensure_ascii=False,
                         indent=4).encode("utf8"))
@@ -39,10 +39,11 @@ class DataManager:
         full_path = self.path + file_name
         return os.path.exists(full_path)
 
-    def craftFile(self, file_name: str,dis_data:dict={}) -> None:
+    def craftFile(self, file_name: str, dis_data: dict = {}) -> None:
         full_path = self.path + file_name
         with open(full_path, "wb") as f:
-            f.write(json.dumps(dis_data, ensure_ascii=False, indent=4).encode("utf8"))
+            f.write(json.dumps(dis_data, ensure_ascii=False,
+                    indent=4).encode("utf8"))
 
     def get(self, file_name: str, key: str = None) -> dict | list | int | str | float | bool | None:
         j = None
@@ -54,7 +55,7 @@ class DataManager:
         if j != None:
             if key == None:
                 return j
-            if isinstance(j,dict) and key in j:
+            if isinstance(j, dict) and key in j:
                 return j[key]
         return None
 
@@ -72,7 +73,7 @@ class DataManager:
         except BaseException as e:
             logging.exception(e)
         if j != None:
-            if isinstance(j,dict):
+            if isinstance(j, dict):
                 j[key] = val
                 try:
                     with open(self.getFileFullPath(file_name), "wb") as f:
@@ -92,7 +93,7 @@ class DataManager:
         except BaseException as e:
             logging.exception(e)
         if j != None:
-            if not isinstance(keys,list) and not isinstance(keys,tuple):
+            if not isinstance(keys, list) and not isinstance(keys, tuple):
                 return r
             for i in keys:
                 if i in j:
@@ -109,7 +110,7 @@ class DataManager:
         except BaseException as e:
             logging.exception(e)
         if j != None:
-            if isinstance(j,dict):
+            if isinstance(j, dict):
                 for key in key_vals:
                     j[key] = key_vals[key]
                 try:
