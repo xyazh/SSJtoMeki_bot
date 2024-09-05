@@ -541,6 +541,8 @@ class IRollGroup(IBaseGroup):
         msg = " ".join(map(str, gen[:100]))
         if arg_1 > 100:
             msg += " ..."
+        dsk = 0
+        dsp = 0
         for i in gen:
             if i > 95:
                 dsk += 1
