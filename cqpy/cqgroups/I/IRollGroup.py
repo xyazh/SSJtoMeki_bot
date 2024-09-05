@@ -537,7 +537,16 @@ class IRollGroup(IBaseGroup):
             return
         arg_1 = order.getArg(1)
         arg_1 = 10 if arg_1 == None else int(arg_1)
-        arg_1 = min(40, arg_1)
-        msg = " ".join((str(int(RollHelper.presetSurpriseDistribution3())) for _ in range(arg_1)))
-        msg = f"你的{arg_1}次百面骰结果为：\r\n{msg}"
+        gen = (int(RollHelper.presetSurpriseDistribution3()) for _ in range(arg_1))
+        msg = " ".join(map(str, gen)[:100])
+        if arg_1 > 100:
+            msg += " ..."
+        for i in gen:
+            if i > 95:
+                dsk += 1
+            elif i <= 5:
+                dsp += 1
+        dsk = f"大成功统计：{dsk}"
+        dsp = f"大失败统计：{dsp}"
+        msg = f"你的{arg_1}次百面骰结果为：\r\n{msg}\r\n{dsk}\r\n{dsp}"
         self.server.sendGroup(self.group_id, msg)

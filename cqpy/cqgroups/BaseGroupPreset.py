@@ -31,8 +31,8 @@ HELP_CLASS_DATA = {"n": "常用命令", "r": "跑团命令", "o": "其他命令"
 ALIAS = {"normal": "n", "roll": "r", "other": "o", "item": "i"}
 
 
-@GroupHelper.addActiveGroups(114514, 318793491)
-class BaseGroupPreset(BaseGroup,IRollGroup):
+@GroupHelper.addActiveGroups(114514)
+class BaseGroupPreset(BaseGroup):
     BOT_NAME = BOT_NAME
     BOT_NAME_SELF = BOT_NAME_SELF
 
