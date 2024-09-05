@@ -196,7 +196,7 @@ class Cqserver:
     def get(self, path: str) -> ResponseData | None:
         h_requse = HTTPRequest(self.ip, self.port)
         data = RequestData("GET", path)
-        data.setJsonData({
+        data.addBodys({
             "Connection": "close",
             "Host": self.ip
         })
