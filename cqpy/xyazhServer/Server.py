@@ -68,7 +68,7 @@ class Server(BaseServer,ServerHelper):
         ran:str|None = self.headers.get("Range")
         ran_min = 0
         if ran != None:
-            ra = re.findall("\d+",ran) 
+            ra = re.findall(r"\d+",ran) 
             ran_min = int(ra[0])
             ran_max = min(ran_min+chunk_size,size)
             self.send_response(206,"Partial Content")

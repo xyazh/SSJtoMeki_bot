@@ -336,4 +336,4 @@ class RollHelper:
 
         两边略高中间高
         """
-        return RollHelper.surpriseDistribution(0, 16, 50, 21, 100, 16, 1, 100, 9, 32, 9)
+        return RollHelper.surpriseDistribution(0, 16, 51, 21, 100, 16, 1, 100, 9, 32, 9)
