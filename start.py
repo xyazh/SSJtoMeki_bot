@@ -10,8 +10,6 @@ from cqpy import LoopEvent
 ConsoleMessage.DEBUG_LEVEL = 2
 I18nConfig.LANG = "cn"
 
-ConsoleMessage.password = "123456d323r232"
-
 LoopEvent.start()
 cq_server = Cqserver("127.0.0.1", 5700, 5710)
 cq_server.serverRun()
