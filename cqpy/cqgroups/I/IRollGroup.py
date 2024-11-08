@@ -6,6 +6,7 @@ from ...CQCode import CQCodeHelper
 from ...Event import Event
 from ...GameSystem.Helper import RollHelper
 from ...GameSystem.PlayerSystem.Player import Player
+from ...GameSystem.Roll.RollPool import RollPool
 from ...GroupHelper import GroupHelper
 from ...IType import *
 from ...I18n.I18n import I18n
@@ -166,7 +167,8 @@ class IRollGroup(IBaseGroup):
                     self, RollHelper.evaluateExpressionToFloat, attribute_text)
                 if roll_result == None:
                     return
-                event = Event.EventBus.hookRollResultEvent(data,"st",roll_result,self.server)
+                event = Event.EventBus.hookRollResultEvent(
+                    data, "st", roll_result, self.server, self.group_id)
                 roll_result = event.getRollResult()
                 roll_result = int(roll_result)
                 player.setBindedCardArr({key: roll_result})
@@ -206,7 +208,8 @@ class IRollGroup(IBaseGroup):
                     self.server.sendGroup(self.group_id, "好像没有%s这个属性" % key)
                     return
             roll_result = random.randint(1, 100)
-            event = Event.EventBus.hookRollResultEvent(data,"arr",roll_result,self.server)
+            event = Event.EventBus.hookRollResultEvent(
+                data, "arr", roll_result, self.server, self.group_id)
             roll_result = event.getRollResult()
             msg = I18n.format("ra_kantei") % (
                 GroupHelper.getName(data), key, roll_result, value)
@@ -294,7 +297,8 @@ class IRollGroup(IBaseGroup):
                 self, RollHelper.evaluateExpression, expression)
             if roll_result == None:
                 return
-            event = Event.EventBus.hookRollResultEvent(data,"r",roll_result,self.server)
+            event = Event.EventBus.hookRollResultEvent(
+                data, "r", roll_result, self.server, self.group_id)
             roll_result = event.getRollResult()
             self.server.sendGroup(self.group_id, "%s投了骰子：\r\n%s=%s" %
                                   (GroupHelper.getName(data), expression, roll_result))
@@ -329,6 +333,9 @@ class IRollGroup(IBaseGroup):
         for card in card_list:
             roll_result = int(RollHelper.bestRandomGuass(50, 25, 2))
             roll_result -= int(roll_result % 5)
+            event = Event.EventBus.hookRollResultEvent(
+                data, "coc", roll_result, self.server, self.group_id)
+            roll_result = event.getRollResult()
             total = sum(card)
             msg += " \r\n\r\n力量%s体质%s体型%s敏捷%s外貌%s智力%s意志%s教育%s" % card + \
                 "幸运%s 共计[%s/%s]" % (roll_result, total, total + roll_result)
@@ -452,7 +459,8 @@ class IRollGroup(IBaseGroup):
             return
         val = card[order_str]
         rc = random.randint(1, 100)
-        event = Event.EventBus.hookRollResultEvent(data,"arr_op",rc,self.server)
+        event = Event.EventBus.hookRollResultEvent(
+            data, "arr_op", rc, self.server, self.group_id)
         rc = event.getRollResult()
         msg = I18n.format("ra_kantei") % (
             GroupHelper.getName(data), order_str, rc, val)
@@ -461,7 +469,8 @@ class IRollGroup(IBaseGroup):
                 self, RollHelper.evaluateExpression, xdys[0])
             if roll_result == None:
                 return
-            event = Event.EventBus.hookRollResultEvent(data,"arr_ed",roll_result,self.server)
+            event = Event.EventBus.hookRollResultEvent(
+                data, "arr_ed", roll_result, self.server, self.group_id)
             roll_result = event.getRollResult()
             roll_result = int(roll_result)
             msg += I18n.format("ra_meki_huutsuu")
@@ -473,7 +482,8 @@ class IRollGroup(IBaseGroup):
                 self, RollHelper.evaluateExpression, xdys[1])
             if roll_result == None:
                 return
-            event = Event.EventBus.hookRollResultEvent(data,"arr_ed",roll_result,self.server)
+            event = Event.EventBus.hookRollResultEvent(
+                data, "arr_ed", roll_result, self.server, self.group_id)
             roll_result = event.getRollResult()
             roll_result = int(roll_result)
             msg += I18n.format("ra_meki_shippai")
@@ -494,7 +504,8 @@ class IRollGroup(IBaseGroup):
                 arg_2 = int(arg_2) if arg_2 != None else 2
                 rc_list = (random.randint(1, 100) for _ in range(arg_2))
                 rc = min(rc_list)
-                event = Event.EventBus.hookRollResultEvent(data,"rb",rc,self.server)
+                event = Event.EventBus.hookRollResultEvent(
+                    data, "rb", rc, self.server, self.group_id)
                 rc = event.getRollResult()
                 if rc <= value:
                     msg = I18n.format("rb_meki_seikou")
@@ -518,7 +529,8 @@ class IRollGroup(IBaseGroup):
                 arg_2 = int(arg_2) if arg_2 != None else 2
                 rc_list = (random.randint(1, 100) for _ in range(arg_2))
                 rc = max(rc_list)
-                event = Event.EventBus.hookRollResultEvent(data,"rp",rc,self.server)
+                event = Event.EventBus.hookRollResultEvent(
+                    data, "rp", rc, self.server, self.group_id)
                 rc = event.getRollResult()
                 if rc >= value:
                     msg = I18n.format("rp_meki_shippai")
@@ -537,7 +549,8 @@ class IRollGroup(IBaseGroup):
             return
         arg_1 = order.getArg(1)
         arg_1 = 10 if arg_1 == None else int(arg_1)
-        gen = [int(RollHelper.presetSurpriseDistribution3()) for _ in range(arg_1)]
+        gen = [int(RollHelper.presetSurpriseDistribution3())
+               for _ in range(arg_1)]
         msg = " ".join(map(str, gen[:100]))
         if arg_1 > 100:
             msg += " ..."
@@ -552,3 +565,84 @@ class IRollGroup(IBaseGroup):
         dsp = f"大失败统计：{dsp}"
         msg = f"你的{arg_1}次百面骰结果为：\r\n{msg}\r\n{dsk}\r\n{dsp}"
         self.server.sendGroup(self.group_id, msg)
+
+    @BaseGroup.register
+    @BaseGroup.helpData(["roll"], "开始跑团", "r_play", "r_play [AT]*", "添加成员开始跑团")
+    def play(self, data: dict, order: Order):
+        if not order.checkOrder("r_play"):
+            return
+        qq_id = GroupHelper.getId(data)
+        kp_player = Player(qq_id)
+        if not kp_player.isKp():
+            self.server.sendGroup(self.group_id, "只有kp可以用此命令")
+            return
+        qq_id_list = CQCodeHelper.getAt(GroupHelper.getMsg(data))
+        pool = RollPool(self.group_id)
+        pool.addPlayer(qq_id)
+        for qq_id in qq_id_list:
+            pool.addPlayer(qq_id)
+        self.server.sendGroup(self.group_id, I18n.format(
+            "已添加成员：\r\n" + "\r\n".join(map(str, qq_id_list))))
+
+    @BaseGroup.register
+    @BaseGroup.helpData(["roll"], "知晓未来", "predict", "predict number AT", "获得玩家number次检定时的骰子的值，kp可用")
+    def predict(self, data: dict, order: Order):
+        if not order.checkOrder("predict"):
+            return
+        qq_id = GroupHelper.getId(data)
+        kp_player = Player(qq_id)
+        if not kp_player.isKp():
+            self.server.sendGroup(self.group_id, "只有kp可以用此命令")
+            return
+        n = order.getArg(1, int)
+        if n is None:
+            n = 1
+        qq_id_list = CQCodeHelper.getAt(GroupHelper.getMsg(data))
+        if len(qq_id_list) == 0:
+            self.server.sendGroup(self.group_id, I18n.format("has_help"))
+            return
+        qq_id = qq_id_list[0]
+        pool = RollPool(self.group_id)
+        t_player = pool.getPlayer(qq_id)
+        if t_player is None:
+            self.server.sendGroup(self.group_id, f"此局内该玩家{qq_id}不存在")
+            return
+        l = str(list(t_player.roll_points.queue)[:n])
+        self.server.sendGroup(self.group_id, f"命运的丝线探越时间的迷雾，未来已悄然揭晓：\r\n{l}")
+
+    @BaseGroup.register
+    @BaseGroup.helpData(["roll"], "改变运气", "lucky", "lucky number1 number2 AT", "提升或降低玩家number1次检定时的骰子的值增减number2，kp可用")
+    def lucky(self, data: dict, order: Order):
+        if not order.checkOrder("lucky"):
+            return
+        qq_id = GroupHelper.getId(data)
+        kp_player = Player(qq_id)
+        if not kp_player.isKp():
+            self.server.sendGroup(self.group_id, "只有kp可以用此命令")
+            return
+        n1 = order.getArg(1, int)
+        n2 = order.getArg(2, int)
+        if n1 is None or n2 is None:
+            self.server.sendGroup(self.group_id, I18n.format("has_help"))
+            return
+        qq_id_list = CQCodeHelper.getAt(GroupHelper.getMsg(data))
+        if len(qq_id_list) == 0:
+            self.server.sendGroup(self.group_id, I18n.format("has_help"))
+            return
+        qq_id = qq_id_list[0]
+        pool = RollPool(self.group_id)
+        t_player = pool.getPlayer(qq_id)
+        player = Player(qq_id)
+        
+        if t_player is None:
+            self.server.sendGroup(self.group_id, f"此局内该玩家{qq_id}不存在")
+            return
+        for i in range(n1):
+            v = t_player.readRoll(i)
+            v = v + n2
+            v = max(min(100, v), 0)
+            t_player.writeRoll(i, v)
+        if  n2 < 0:
+            self.server.sendGroup(self.group_id, f"命运眷顾了{player.getName()}")
+        else:
+            self.server.sendGroup(self.group_id, f"{player.getName()}遭受了命运的嫌弃")

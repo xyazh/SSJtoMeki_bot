@@ -70,8 +70,8 @@ class Event:
             return gruop_register_event
         
         @staticmethod
-        def hookRollResultEvent(data:dict,t:str,result:float,s:Cqserver):
-            roll_result_event:Event.RollResultEvent = Event.RollResultEvent(data,result,s)
+        def hookRollResultEvent(data:dict,t:str,result:float,s:Cqserver,group_id:int):
+            roll_result_event:Event.RollResultEvent = Event.RollResultEvent(data,t,result,s,group_id)
             for func in Event.EventBus.EVENT_BUS_MAP[Event.EventBus.ROLL_RESULT_EVENT]:
                 func(roll_result_event)
             return roll_result_event
@@ -182,11 +182,13 @@ class Event:
             self.s = s
 
     class RollResultEvent(BaseEvent):
-        def __init__(self,data:dict,result:float,s:Cqserver):
+        def __init__(self,data:dict,t:str,result:float,s:Cqserver,group_id:int):
             super().__init__()
             self.data = data
+            self.type = t
             self.result = result
             self.s = s
+            self.group_id = group_id
 
         def getRollResult(self)->float:
             return self.result

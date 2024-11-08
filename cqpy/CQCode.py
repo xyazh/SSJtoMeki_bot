@@ -57,3 +57,16 @@ class CQCodeHelper:
     @staticmethod
     def creatCQCodeFromData(t:str,data:dict)->CQCode:
         return CQCode(t,data)
+    
+    @staticmethod
+    def getAt(qq_msg:str)->list[int]:
+        cq_codes = CQCodeHelper.creatCQCodeFromMsg(qq_msg)
+        at_id_set = set()
+        for cq_code in cq_codes:
+            if cq_code.t != "at":
+                continue
+            qq_id:str = cq_code.data["qq"]
+            if not qq_id.isdigit():
+                continue
+            at_id_set.add(qq_id)
+        return list(at_id_set)

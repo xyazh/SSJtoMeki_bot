@@ -3,6 +3,7 @@ from ..xyazhServer.ConsoleMessage import ConsoleMessage
 from ..GroupHelper import GroupHelper
 from ..MsgHelper import MsgHelper
 from ..DataManager import DataManager
+from ..GameSystem.Roll.RollPool import RollPool
 
 MSG_LEN = 400
 
@@ -69,5 +70,18 @@ class DisEvent:
     @staticmethod
     @Event.EventBus.register(Event.EventBus.ROLL_RESULT_EVENT)
     def disGroupRegister(event:Event.RollResultEvent):
-        #event.setRollResult(6)
-        pass
+        pool = RollPool.ROLL_POOL.get(event.group_id)
+        if pool is None:
+            return
+        qq_id = GroupHelper.getId(event.data)
+        t_player = pool.getPlayer(qq_id)
+        r = event.getRollResult()
+        if t_player is None:
+            return
+        if event.type == "arr" or event.type == "arr_op":
+            r = t_player.getRoll()
+        elif event.type == "rb":
+            r = min(t_player.getRoll(),t_player.getRoll())
+        elif event.type == "rp":
+            r = max(t_player.getRoll(),t_player.getRoll())
+        event.setRollResult(r)

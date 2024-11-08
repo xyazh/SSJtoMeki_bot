@@ -499,6 +499,7 @@ class BaseGroupPreset(BaseGroup):
                 logging.exception(e)
                 self.server.sendGroup(self.group_id, str(e))
 
+
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "随机食物", "/what_do_eat", "what_do_eat", "看看吃什么")
     def whatDoEatT(self, data: dict, order: Order):

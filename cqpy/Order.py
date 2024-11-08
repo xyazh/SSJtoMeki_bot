@@ -57,8 +57,8 @@ class Order:
             return ""
         return self.o_li[0][1:]
 
-    # type: ignore
-    def getArg(self, index: int, t: Callable[[T], T] = str) -> str | T | None:
+
+    def getArg(self, index: int, t: Callable[[T], T] = str) -> str | T | None: # type: ignore
         r = None
         if index >= 0 and index < len(self.o_li):
             r = self.o_li[index]
@@ -71,8 +71,7 @@ class Order:
             pass
         return None
 
-    # type: ignore
-    def getArgs(self, *args: tuple[int], t: Callable[[T], T] = str) -> tuple[str | T | None, ...]:
+    def getArgs(self, *args: tuple[int], t: Callable[[T], T] = str) -> tuple[str | T | None, ...]: # type: ignore
         return tuple(self.getArg(i, t=t) for i in args)
 
 
