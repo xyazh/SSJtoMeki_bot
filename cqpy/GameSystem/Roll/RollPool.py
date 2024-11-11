@@ -21,11 +21,15 @@ class RollPool:
         self.group_id: int = group_id
         self.players: dict[int, RollPool.TempPlayer] = {}
 
-    def addPlayer(self, player: int | Player):
+    def addPlayer(self, player: int | Player | str):
         if isinstance(player, int):
             self.players[player] = RollPool.TempPlayer(player)
         elif isinstance(player, Player):
             self.addPlayer(player.qq_id)
+        elif isinstance(player, str):
+            self.addPlayer(int(player))
+        else:
+            raise TypeError("Type shloud be int or Player or str")
 
     def getPlayer(self, qq_id: int|str) -> "RollPool.TempPlayer|None":
         if isinstance(qq_id, str):

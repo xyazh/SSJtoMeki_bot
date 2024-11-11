@@ -31,7 +31,8 @@ class GPiaoXue(BaseGroupPreset, IRollGroup, IItemGroup, ITTKGroup):
 
             self.activeAPI: LLMAPI = self.API_dict["QwenAPI"]
         except BaseException as e:
-            logging.exception(e)
+            pass
+            #logging.exception(e)
 
     @BaseGroup.register
     @BaseGroup.helpData(["o"], "测试指令", "test", "test (msg)", "测试指令")

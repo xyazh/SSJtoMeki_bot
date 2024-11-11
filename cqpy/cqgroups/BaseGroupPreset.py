@@ -32,7 +32,7 @@ ALIAS = {"normal": "n", "roll": "r", "other": "o", "item": "i"}
 
 
 @GroupHelper.addActiveGroups(114514,318793491)
-class BaseGroupPreset(BaseGroup):
+class BaseGroupPreset(BaseGroup,IRollGroup):
     BOT_NAME = BOT_NAME
     BOT_NAME_SELF = BOT_NAME_SELF
 
