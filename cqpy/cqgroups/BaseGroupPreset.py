@@ -544,7 +544,7 @@ class BaseGroupPreset(BaseGroup, IRollGroup):
                 self.server.sendGroup(self.group_id, f"{BOT_NAME_SELF}不知道这道菜呢")
             return
         with open(dishe_path, "r", encoding="utf8") as f:
-            self.server.sendGroup(self.group_id, f"{f.read()}")
+            self.server.sendGroup(self.group_id, f"{f.read()}\r\n\r\n(食谱来自github how-to-cook项目)")
 
     # @BaseGroup.register
 
