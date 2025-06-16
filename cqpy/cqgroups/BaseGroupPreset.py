@@ -31,8 +31,8 @@ HELP_CLASS_DATA = {"n": "常用命令", "r": "跑团命令", "o": "其他命令"
 ALIAS = {"normal": "n", "roll": "r", "other": "o", "item": "i"}
 
 
-@GroupHelper.addActiveGroups(114514,318793491)
-class BaseGroupPreset(BaseGroup,IRollGroup):
+@GroupHelper.addActiveGroups(114514, 318793491)
+class BaseGroupPreset(BaseGroup, IRollGroup):
     BOT_NAME = BOT_NAME
     BOT_NAME_SELF = BOT_NAME_SELF
 
@@ -213,7 +213,7 @@ class BaseGroupPreset(BaseGroup,IRollGroup):
             order = GroupHelper.getOrderFromStr(ORDER_SPLIT_LIST[0] + "jrrp")
             self.meiunn(data, order, is_test=True)
             return
-        self.server.sendGroup(self.group_id,"你没有使用此命令的权限")
+        self.server.sendGroup(self.group_id, "你没有使用此命令的权限")
 
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "动漫资讯", "anime_news", "anime_news", "获取当日动漫新闻。资讯来源于网络，每小时会尝试更新，直接发送动漫新闻、动画新闻、二次元新闻、anime新闻、动漫资讯、动画资讯、二次元资讯、anime资讯有同样效果")
@@ -499,7 +499,6 @@ class BaseGroupPreset(BaseGroup,IRollGroup):
                 logging.exception(e)
                 self.server.sendGroup(self.group_id, str(e))
 
-
     @BaseGroup.register
     @BaseGroup.helpData(["n"], "随机食物", "/what_do_eat", "what_do_eat", "看看吃什么")
     def whatDoEatT(self, data: dict, order: Order):
@@ -515,17 +514,8 @@ class BaseGroupPreset(BaseGroup,IRollGroup):
                      "极霸矛", "蔬菜棒", "迎宾酒", "爱心便当", "金液", "秘制酱拌面")
             msgs = ("那你就吃%s罢", "吃%s挺适合你的", "吃%s完了有奖励，吃不完有惩罚")
         else:
-            foods = ("东坡肉", "冷锅鱼", "豆花", "甜皮鸭", "卤鸭子", "鱼香肉丝", "回锅肉", "麻婆豆腐", "炝炒大白菜", "金沙玉米",
-                     "辣子鸡", "酸菜鱼", "水煮鱼", "毛血旺", "夫妻肺片", "火锅", "红烧排骨", "烧烤脑花", "锅巴肉片", "蒸鱼",
-                     "糖醋鲤鱼", "葱烧海参", "九转大肠", "油爆双脆", "油焖大虾", "醋椒鱼", "糟熘鱼片", "苦瓜烘蛋", "小煎兔",
-                     "温炝鳜鱼片", "芫爆鱿鱼卷", "清汤银耳", "糖醋里脊", "红烧大虾", "招远蒸丸", "清蒸加吉鱼", "把子肉",
-                     "葱椒鱼片", "糖酱鸡块",  "乌鱼蛋汤", "锅烧鸭", "香酥鸡",  "黄焖鸡", "烧鸡", "长寿面", "香肠", "红烧狮子头",
-                     "奶汤鲫鱼", "虾饺", "烧卖", "糯米鸡", "叉烧包", "鸡蛋卷", "肠粉", "炒河粉", "凤爪", "卤牛杂", "薄脆",
-                     "煎饼", "烤鸭", "老鸭汤", "盐水鸭", "板鸭", "松鼠鳜鱼", "叫花鸡", "卤鸡", "清炖甲鱼", "糖醋鳜鱼", "文思豆腐",
-                     "粉蒸肉", "烧白", "辣椒炒肉", "剁椒鱼头", "泡椒鳝段", "花椒鸡", "红烧牛肉", "肝腰合炒", "宫保鸡丁", "干煸四季豆",
-                     "番茄炒蛋", "青椒肉丝", "蛋炒饭", "兰州拉面", "泡椒腰花", "小炒肉", "羊肉串", "石锅拌饭", "冬瓜排骨", "美蛙鱼头",
-                     "惠灵顿牛排", "意大利面", "春卷", "寿司", "照烧鸡", "墨西哥卷", "仰望星空", "炸鸡", "秋葵鸡", "沙拉", "三明治", "苹果派",
-                     "面包", "蛋糕", "汉堡", "披萨", "羊杂粉", "木桶饭")
+            dishes = self.data_manager.getFileTuples("dishes", "*.md", True)
+            foods = [i[1] for i in dishes]
             msgs = ("我觉得%s还不错", "那就尝尝%s吧", "试试%s如何")
         msg = random.choice(msgs) % random.choice(foods)
         self.server.sendGroup(self.group_id, msg)

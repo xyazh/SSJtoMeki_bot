@@ -2,16 +2,17 @@ import os
 import json
 import io
 import logging
+from pathlib import Path
 
 
 class DataManager:
     def __init__(self, path="\\cqpy_data\\"):
         current_directory = os.getcwd()
         parent_directory = os.path.dirname(current_directory)
-        self.path = parent_directory+"\\SSJtoMeki_data"
-        if not os.path.exists(self.path):
-            os.mkdir(self.path)
-        self.path += path
+        self.root_path = parent_directory+"\\SSJtoMeki_data"
+        if not os.path.exists(self.root_path):
+            os.mkdir(self.root_path)
+        self.path = self.root_path + path
         if not os.path.exists(self.path):
             os.mkdir(self.path)
 
@@ -26,8 +27,11 @@ class DataManager:
         f = open(self.getFileFullPath(path, create=False), mode, *args, **kw)
         return f
 
-    def getFileFullPath(self, file_name: str, create: bool = True) -> str:
-        full_path = self.path + file_name
+    def getFileFullPath(self, file_name: str, create: bool = True, is_root: bool = False) -> str:
+        if is_root:
+            full_path = f"{self.root_path}\\{file_name}"
+        else:
+            full_path = self.path + file_name
         if not os.path.exists(full_path) and create:
             with open(full_path, "wb") as f:
                 f.write(json.dumps({}, ensure_ascii=False,
@@ -121,3 +125,10 @@ class DataManager:
                 except BaseException as e:
                     logging.exception(e)
         return False
+
+    def getFileTuples(self, path: str, filler: str, is_root: bool = False):
+        directory = self.getFileFullPath(path, False, is_root)
+        file_path = Path(directory).resolve()
+        return [
+            (str(file.resolve()), file.stem) for file in file_path.rglob('*.md')
+        ]
