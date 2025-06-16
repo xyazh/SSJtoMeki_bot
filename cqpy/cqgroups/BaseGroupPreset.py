@@ -520,8 +520,35 @@ class BaseGroupPreset(BaseGroup, IRollGroup):
         msg = random.choice(msgs) % random.choice(foods)
         self.server.sendGroup(self.group_id, msg)
 
+    @BaseGroup.register
+    @BaseGroup.helpData(["n"], "食物做法", "/how_to_cook", "how_to_cook [name]", "看看食物做法")
+    def howToCook(self, data: MsgData, order: Order):
+        flag = False
+        if order.checkOrder("how_to_cook"):
+            name = order.getArg(1)
+            flag = True
+            if name == None:
+                self.server.sendGroup(self.group_id, I18n.format("has_help"))
+                return
+        else:
+            msg = data.getMsg()
+            if len(msg) > 3 and msg[-3:] == "怎么做":
+                name = msg[:-3]
+            else:
+                return
+        dishes = {k: v for v, k in self.data_manager.getFileTuples(
+            "dishes", "*.md", True)}
+        dishe_path = dishes.get(name)
+        if dishe_path is None:
+            if flag:
+                self.server.sendGroup(self.group_id, f"{BOT_NAME_SELF}不知道这道菜呢")
+            return
+        with open(dishe_path, "r", encoding="utf8") as f:
+            self.server.sendGroup(self.group_id, f"{f.read()}")
+
     # @BaseGroup.register
-    def fireStar(self, data: dict, order: Order):
+
+    def fireStar(self, data: MsgData, order: Order):
         msg = GroupHelper.getMsg(data)
         cqs = CQCodeHelper.creatCQCodeFromMsg(msg)
         cq = None
