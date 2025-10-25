@@ -60,7 +60,7 @@ class CommonTest:
 
     @register
     def sendAudio(self, msg: str, order: Order):
-        if not order.checkOrder("send_a") or not order.checkOrder("send_audio"):
+        if not order.checkOrder("send_a") and not order.checkOrder("send_audio"):
             return
         group_id = order.getArg(1, int)
         r = order.getArg(2)
