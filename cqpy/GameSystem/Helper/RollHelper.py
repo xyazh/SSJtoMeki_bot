@@ -337,3 +337,31 @@ class RollHelper:
         两边略高中间高
         """
         return RollHelper.surpriseDistribution(0, 16, 51, 21, 100, 16, 1, 100, 9, 32, 9)
+    
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from collections import Counter
+
+    def plot_frequency_histogram(int_list):
+        # 统计频率
+        counter = Counter(int_list)
+        
+        # 拆分为 x 和 y
+        numbers = list(counter.keys())
+        frequencies = list(counter.values())
+        
+        # 绘制柱状图
+        plt.bar(numbers, frequencies, width=0.6, edgecolor='black')
+        
+        # 设置标题和标签
+        plt.title("Frequency Distribution Histogram")
+        plt.xlabel("Number")
+        plt.ylabel("Frequency")
+        
+        plt.show()
+
+
+    # 示例
+    l = [int(RollHelper.surpriseDistribution(0, 20, 39, 12, 100, 16, 1, 100, 9, 30, 2)) for _ in range(1000000)]
+    plot_frequency_histogram(l)

@@ -57,3 +57,14 @@ class CommonTest:
         if order.checkOrder("cq_change") or int(self.common_type % len(COMMON_TYPES)) != 0:
             return
         self.server.testMsg(self.select_group_id, msg)
+
+    @register
+    def sendAudio(self, msg: str, order: Order):
+        if not order.checkOrder("send_a") or not order.checkOrder("send_audio"):
+            return
+        group_id = order.getArg(1, int)
+        r = order.getArg(2)
+        if r is None or group_id is None:
+            print("参数错误")
+            return
+        self.server.sendGroup(group_id, "[CQ:record,file=file:///%s]" % r)
