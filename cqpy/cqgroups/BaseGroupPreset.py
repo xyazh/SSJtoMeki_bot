@@ -467,7 +467,7 @@ class BaseGroupPreset(BaseGroup, IRollGroup):
                 return
             r = r.replace("C:\\", "C:\\\\")
             self.server.sendGroup(
-                self.group_id, "[CQ:record,file=file:///%s]" % r)
+                self.group_id, "[CQ:record,file=file://%s]" % r)
         th = threading.Thread(target=t, args=(self, data, order))
         th.start()
 
