@@ -67,4 +67,4 @@ class CommonTest:
         if r is None or group_id is None:
             print("参数错误")
             return
-        self.server.sendGroup(group_id, "[CQ:record,file=file:///%s]" % r)
+        print(self.server.sendGroup(group_id, "[CQ:record,file=file://%s]" % r))

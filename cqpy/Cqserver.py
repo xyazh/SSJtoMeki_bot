@@ -241,7 +241,7 @@ class Cqserver:
         group_id = fuc_group_msg_event.getGroupId()
         if not fuc_group_msg_event.getCancel():
             msg = self.escapeMsg(msg)
-            self.get("/send_msg?message_type=group&group_id=%s&message=%s" %
+            return self.get("/send_msg?message_type=group&group_id=%s&message=%s" %
                      (group_id, msg))
 
     @patch
