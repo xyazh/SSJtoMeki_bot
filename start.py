@@ -5,5 +5,5 @@ from xyacqbot.xyazhServer.ConsoleMessage import ConsoleMessage
 
 ConsoleMessage.DEBUG_LEVEL = 2
 
-cq_server = Cqserver("127.0.0.1", 5700, 5710)
+cq_server = Cqserver("127.0.0.1", 5700, 5710, 8080)
 cq_server.serverRun()

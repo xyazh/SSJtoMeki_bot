@@ -1,301 +1,446 @@
 <!doctype html>
-<html>
+<html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-    <title>XYA-BOT-MANAGER</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>QQ 机器人 · 后台管理</title>
     <link rel="shortcut icon" href="./images/favicon.png">
+    <!-- 使用 layui（与用户现有代码兼容） -->
     <link rel="stylesheet" href="./layui/css/layui.css">
-    <link rel="stylesheet" href="./css/top.css">
-    <link rel="stylesheet" href="./css/body.css">
-    <link rel="stylesheet" href="./css/main.css">
-    <link rel="stylesheet" href="./css/msg_card.css">
-    <script src="./js/jquery-2.1.4.min.js"></script>
-    <script src="./js/jquery.easytabs.min.js"></script>
-    <script src="./js/jquery.magnific-popup.min.js"></script>
-    <script src="./js/jquery.cookie.min.js"></script>
-    <script src="./js/temp.js"></script>
-    <script src="./layui/layui.js"></script>
-    <script src="./js/manager_page.js"></script>
-    <script type="text/html" id="msg_card_temp">
-        <div class="layui-card msg_card layui-anim-up">
-            <div class="layui-card-header" style="display: flex;">
-                <h3>{{title}}</h3>
-                <i style="margin-left: auto;margin-right: 2px;" id="d_ad_{{msg_id}}">•••</i>
-            </div>
-            <div class="layui-card-body">
-                <i>{{user_name}}&nbsp;&nbsp;</i><a style="color: #aaaaaa;">&gt; &gt;{{msg_id}}</a>
-                <br>
-               {{msg}}
-            </div>
-            <script>
-                layui.use('dropdown', function () {
-                    var dropdown = layui.dropdown;
-                    dropdown.render({
-                        elem: '#d_ad_{{msg_id}}',
-                        data: [
-                            { title: '收藏', id: 1 },
-                            { title: '删除', id: 2 },
-                            { title: '举报', id: 3 },
-                            { title: '移动', id: 4 }
-                        ]
-                    });
-                });
-            </script>
-    </div>
-    </script>
-    <script type="text/html" id="logging_layer_temp">
-        <ul class="layui-form layui-form-pane" style="margin: 15px;">
-            <li class="layui-form-item">
-                <label class="layui-form-label">邮箱</label>
-                <div class="layui-input-block">
-                    <input class="layui-input" lay-verify="required" type="mail" name="user_mail">
-                </div>
-            </li>
-            <li class="layui-form-item">
-                <label class="layui-form-label">密码</label>
-                <div class="layui-input-block">
-                    <input class="layui-input" lay-verify="required" type="password" name="password">
-                </div>
-            </li>
-            <li class="layui-form-item" style="text-align:center;">
-                <button type="submit" lay-submit lay-filter="logging_b" class="layui-btn">提交</button>
-            </li>
-        </ul>
-    </script>
-    <script type="text/html" id="register_layer_temp">
-        <ul class="layui-form layui-form-pane" style="margin: 15px;">
-            <li class="layui-form-item">
-                <label class="layui-form-label">用户名</label>
-                <div class="layui-input-block">
-                    <input class="layui-input" lay-verify="required" name="user_name">
-                </div>
-            </li>
-            <li class="layui-form-item">
-                <label class="layui-form-label">密码</label>
-                <div class="layui-input-block">
-                    <input class="layui-input" lay-verify="required" type="password" name="password">
-                </div>
-            </li>
-            <li class="layui-form-item">
-                <label class="layui-form-label">确认密码</label>
-                <div class="layui-input-block">
-                    <input class="layui-input" lay-verify="required" type="password" name="check_password">
-                </div>
-            </li>
-            <li class="layui-form-item">
-                <label class="layui-form-label">邮箱</label>
-                <div class="layui-input-block" style="display: flex;flex-direction: column;">
-                    <input class="layui-input" lay-verify="required" id="r_mail" type="mail" name="user_mail">
-                    <button class="layui-btn" id="check_mail_button" onclick="get_mail_check_code();">发送验证码</button>
-                </div>
-            </li>
-            <li class="layui-form-item">
-                <label class="layui-form-label">验证码</label>
-                <div class="layui-input-block">
-                    <input class="layui-input" lay-verify="required" name="check_number">
-                </div>
-            </li>
-            <li class="layui-form-item" style="text-align:center;">
-                <button type="submit" lay-submit lay-filter="register_b" class="layui-btn">提交</button>
-            </li>
-        </ul>
-    </script>
+    <style>
+        body {
+            background: #f5f7fa;
+            margin: 0;
+            font-family: "Microsoft Yahei", Arial, sans-serif
+        }
+
+        .top-bar {
+            height: 60px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, .06)
+        }
+
+        .logo {
+            height: 36px;
+            margin-right: 12px
+        }
+
+        .app-title {
+            font-size: 18px;
+            color: #333;
+            margin-right: 20px
+        }
+
+        .side {
+            width: 240px;
+            background: #fff;
+            height: calc(100vh - 60px);
+            box-shadow: 1px 0 0 rgba(0, 0, 0, .03);
+            position: fixed;
+            top: 60px;
+            left: 0;
+            overflow: auto
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: calc(100vh - 60px)
+        }
+
+        .card {
+            background: #fff;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .03);
+        }
+
+        .menu-item {
+            padding: 12px 18px;
+            cursor: pointer;
+            color: #333
+        }
+
+        .menu-item.active {
+            background: #edf2ff;
+            color: #2f54eb
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .small {
+            font-size: 13px
+        }
+
+        textarea {
+            min-height: 120px
+        }
+
+        .muted {
+            color: #999
+        }
+
+        .flex {
+            display: flex;
+            gap: 12px
+        }
+
+        .grow {
+            flex: 1
+        }
+
+        .table-actions button {
+            margin-right: 6px
+        }
+
+        .footer-note {
+            font-size: 12px;
+            color: #999;
+            margin-top: 12px
+        }
+    </style>
 </head>
 
-<body style="margin: 0;background-color: #eeeeee;">
-    <div id="top_bar" class="top_bar">
-        <ul class="layui-nav" lay-filter="">
-            <li><img id="logo_img" class="logo_img" src="./images/favicon.png"></li>
-            <li style="max-width: 50%;">
-                <h2 class="no_warp" style="color: #444444;">XYA-BOT-MANAGER</h2>
-            </li>
-            <li class="layui-nav-item" id="logging1"><button class="layui-btn top_button" onclick="logging_layer();"
-                    active="logging">登录</button></li>
-            <li class="layui-nav-item" id="register1"><button class="layui-btn top_button" onclick="register_layer();"
-                    active="logging">注册</button></li>
-            <li class="layui-nav-item"><button class="layui-btn top_button" onclick="layer.msg('草');">草</button></li>
-            <li class="layui-nav-item"><button class="layui-btn top_button" onclick="bindQQId(this);">绑定QQ</button></li>
-            <li class="layui-nav-item coll">
-                <button class="layui-btn coll" style="background-color: #dadada;"> ☰ </button>
-                <dl class="layui-nav-child">
-                    <dd id="logging2"><button class="layui-btn" onclick="logging_layer();">登录</button></dd>
-                    <dd id="register2"><button class="layui-btn" onclick="register_layer();">注册</button></dd>
-                    <dd><button class="layui-btn" onclick="layer.msg('草');">草</button></dd>
-                    <dd><button class="layui-btn" onclick="bindQQId(this);">绑定QQ</button></dd>
-                </dl>
-            </li>
-        </ul>
-    </div>
-    <div id="top_block" class="top_block">
-    </div>
-    <div id="main_body" class="main_body">
-        <div id="left_main_body" class="left_main_body">
-            <div id="user_data" class="user_data">
-                <div id="user_name" class="user_name">游客</div>
-                <div id="user_id" class="user_id">UID:<p id="uid">1145141919810</p>
-                </div>
-            </div>
-            <div id="user_data" class="user_data datetime1">
-                <div id="datetime1"></div>
-            </div>
+<body>
+    <div class="top-bar">
+        <img class="logo" src="./images/favicon.png" alt="logo">
+        <div class="app-title">XYA QQ 机器人 · 管理后台</div>
+        <div style="flex:1"></div>
+        <div class="toolbar">
         </div>
-        <div id="right_main_body" class="right_main_body">
-            <div class="layui-tab right_main_page">
-                <ul class="layui-tab-title">
-                    <li class="layui-this">留言栏</li>
-                    <li id="manager_global" onclick="getManagerPage(this);">全局管理</li>
-                    <li id="manager_group" onclick="getManagerPage(this);">GROUP管理</li>
-                    <li id="manager_data" onclick="getManagerPage(this);">cqpy通用数据修改</li>
-                    <li>事件系统</li>
-                    <li id="manager_roll" onclick="getManagerPage(this)">跑团系统</li>
-                </ul>
-                <div class="layui-tab-content">
-                    <div class="layui-tab-item layui-show" id="msg_table">
-                        <ul class="layui-form layui-form-pane" style="margin: 15px;">
-                            <li class="layui-form-item">
-                                <label class="layui-form-label">标题</label>
-                                <div class="layui-input-block">
-                                    <input class="layui-input" lay-verify="required" placeholder="最多60字" id="in_title"
-                                        name="in_title">
-                                </div>
-                            </li>
-                            <li class="layui-form-item">
-                                <label class="layui-form-label">正文</label>
-                                <div class="layui-input-block">
-                                    <textarea class="layui-input" lay-verify="required" placeholder="最多2000字"
-                                        id="in_text" name="in_text"></textarea>
-                                </div>
-                                <button type="submit" lay-submit lay-filter="send_msg" class="layui-btn">提交</button>
-                            </li>
-                        </ul>
-                        <hr id="msg_list">
+    </div>
+
+    <div class="side">
+        <div class="menu-item active" data-view="dashboard">仪表盘</div>
+        <div class="menu-item" data-view="messages">消息管理</div>
+        <div class="menu-item" data-view="groups">群组管理</div>
+        <div class="menu-item" data-view="users">用户管理</div>
+        <div class="menu-item" data-view="send">发送测试/广播</div>
+        <div class="menu-item" data-view="logs">系统日志</div>
+        <div class="menu-item" data-view="settings">机器人设置</div>
+        <div class="menu-item" data-view="devtools">开发者工具</div>
+    </div>
+
+    <div class="content">
+        <!-- 仪表盘 -->
+        <div id="view_dashboard" class="view card">
+            <h3>仪表盘</h3>
+            <div class="flex" style="margin-top:12px">
+                <div style="width:260px" class="card small">
+                    <div><strong id="stat_online_bot">机器人在线：--</strong></div>
+                    <div class="muted small">当前连接状态</div>
+                </div>
+                <div class="card grow small">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div>
+                            <div><strong id="stat_msgs">收到消息：--</strong></div>
+                            <div class="muted">最近的消息计数</div>
+                        </div>
+                        <div>
+                            <button class="layui-btn layui-btn-sm" id="btn_reload_stats">刷新</button>
+                        </div>
                     </div>
-                    <div id="manager_global_page" class="layui-tab-item"></div>
-                    <div id="manager_group_page" class="layui-tab-item"></div>
-                    <div id="manager_data_page" class="layui-tab-item"></div>
-                    <div class="layui-tab-item"></div>
-                    <div id="manager_roll_page" class="layui-tab-item"></div>
                 </div>
             </div>
         </div>
+
+        <!-- 消息管理 -->
+        <div id="view_messages" class="view" style="display:none">
+            <h3>消息管理</h3>
+            <div class="card" style="margin-top:12px">
+                <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
+                    <input type="text" id="q_msg" placeholder="按关键字搜索" class="layui-input" style="width:320px">
+                    <button class="layui-btn layui-btn-sm" id="btn_search_msg">搜索</button>
+                    <button class="layui-btn layui-btn-sm" id="btn_refresh_msg">刷新</button>
+                </div>
+                <table class="layui-table">
+                    <thead>
+                        <tr>
+                            <th style="width:60px">ID</th>
+                            <th style="width:100px">用户</th>
+                            <th style="max-width:400px; word-break:break-word;">内容</th>
+                            <th style="width:140px">时间</th>
+                            <th style="width:120px">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="msg_table_body">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 群组管理 -->
+        <div id="view_groups" class="view" style="display:none">
+            <h3>群组管理</h3>
+            <div class="card" style="margin-top:12px">
+                <div style="display:flex;gap:8px;align-items:center">
+                    <button class="layui-btn" id="btn_fetch_groups">获取群组</button>
+                    <button class="layui-btn layui-btn-danger" id="btn_leave_group">踢出/退群（选中）</button>
+                </div>
+                <table class="layui-table" style="margin-top:8px">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="group_select_all"></th>
+                            <th>群号</th>
+                            <th>群名</th>
+                            <th>人数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groups_table_body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 用户管理 -->
+        <div id="view_users" class="view" style="display:none">
+            <h3>用户管理</h3>
+            <div class="card" style="margin-top:12px">
+                <table class="layui-table">
+                    <thead>
+                        <tr>
+                            <th>UID</th>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>权限</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users_table_body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 发送测试/广播 -->
+        <div id="view_send" class="view" style="display:none">
+            <h3>发送测试 / 广播</h3>
+            <div class="card" style="margin-top:12px">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">目标（QQ/群/频道）</label>
+                    <div class="layui-input-block"><input class="layui-input" id="send_target"
+                            placeholder="例如：123456789 或 group:987654"></div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">消息</label>
+                    <div class="layui-input-block"><textarea class="layui-textarea" id="send_message"
+                            placeholder="请输入要发送的文本消息，支持 CQ 码"></textarea></div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center">
+                    <button class="layui-btn" id="btn_send_once">发送</button>
+                    <button class="layui-btn layui-btn-warm" id="btn_send_broadcast">广播（批量）</button>
+                    <button class="layui-btn layui-btn-primary" id="btn_preview_cq">预览 CQ 码</button>
+                </div>
+                <div id="send_result" class="footer-note"></div>
+            </div>
+        </div>
+
+        <!-- 日志 -->
+        <div id="view_logs" class="view" style="display:none">
+            <h3>系统日志</h3>
+            <div class="card" style="margin-top:12px">
+                <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
+                    <select id="log_level" class="layui-select" style="width:160px">
+                        <option value="all">全部</option>
+                        <option value="info">INFO</option>
+                        <option value="warn">WARN</option>
+                        <option value="error">ERROR</option>
+                    </select>
+                    <button class="layui-btn" id="btn_fetch_logs">获取日志</button>
+                </div>
+                <pre id="logs_area"
+                    style="max-height:420px;overflow:auto;background:#111;color:#dfe6ff;padding:12px;border-radius:6px"></pre>
+            </div>
+        </div>
+
+        <!-- 设置 -->
+        <div id="view_settings" class="view" style="display:none">
+            <h3>机器人设置</h3>
+            <div class="card" style="margin-top:12px">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">机器人名称</label>
+                    <div class="layui-input-block"><input class="layui-input" id="setting_name"></div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">心跳间隔（秒）</label>
+                    <div class="layui-input-block"><input class="layui-input" id="setting_heartbeat" type="number">
+                    </div>
+                </div>
+                <div style="margin-top:8px"><button class="layui-btn" id="btn_save_settings">保存设置</button></div>
+            </div>
+        </div>
+
+        <!-- 开发者工具 -->
+        <div id="view_devtools" class="view" style="display:none">
+            <h3>开发者工具</h3>
+            <div class="card" style="margin-top:12px">
+                <div><strong>模拟事件</strong></div>
+                <div style="margin-top:8px">
+                    <textarea id="dev_input_json" class="layui-textarea"
+                        placeholder='示例: {"type":"message","from":123,"text":"你好"}'></textarea>
+                    <div style="margin-top:8px"><button class="layui-btn" id="btn_send_sim">发送模拟事件</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="height:36px"></div>
     </div>
+
+    <script src="./js/jquery-2.1.4.min.js"></script>
+    <script src="./layui/layui.js"></script>
     <script>
-        c_token = $.cookie("token");
-        if (c_token) {
-            $("#logging1").attr("style", "display: none;");
-            $("#logging2").attr("style", "display: none;");
-            $("#register1").attr("style", "display: none;");
-            $("#register2").attr("style", "display: none;");
-        } else {
-        }
-        c_uid = $.cookie("uid");
-        if (c_uid) {
-            $("#uid").text(c_uid);
-        }
-        c_user_name = $.cookie("user_name");
-        if (c_user_name) {
-            $("#user_name").text(c_user_name);
-        }
-        c_level = $.cookie("level");
-    </script>
-    <script>
-        layui.use('element', function () {
-            var element = layui.element;
-        });
-        layui.use('laydate', function () {
-            var laydate = layui.laydate;
-            laydate.render({
-                elem: '#datetime1', 
-                show: true,
-                position: 'static',
-                btns: ['now'],
+        // 简单前端逻辑：视图切换 / 调用后端 API（需要服务端实现对应接口）
+        $(function () {
+            // 菜单切换
+            $('.menu-item').click(function () {
+                $('.menu-item').removeClass('active');
+                $(this).addClass('active');
+                var view = $(this).data('view');
+                $('.view').hide();
+                $('#view_' + view).show();
+            });
+            
+            // 加载消息列表
+            $('#btn_refresh_msg, #btn_search_msg').click(loadMessages);
+            function loadMessages() {
+                var q = $('#q_msg').val() || '';
+                $.get('/api/messages', { q: q }, function (res) {
+                    var html = '';
+                    (res || []).forEach(function (m, idx) {
+                        html += '<tr>' +
+                            '<td>' + m.id + '</td>' +
+                            '<td>' + m.user + '</td>' +
+                            '<td style="max-width:400px;word-break:break-word;overflow-wrap:break-word;">' + m.text + '</td>' +
+                            '<td>' + m.time + '</td>' +
+                            '<td class="table-actions">';
+                        if (m.urls && m.urls.length > 0) {
+                            html += '<div>';
+                            m.urls.forEach(function (url, i) {
+                                html += '<a href="javascript:;" class="copy-url" data-url="' + url + '" ' +
+                                    'style="color:#52c41a;margin-right:5px;display:inline-block;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" ' +
+                                    'title="' + url + '">复制链接</a>';
+                            });
+                            html += '</div>';
+                        }
+                        html += '</td></tr>';
+                    });
+                    $('#msg_table_body').html(html);
+                    // 绑定点击事件
+                    $('.copy-url').off('click').on('click', function () {
+                        var url = $(this).data('url');
+                        navigator.clipboard.writeText(url).then(function () {
+                            layer.msg('已复制链接', { icon: 1 });
+                        }).catch(function () {
+                            layer.msg('复制失败', { icon: 2 });
+                        });
+                    });
+                }).fail(function () {
+                    layer.msg('获取消息失败', { icon: 0 });
+                });
+            }
+
+
+            // 群组
+            $('#btn_fetch_groups').click(function () {
+                $.get('/api/groups', function (res) {
+                    var html = '';
+                    (res || []).forEach(function (g) {
+                        html += '<tr>' +
+                            '<td><input type="checkbox" class="group_check" value="' + g.id + '"></td>' +
+                            '<td>' + g.id + '</td><td>' + g.name + '</td><td>' + g.count + '</td>' +
+                            '<td><button class="layui-btn layui-btn-xs" onclick="openGroup(' + g.id + ')">管理</button></td>' +
+                            '</tr>';
+                    });
+                    $('#groups_table_body').html(html);
+                }).fail(function () { layer.msg('获取群列表失败', { icon: 0 }); });
+            });
+            $('#group_select_all').on('change', function () { $('.group_check').prop('checked', this.checked); });
+
+            // 发送
+            $('#btn_send_once').click(function () {
+                var target = $('#send_target').val();
+                var text = $('#send_message').val();
+                if (!target || !text) { layer.msg('目标或消息为空', { icon: 0 }); return }
+                $.post('/api/send', JSON.stringify({ target: target, text: text }), function (res) {
+                    $('#send_result').text(JSON.stringify(res));
+                    layer.msg('请求已发送');
+                }, 'json').fail(function () { layer.msg('发送请求失败', { icon: 0 }); });
+            });
+
+            $('#btn_send_broadcast').click(function () {
+                var text = $('#send_message').val();
+                if (!text) { layer.msg('消息为空', { icon: 0 }); return }
+                if (!confirm('确认发送广播给所有已订阅的对象吗？')) return;
+                $.post('/api/broadcast', JSON.stringify({ text: text }), function (res) {
+                    layer.msg(res.msg || '已请求广播');
+                }, 'json').fail(function () { layer.msg('广播请求失败', { icon: 0 }); });
+            });
+
+            // 日志
+            $('#btn_fetch_logs').click(function () {
+                var level = $('#log_level').val();
+                $.get('/api/logs', { level: level }, function (res) {
+                    $('#logs_area').text((res || []).join('\n'));
+                }).fail(function () { layer.msg('获取日志失败', { icon: 0 }); });
+            });
+
+            // 设置保存
+            $('#btn_save_settings').click(function () {
+                var data = { name: $('#setting_name').val(), heartbeat: Number($('#setting_heartbeat').val()) };
+                $.ajax({ url: '/api/settings', type: 'POST', contentType: 'application/json', data: JSON.stringify(data), success: function (res) { layer.msg('保存成功', { icon: 1 }); }, error: function () { layer.msg('保存失败', { icon: 0 }); } });
+            });
+
+            // 仪表盘：自动轮询统计
+            function fetchStats() {
+                $.get('/api/stats', function (res) {
+                    $('#stat_online_bot').text('机器人在线：' + (res.online ? '是' : '否'));
+                    $('#stat_msgs').text('收到消息：' + (res.total || 0));
+                }).fail(function () {
+                    $('#stat_online_bot').text('机器人在线：未知（请求失败）');
+                });
+            }
+            // 初次加载时执行一次
+            fetchStats();
+            // 每 10 秒轮询一次（可根据需求调整）
+            setInterval(fetchStats, 10000);
+
+            window.openGroup = function (id) {
+                layer.msg('打开群组管理: ' + id);
+            }
+
+            // 模拟事件发送
+            $('#btn_send_sim').click(function () {
+                var txt = $('#dev_input_json').val();
+                try { var obj = JSON.parse(txt); } catch (e) { layer.msg('JSON 解析错误', { icon: 0 }); return; }
+                $.post('/api/dev/sim', JSON.stringify(obj), function (res) { layer.msg('已发送模拟事件', { icon: 1 }); }, 'json');
             });
         });
+
     </script>
-    <script src="./js/logging_register.js"></script>
-    <script>
-        $.ajax({
-            url: "/api/msg_get",
-            type: "get",
-            async: false,
-            success: function (result) {
-                var l_data = JSON.parse(result);
-                for (var i = 0; i < l_data.length; i++) {
-                    var h = template("msg_card_temp", l_data[i])
-                    $("#msg_list").after(h);
-                }
-            },
-            error: function (xhr, status, error) {
-            }
-        });
-    </script>
-    <script>
-        layui.form.render().on('submit(send_msg)', function (data) {
-            if (data.field["in_title"].length > 60) {
-                layer.msg("标题字数太长", { icon: 0 });
-                return;
-            }
-            if (data.field["in_text"].length > 2000) {
-                layer.msg("正文字数太长", { icon: 0 });
-                return;
-            }
-            var r_data = data.field;
-            if (c_token) {
-                r_data = { "title": r_data["in_title"], "text": r_data["in_text"], "token": c_token }
-            }
-            else if (c_user_name) {
-                r_data = { "title": r_data["in_title"], "text": r_data["in_text"], "name": c_user_name }
-            } else {
-                var c_user_name = prompt("请输入临时用户名", "");
-                if (c_user_name) {
-                    $("#user_name").text(c_user_name);
-                }
-                return;
-            }
-            r_data = JSON.stringify(r_data);
-            $.ajax({
-                url: "/api/msg_send",
-                type: "post",
-                data: r_data,
-                async: false,
-                success: function (result) {
-                    var l_data = JSON.parse(result);
-                    var h = template("msg_card_temp", l_data)
-                    $("#msg_list").after(h);
-                    $("#in_title").val("");
-                    $("#in_text").val("");
-                    layer.msg("提交成功", { icon: 1 });
-                },
-                error: function (xhr, status, error) {
-                    var m = "错误"
-                    switch (xhr.status) {
-                        case 400:
-                            m = "数据字段错误";
-                            break;
-                        case 404:
-                            m = "用户不存在";
-                            break;
-                        case 403:
-                            if (error == "resetting time") {
-                                m = "发言的间隔是5s";
-                            } else {
-                                m = "0-9时不允许游客发言";
-                            }
-                    }
-                    layer.msg(m, { icon: 0 });
-                }
-            });
-        });
-    </script>
-    <script>
-        layer.open({
-            title: '公告',
-            content: "手机段右上角可以登录。<br>游客在0-9点无法发言",
-        });
-    </script>
+
+    <!-- 说明：
+    此页面为前端样板，依赖后端提供如下 REST 接口（示例）：
+      POST /api/admin/login        -> {name,password} 返回 {ok, token, user}
+      GET  /api/stats              -> 返回 {online, today_msgs}
+      GET  /api/messages?q=...     -> 返回消息数组
+      GET  /api/message/:id        -> 返回单条消息
+      DELETE /api/message/:id
+      GET  /api/groups
+      POST /api/send               -> {target,text}
+      POST /api/broadcast          -> {text}
+      GET  /api/logs?level=...
+      POST /api/settings           -> 保存设置
+      POST /api/dev/sim            -> 接收模拟事件
+    根据实际机器人后端实现调整接口与字段。
+  -->
 </body>
 
 </html>

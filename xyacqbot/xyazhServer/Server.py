@@ -9,21 +9,23 @@ import urllib.parse
 import typing
 from .BaseServer import BaseServer
 from .lzstring import *
-from .PageManager import PageManager
 from .ServerHelper import ServerHelper
-
 if typing.TYPE_CHECKING:
-    from xyacqbot import Cqserver
+    from .App import App
+
 
 #自义定一个处理模块
 class Server(BaseServer,ServerHelper):
-    lzs = LZString()
+    def __init__(self, request, client_address, server, app: "App"):
+        self.lzs = LZString()
+        self.app: "App" = app
+        super().__init__(request, client_address, server)
 
-    def sendTextPage(self,text:str|bytes):
+    def sendTextPage(self,text:str|bytes,header:str="text/html;charset=utf-8"):
         if type(text) == str:
             text = bytes(text,encoding="utf8")
         self.send_response(200,"OK")
-        self.send_header("Content-type","text/html;charset=utf-8")
+        self.send_header("Content-type",header)
         self.send_header("Content-Length",str(len(text)))
         if self.set_cookie:
             for i in self.set_cookie:
@@ -162,7 +164,7 @@ class Server(BaseServer,ServerHelper):
     def do_GET(self):
         self.doStart()
         try:
-            fuc = PageManager.findPath(self.virtual_path,"GET")
+            fuc = self.app.page_manager.findPath(self.virtual_path,"GET")
             if fuc == None:
                 self.send_error(404)
             else:
@@ -176,7 +178,7 @@ class Server(BaseServer,ServerHelper):
     def do_POST(self):
         self.doStart()
         try:
-            fuc = PageManager.findPath(self.virtual_path,"POST")
+            fuc = self.app.page_manager.findPath(self.virtual_path,"POST")
             if fuc == None:
                 self.send_error(404)
             else:

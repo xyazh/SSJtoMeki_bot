@@ -1,0 +1,94 @@
+import json
+from collections import deque
+from ..xyazhServer.PageManager import PageManager
+from ..xyazhServer.Server import Server
+from .BaseWebApp import BaseWebApp
+from typing import TYPE_CHECKING
+from ..Packet.PacketBase import PacketBase
+from ..Packet.PacketMsg import PacketMsg, ImageSegment
+if TYPE_CHECKING:
+    from ..xyazhServer.App import App
+    from ..Cqserver import Cqserver
+
+
+class WebApp(BaseWebApp):
+    def __init__(self, app: "App", cq_server: "Cqserver"):
+        super().__init__(app)
+        self.cq_server = cq_server
+        self._real_root = "./web/public"
+        self._virtual_root = "/res"
+        self.app.page_manager.addFileTree(
+            self._real_root, self._virtual_root, self._virtualPath)
+        cq_server.onEvent(self.onEvent)
+        self.__init_other__()
+
+    def __init_other__(self):
+        self.msg_count = 0
+        self.message_queue: deque[PacketMsg] = deque(maxlen=10000)
+
+    def _virtualPath(self, server: Server):
+        path = server.virtual_path.replace(
+            self._virtual_root, self._real_root, 1)
+        server.sendFile(path)
+
+    def onEvent(self, p: PacketBase):
+        if isinstance(p, PacketMsg):
+            self.msg_count += 1
+            self.message_queue.append(p)
+
+    @BaseWebApp.page("/favicon.ico", "GET")
+    def fav(self, s: Server):
+        s.sendFile(".\\web\\images\\favicon.png")
+
+    @BaseWebApp.page("/index", "GET")
+    @BaseWebApp.page("/index.html", "GET")
+    def reindex(self, s: Server):
+        host = s.headers.get("Host")
+        if host == None:
+            s.send_error(404)
+            return
+        s.send_response(301, "Moved Permanently")
+        s.send_header("Location", "http://" + host + "/res/index.html")
+        s.end_headers()
+
+    @BaseWebApp.page("/api/stats", "GET")
+    def stats(self, s: Server):
+        s.sendTextPage(json.dumps({
+            "online": True,
+            "total": self.msg_count
+        }), "application/json;charset=utf-8")
+
+    @BaseWebApp.page("/api/messages", "GET")
+    def messages(self, s: "Server"):
+        keyword = s.urlVals(s.path).get("q", "")
+        keywords = s.splitKeyword(keyword)
+        msgs = []
+        for msg in self.message_queue:
+            real_msgs = msg.message
+            urls = []
+            for real_msg in real_msgs:
+                if isinstance(real_msg, ImageSegment):
+                    print(real_msg.getUrl())
+                    urls.append(real_msg.getUrl())
+            data = {
+                "id": str(msg.getId()),
+                "user": msg.getName(),
+                "text": msg.getMsg(),
+                "time": msg.time,
+                "weight": 0,
+                "urls": urls
+            }
+            if keyword == "":
+                msgs.append(data)
+                continue
+            for kw in keywords:
+                if kw in data["text"]:
+                    data["weight"] += 1
+                if kw in data["user"]:
+                    data["weight"] += 2
+                if kw in data["id"]:
+                    data["weight"] += 2
+            if data["weight"] > 0:
+                msgs.append(data)
+        msgs.sort(key=lambda x: x["weight"], reverse=True)
+        s.sendTextPage(json.dumps(msgs), "application/json;charset=utf-8")

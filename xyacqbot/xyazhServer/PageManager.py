@@ -3,20 +3,22 @@ from .UrlHelper import UrlHelper
 import os
 import urllib.parse
 
+
 class PageManager:
     D = "*"
-    path_trees = {
-        "GET":Tree(),
-        "POST":Tree()
+
+    def __init__(self):
+        self.path_trees = {
+            "GET": Tree(),
+            "POST": Tree()
         }
 
-    @staticmethod
-    def addPath(path:str,fuc:object,t:str):
-        path = path.replace("\\","/")
+    def addPath(self,path: str, fuc: object, t: str):
+        path = path.replace("\\", "/")
         h_dir = UrlHelper.pathSplit(path)
-        if not t in PageManager.path_trees:
-            PageManager.path_trees[t] = Tree()
-        in_node = PageManager.path_trees[t]
+        if not t in self.path_trees:
+            self.path_trees[t] = Tree()
+        in_node = self.path_trees[t]
         for i in h_dir:
             if i == "":
                 in_node.leaf = fuc
@@ -30,12 +32,11 @@ class PageManager:
                 in_node.child_nodes[i] = new_node
                 in_node = new_node
 
-    @staticmethod
-    def findPath(path:str,t:str)->object|None:
+    def findPath(self,path: str, t: str) -> object | None:
         h_dir = UrlHelper.pathSplit(path)
-        if not t in PageManager.path_trees:
+        if not t in self.path_trees:
             return None
-        in_node = PageManager.path_trees[t]
+        in_node = self.path_trees[t]
         r = None
         for i in h_dir:
             if i == "":
@@ -43,22 +44,22 @@ class PageManager:
                 break
             elif i in in_node.child_nodes:
                 in_node = in_node.child_nodes[i]
-            elif PageManager.D in in_node.child_nodes:
-                in_node = in_node.child_nodes[PageManager.D]
+            elif self.D in in_node.child_nodes:
+                in_node = in_node.child_nodes[self.D]
             else:
                 break
         return r
 
-    def register(path:str,t:str="GET"):
+    def register(self,path: str, t: str = "GET"):
         def r(fuc):
-            PageManager.addPath(path,fuc,t)
+            self.addPath(path, fuc, t)
+            print(fuc)
             return fuc
         return r
 
-    @staticmethod
-    def addFileTree(root:str,virtual_root:str,fuc:object,t:str="GET"):
+    def addFileTree(self,root: str, virtual_root: str, fuc: object, t: str = "GET"):
         for dirpath, dirnames, filenames in os.walk(root):
-            dirpath = dirpath.replace(root,virtual_root,1)
+            dirpath = dirpath.replace(root, virtual_root, 1)
             for filename in filenames:
                 path = dirpath+"/"+filename
-                PageManager.addPath(dirpath+"/"+filename,fuc,t)
+                self.addPath(path, fuc, t)

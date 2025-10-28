@@ -2,7 +2,7 @@ import urllib.parse
 import typing
 import json
 import os
-from .xyazhServer import ConsoleMessage, App, PageManager, Server
+from .xyazhServer import ConsoleMessage, App, Server
 from .xyazhRequest import HTTPRequest, HTTPSRequest, RequestData, ResponseData
 from .Packet.PacketMsg import PacketMsg
 from .Packet.PacketBase import PacketBase
@@ -10,48 +10,103 @@ from .msg.MsgBuilder import MsgBuilder
 from .ModsLoader.ModsLoader import ModLoader
 from .ModsLoader.Container import Container
 from .Order import Order
+from .WebApp.WebApp import WebApp
 
 if typing.TYPE_CHECKING:
     pass
 
+    class Mod:
+        class Main:
+            @staticmethod
+            def main(moudles: list[Container]):
+                ...
+
+            @staticmethod
+            def onBotOtherEvent(packet: PacketBase):
+                ...
+
+            @staticmethod
+            def onBotMsgEvent(packet: PacketMsg):
+                ...
+
 
 class Cqserver:
-    def __init__(self, ip: str, send_port: int, lisent_port: int):
+    def __init__(self, ip: str, send_port: int, lisent_port: int, web_port: int):
         self.ip = ip
         self.send_port = send_port
         self.lisent_port = lisent_port
-        
+        self.web_port = web_port
+        self.on_event_fuctions: list[typing.Callable] = []
+
+    def onEvent(self, fuction: typing.Callable):
+        self.on_event_fuctions.append(fuction)
 
     def loadMods(self):
         self.mod_loader = ModLoader(os.getcwd()+"\\mods")
         self.mod_loader.loadAll()
         self.mods = self.mod_loader.getMods()
+        mod: "Mod"
         for mod in self.mods.values():
             containers = [
                 Container("cqserver", self, "object")
             ]
             mod.Main.main(containers)
 
-    def printTitleVison(self):
-        print(" * ---------------------------------")
-        print(" * Multi functional dice rolling bot made with Python by Xyazh")
-        print(" * 在浏览器打开 http://%s:%s/res/index.html 进行可视化后台管理" %
-              (self.ip, self.lisent_port))
-        print(" * アトリは、高性能ですから!")
-        print(" * ---------------------------------")
+    def modOnEvent(self, p: PacketBase):
+        mods = self.mod_loader.getMods()
+        mod: "Mod"
+        for mod in mods.values():
+            if isinstance(p, PacketMsg):
+                mod.Main.onBotMsgEvent(p)
+            elif isinstance(p, PacketBase):
+                mod.Main.onBotOtherEvent(p)
 
-    def initFunc(self):
+    def printTitleVison(self):
+        print(f" * ---------------------------------")
+        print(f" * Multi functional dice rolling bot made with Python by Xyazh")
+        print(f" * Http发送地址 {self.ip}:{self.send_port}")
+        print(f" * Http接收上报地址 http://{self.ip}:{self.lisent_port}/")
+        print(f" * 后台管理地址 http://{self.ip}:{self.web_port}/res/index.html")
+        print(f" * アトリは、高性能ですから!")
+        print(f" * ---------------------------------")
+
+    def initLisentFunc(self):
+        pass
+
+    def initWebFunc(self):
+        pass
+
+    def initFuc(self):
         self.loadMods()
+        self.onEvent(self.modOnEvent)
+        self.onEvent(self.onMsgEvent)
+
+    def onMsgEvent(self, p: PacketBase):
+        if not isinstance(p, PacketMsg):
+            return
+        if p.message_type == "group":
+            ConsoleMessage.printC(
+                f"来自群{p.group_id}{p.getName()}({p.getId()})的消息：{p.getMsg()}")
 
     def serverRun(self):
         self.printTitleVison()
         self.newLisentApp(self.ip, self.lisent_port)
-        fuc = self.lisent_server.runHTTP
-        self.lisent_server.runThead(fuc, (self.initFunc,))
+        self.newWebApp(self.ip, self.web_port)
+        print("\r\n\r\n")
+        self.initFuc()
+
+    def newWebApp(self, ip: str, port: int):
+        self.web_app: App = App(ip, port)
+        self.web_app_page = WebApp(self.web_app, self)
+        fun = self.web_app.runHTTP
+        self.web_app.runThead(fun, (self.initWebFunc,))
 
     def newLisentApp(self, ip: str, post_port: int):
         self.lisent_server: App = App(ip, post_port)
-        PageManager.addPath("/", self.cqhttpApiConnector, "POST")
+        self.lisent_server.page_manager.addPath(
+            "/", self.cqhttpApiConnector, "POST")
+        fuc = self.lisent_server.runHTTP
+        self.lisent_server.runThead(fuc, (self.initLisentFunc,))
 
     def cqhttpApiConnector(self, server: Server):
         data: bytes = server.readPostData(max_size=10240)
@@ -60,18 +115,16 @@ class Cqserver:
         except json.decoder.JSONDecodeError as e:
             server.send_error(400, "json decoder error")
             return
-        self.mainMsgHandler(cqhttp_data)
+        self.mainEventHandler(cqhttp_data)
         server.sendTextPage("ok")
 
-    def mainMsgHandler(self, raw_data: dict):
-        mods = self.mod_loader.getMods()
-        for mod in mods.values():
-            if PacketMsg.like(raw_data):
-                p = PacketMsg(raw_data)
-                mod.Main.onBotMsgEvent(p)
-            else:
-                p = PacketBase(raw_data)
-                mod.Main.onBotOtherEvent(p)
+    def mainEventHandler(self, raw_data: dict):
+        if PacketMsg.like(raw_data):
+            p = PacketMsg(raw_data)
+        else:
+            p = PacketBase(raw_data)
+        for f in self.on_event_fuctions:
+            f(p)
 
     def send(self, h_path: str, data: dict = None) -> ResponseData | None:
         h_requse = HTTPRequest(self.ip, self.send_port)
