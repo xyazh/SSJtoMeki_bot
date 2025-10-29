@@ -13,8 +13,6 @@ from .Order import Order
 from .WebApp.WebApp import WebApp
 
 if typing.TYPE_CHECKING:
-    pass
-
     class Mod:
         class Main:
             @staticmethod
@@ -176,6 +174,28 @@ class Cqserver:
     def setGroupBan(self, group_id: int, user_id: int, duration: int = 0) -> ResponseData | None:
         data = {"group_id": group_id, "user_id": user_id, "duration": duration}
         return self.send("/set_group_ban", data)
+
+    def _getGroupList(self, no_cache: bool = False) -> ResponseData | None:
+        data = {
+            "no_cache": no_cache
+        }
+        return self.send("/get_group_list", data)
+
+    def getGroupList(self, no_cache: bool = False) -> list[dict] | None:
+        """
+        data: [{"group_id": 123456,"group_name": "群名称","group_memo": "","group_create_time": 1234567890,"member_count": 123,"max_member_count": 200,"remark_name": ""}]
+        """
+        result = self._getGroupList(no_cache)
+        if result is None:
+            return None
+        data = result.json()
+        if data is None:
+            return None
+        status = data.get("status", "error")
+        if status != "ok":
+            return None
+        data = data.get("data", [])
+        return data
 
     def escapeMsg(self, msg: str) -> str:
         msg = urllib.parse.quote(msg)

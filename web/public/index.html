@@ -159,7 +159,7 @@
                 <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
                     <input type="text" id="q_msg" placeholder="按关键字搜索" class="layui-input" style="width:320px">
                     <button class="layui-btn layui-btn-sm" id="btn_search_msg">搜索</button>
-                    <button class="layui-btn layui-btn-sm" id="btn_refresh_msg">刷新</button>
+
                 </div>
                 <table class="layui-table">
                     <thead>
@@ -184,7 +184,7 @@
             <div class="card" style="margin-top:12px">
                 <div style="display:flex;gap:8px;align-items:center">
                     <button class="layui-btn" id="btn_fetch_groups">获取群组</button>
-                    <button class="layui-btn layui-btn-danger" id="btn_leave_group">踢出/退群（选中）</button>
+                    <button class="layui-btn layui-btn-danger" id="btn_leave_group">退群（选中）</button>
                 </div>
                 <table class="layui-table" style="margin-top:8px">
                     <thead>
@@ -307,7 +307,7 @@
                 $('.view').hide();
                 $('#view_' + view).show();
             });
-            
+
             // 加载消息列表
             $('#btn_refresh_msg, #btn_search_msg').click(loadMessages);
             function loadMessages() {
@@ -363,6 +363,40 @@
                 }).fail(function () { layer.msg('获取群列表失败', { icon: 0 }); });
             });
             $('#group_select_all').on('change', function () { $('.group_check').prop('checked', this.checked); });
+
+            $('#btn_leave_group').click(function () {
+                const selected = $('#groups_table_body input[type=checkbox]:checked')
+                    .map((_, el) => $(el).val()) // ✅ 改这里
+                    .get();
+
+                if (selected.length === 0) {
+                    return layer.msg('请先选择要退出的群组');
+                }
+
+                layer.confirm('确认要退出选中的 ' + selected.length + ' 个群组吗？', function (index) {
+                    $.ajax({
+                        url: '/api/groups/leave',
+                        type: 'POST',
+                        data: JSON.stringify({ group_ids: selected }),
+                        contentType: 'application/json',
+                        success: function (res) {
+                            console.log(res);
+                            if (res.success) {
+                                layer.msg('已退出所选群组');
+                                $('#btn_fetch_groups').click();
+                            } else {
+                                layer.msg('部分退群失败：' + (res.error || '未知错误'));
+                            }
+                        },
+                        error: function () {
+                            layer.msg('网络错误，无法退群');
+                        }
+                    });
+                    layer.close(index);
+                });
+            });
+
+
 
             // 发送
             $('#btn_send_once').click(function () {

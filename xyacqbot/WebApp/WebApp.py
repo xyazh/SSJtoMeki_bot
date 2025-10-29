@@ -92,3 +92,32 @@ class WebApp(BaseWebApp):
                 msgs.append(data)
         msgs.sort(key=lambda x: x["weight"], reverse=True)
         s.sendTextPage(json.dumps(msgs), "application/json;charset=utf-8")
+
+    @BaseWebApp.page("/api/groups", "GET")
+    def groups(self, s: "Server"):
+        groups = self.cq_server.getGroupList()
+        if groups == None:
+            s.send_error(500)
+            return
+        datas = []
+        for group in groups:
+            data = {
+                "id": group.get("group_id"),
+                "name": group.get("group_name"),
+                "count": group.get("member_count")
+            }
+            datas.append(data)
+        s.sendTextPage(json.dumps(datas), "application/json;charset=utf-8")
+
+    @BaseWebApp.page("/api/groups/leave", "POST")
+    def leaveGroup(self, s: "Server"):
+        data = s.readPostData(-1)
+        try:
+            data = json.loads(data)
+        except Exception as e:
+            s.send_error(400, json.dumps({"success": False, "error": str(e)}))
+        group_ids = data.get("group_ids", [])
+        for group_id in group_ids:
+            self.cq_server.leaveGroup(group_id)
+        s.sendTextPage(json.dumps({"success": True}),
+                       "application/json;charset=utf-8")
