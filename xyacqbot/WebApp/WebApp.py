@@ -4,8 +4,9 @@ from ..xyazhServer.PageManager import PageManager
 from ..xyazhServer.Server import Server
 from .BaseWebApp import BaseWebApp
 from typing import TYPE_CHECKING
-from ..Packet.PacketBase import PacketBase
-from ..Packet.PacketMsg import PacketMsg, ImageSegment
+from ..packet.PacketBase import PacketBase
+from ..packet.PacketMsg import PacketMsg, ImageSegment
+from ..datamanager.GlobleDataManager import GlobalDataManager
 if TYPE_CHECKING:
     from ..xyazhServer.App import App
     from ..Cqserver import Cqserver
@@ -53,8 +54,12 @@ class WebApp(BaseWebApp):
 
     @BaseWebApp.page("/api/stats", "GET")
     def stats(self, s: Server):
+        status = self.cq_server.getStatus()
         s.sendTextPage(json.dumps({
-            "online": True,
+            "status": status["status"],
+            "recode": status["recode"],
+            "online": status["online"],
+            "good": status["good"],
             "total": self.msg_count
         }), "application/json;charset=utf-8")
 
@@ -100,11 +105,14 @@ class WebApp(BaseWebApp):
             s.send_error(500)
             return
         datas = []
+        enble_groups = GlobalDataManager().getEnbaleGroupList()
         for group in groups:
+            group_id = group.get("group_id")
             data = {
-                "id": group.get("group_id"),
+                "id": group_id,
                 "name": group.get("group_name"),
-                "count": group.get("member_count")
+                "count": group.get("member_count"),
+                "enabled": str(group_id) in enble_groups
             }
             datas.append(data)
         s.sendTextPage(json.dumps(datas), "application/json;charset=utf-8")
@@ -113,11 +121,37 @@ class WebApp(BaseWebApp):
     def leaveGroup(self, s: "Server"):
         data = s.readPostData(-1)
         try:
-            data = json.loads(data)
+            data: dict = json.loads(data)
         except Exception as e:
             s.send_error(400, json.dumps({"success": False, "error": str(e)}))
+            return
         group_ids = data.get("group_ids", [])
         for group_id in group_ids:
             self.cq_server.leaveGroup(group_id)
+        s.sendTextPage(json.dumps({"success": True}),
+                       "application/json;charset=utf-8")
+
+    @BaseWebApp.page("/api/groups/data", "GET")
+    def getGroupData(self, s: "Server"):
+        group_id = s.urlVals(s.path).get("g")
+        if group_id == None or group_id == "":
+            s.send_error(400)
+            return
+        s.sendTextPage(json.dumps({"id": group_id, "enabled": group_id in GlobalDataManager().getEnbaleGroupList()}),
+                       "application/json;charset=utf-8")
+
+    @BaseWebApp.page("/api/groups/update", "POST")
+    def updateGroup(self, s: "Server"):
+        data = s.readPostData(-1)
+        try:
+            data: dict = json.loads(data)
+        except Exception as e:
+            s.send_error(400, json.dumps({"success": False, "error": str(e)}))
+            return
+        global_data_manager = GlobalDataManager()
+        if data.get("enabled", False):
+            global_data_manager.appendEnbaleGroup(data.get("id"))
+        else:
+            global_data_manager.removeEnbaleGroup(data.get("id"))
         s.sendTextPage(json.dumps({"success": True}),
                        "application/json;charset=utf-8")

@@ -4,13 +4,14 @@ import json
 import os
 from .xyazhServer import ConsoleMessage, App, Server
 from .xyazhRequest import HTTPRequest, HTTPSRequest, RequestData, ResponseData
-from .Packet.PacketMsg import PacketMsg
-from .Packet.PacketBase import PacketBase
+from .packet.PacketMsg import PacketMsg
+from .packet.PacketBase import PacketBase
 from .msg.MsgBuilder import MsgBuilder
-from .ModsLoader.ModsLoader import ModLoader
-from .ModsLoader.Container import Container
+from .modsLoader.ModsLoader import ModLoader
+from .modsLoader.Container import Container
 from .Order import Order
-from .WebApp.WebApp import WebApp
+from .webApp.WebApp import WebApp
+from .datamanager.GlobleDataManager import GlobalDataManager
 
 if typing.TYPE_CHECKING:
     class Mod:
@@ -55,6 +56,8 @@ class Cqserver:
         mod: "Mod"
         for mod in mods.values():
             if isinstance(p, PacketMsg):
+                if p.shouldIgnore():
+                    return
                 mod.Main.onBotMsgEvent(p)
             elif isinstance(p, PacketBase):
                 mod.Main.onBotOtherEvent(p)
@@ -83,6 +86,10 @@ class Cqserver:
         if not isinstance(p, PacketMsg):
             return
         if p.message_type == "group":
+            if p.shouldIgnore():
+                ConsoleMessage.printC(
+                    f"忽略群{p.group_id}{p.getName()}({p.getId()})的消息：{p.getMsg()}")
+                return
             ConsoleMessage.printC(
                 f"来自群{p.group_id}{p.getName()}({p.getId()})的消息：{p.getMsg()}")
 
@@ -196,6 +203,26 @@ class Cqserver:
             return None
         data = data.get("data", [])
         return data
+
+    def _getStatus(self) -> ResponseData | None:
+        return self.send("/get_status", {})
+
+    def getStatus(self) -> dict:
+        """
+        data: {"status": "ok","retcode":0,"online": true,"good": true}
+        """
+        result = self._getStatus()
+        if result is None:
+            return {"status": "error", "recode": -1, "online": False, "good": False}
+        data = result.json()
+        if data is None:
+            return {"status": "error", "recode": -1, "online": False, "good": False}
+        status = data.get("status", "error")
+        recode = data.get("retcode", -1)
+        data_data: dict = data.get("data", {})
+        online = data_data.get("online", False)
+        good = data_data.get("good", False)
+        return {"status": status, "recode": recode, "online": online, "good": good}
 
     def escapeMsg(self, msg: str) -> str:
         msg = urllib.parse.quote(msg)

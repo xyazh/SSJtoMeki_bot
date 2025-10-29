@@ -106,6 +106,31 @@
             color: #999;
             margin-top: 12px
         }
+
+        .stat-card {
+            flex: 1 1 180px;
+            /* 最小宽度180px，可扩展 */
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-info strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .muted.small {
+            color: #888;
+            font-size: 12px;
+        }
     </style>
 </head>
 
@@ -122,35 +147,58 @@
         <div class="menu-item active" data-view="dashboard">仪表盘</div>
         <div class="menu-item" data-view="messages">消息管理</div>
         <div class="menu-item" data-view="groups">群组管理</div>
-        <div class="menu-item" data-view="users">用户管理</div>
         <div class="menu-item" data-view="send">发送测试/广播</div>
-        <div class="menu-item" data-view="logs">系统日志</div>
         <div class="menu-item" data-view="settings">机器人设置</div>
         <div class="menu-item" data-view="devtools">开发者工具</div>
     </div>
 
     <div class="content">
         <!-- 仪表盘 -->
-        <div id="view_dashboard" class="view card">
-            <h3>仪表盘</h3>
-            <div class="flex" style="margin-top:12px">
-                <div style="width:260px" class="card small">
-                    <div><strong id="stat_online_bot">机器人在线：--</strong></div>
-                    <div class="muted small">当前连接状态</div>
+        <div id="view_dashboard" class="view card" style="padding:16px;">
+            <h3 style="margin-bottom:12px;">仪表盘</h3>
+            <div class="flex" style="gap:12px; flex-wrap:wrap;">
+                <!-- 在线状态 -->
+                <div class="card stat-card">
+                    <div class="stat-info">
+                        <strong id="stat_online_bot">机器人在线：--</strong>
+                        <div class="muted small">当前连接状态</div>
+                    </div>
                 </div>
-                <div class="card grow small">
-                    <div style="display:flex;justify-content:space-between;align-items:center">
-                        <div>
-                            <div><strong id="stat_msgs">收到消息：--</strong></div>
-                            <div class="muted">最近的消息计数</div>
-                        </div>
-                        <div>
-                            <button class="layui-btn layui-btn-sm" id="btn_reload_stats">刷新</button>
-                        </div>
+
+                <!-- 状态 -->
+                <div class="card stat-card">
+                    <div class="stat-info">
+                        <strong id="stat_status">状态：--</strong>
+                        <div class="muted small">机器人状态</div>
+                    </div>
+                </div>
+
+                <!-- 重连码 -->
+                <div class="card stat-card">
+                    <div class="stat-info">
+                        <strong id="stat_recode">重连码：--</strong>
+                        <div class="muted small">上次重连记录</div>
+                    </div>
+                </div>
+
+                <!-- 情况 -->
+                <div class="card stat-card">
+                    <div class="stat-info">
+                        <strong id="stat_good">情况：--</strong>
+                        <div class="muted small">情况</div>
+                    </div>
+                </div>
+
+                <!-- 消息计数 -->
+                <div class="card stat-card grow">
+                    <div class="stat-info">
+                        <strong id="stat_msgs">收到消息：--</strong>
+                        <div class="muted small">最近的消息计数</div>
                     </div>
                 </div>
             </div>
         </div>
+
 
         <!-- 消息管理 -->
         <div id="view_messages" class="view" style="display:none">
@@ -193,6 +241,7 @@
                             <th>群号</th>
                             <th>群名</th>
                             <th>人数</th>
+                            <th>启用状态</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -201,31 +250,13 @@
             </div>
         </div>
 
-        <!-- 用户管理 -->
-        <div id="view_users" class="view" style="display:none">
-            <h3>用户管理</h3>
-            <div class="card" style="margin-top:12px">
-                <table class="layui-table">
-                    <thead>
-                        <tr>
-                            <th>UID</th>
-                            <th>用户名</th>
-                            <th>邮箱</th>
-                            <th>权限</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users_table_body"></tbody>
-                </table>
-            </div>
-        </div>
 
         <!-- 发送测试/广播 -->
         <div id="view_send" class="view" style="display:none">
             <h3>发送测试 / 广播</h3>
             <div class="card" style="margin-top:12px">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">目标（QQ/群/频道）</label>
+                    <label class="layui-form-label">目标</label>
                     <div class="layui-input-block"><input class="layui-input" id="send_target"
                             placeholder="例如：123456789 或 group:987654"></div>
                 </div>
@@ -234,30 +265,27 @@
                     <div class="layui-input-block"><textarea class="layui-textarea" id="send_message"
                             placeholder="请输入要发送的文本消息，支持 CQ 码"></textarea></div>
                 </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">附件</label>
+                    <div class="layui-input-block" style="display:flex;gap:8px;align-items:center;">
+                        <input type="file" id="send_file" accept="image/*,audio/*,video/*">
+                        <select id="send_mode" class="layui-select">
+                            <option value="auto">自动</option>
+                            <option value="image_sticker">图片 → 表情</option>
+                            <option value="image_file">图片 → 文件</option>
+                            <option value="audio_voice">音频 → 语音</option>
+                            <option value="audio_file">音频 → 文件</option>
+                            <option value="video_video">视频 → 视频</option>
+                            <option value="video_file">视频 → 文件</option>
+                            <option value="file_file">文件 → 文件</option>
+                        </select>
+                    </div>
+                </div>
                 <div style="display:flex;gap:8px;align-items:center">
                     <button class="layui-btn" id="btn_send_once">发送</button>
                     <button class="layui-btn layui-btn-warm" id="btn_send_broadcast">广播（批量）</button>
-                    <button class="layui-btn layui-btn-primary" id="btn_preview_cq">预览 CQ 码</button>
                 </div>
                 <div id="send_result" class="footer-note"></div>
-            </div>
-        </div>
-
-        <!-- 日志 -->
-        <div id="view_logs" class="view" style="display:none">
-            <h3>系统日志</h3>
-            <div class="card" style="margin-top:12px">
-                <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
-                    <select id="log_level" class="layui-select" style="width:160px">
-                        <option value="all">全部</option>
-                        <option value="info">INFO</option>
-                        <option value="warn">WARN</option>
-                        <option value="error">ERROR</option>
-                    </select>
-                    <button class="layui-btn" id="btn_fetch_logs">获取日志</button>
-                </div>
-                <pre id="logs_area"
-                    style="max-height:420px;overflow:auto;background:#111;color:#dfe6ff;padding:12px;border-radius:6px"></pre>
             </div>
         </div>
 
@@ -348,31 +376,36 @@
             }
 
 
-            // 群组
+            // 获取群组
             $('#btn_fetch_groups').click(function () {
                 $.get('/api/groups', function (res) {
                     var html = '';
                     (res || []).forEach(function (g) {
+                        const statusText = g.enabled ? '<span style="color:green">启用</span>' : '<span style="color:red">禁用</span>';
                         html += '<tr>' +
                             '<td><input type="checkbox" class="group_check" value="' + g.id + '"></td>' +
-                            '<td>' + g.id + '</td><td>' + g.name + '</td><td>' + g.count + '</td>' +
+                            '<td>' + g.id + '</td>' +
+                            '<td>' + g.name + '</td>' +
+                            '<td>' + g.count + '</td>' +
+                            '<td>' + statusText + '</td>' +
                             '<td><button class="layui-btn layui-btn-xs" onclick="openGroup(' + g.id + ')">管理</button></td>' +
                             '</tr>';
                     });
                     $('#groups_table_body').html(html);
                 }).fail(function () { layer.msg('获取群列表失败', { icon: 0 }); });
             });
-            $('#group_select_all').on('change', function () { $('.group_check').prop('checked', this.checked); });
+
+            $('#group_select_all').on('change', function () {
+                $('.group_check').prop('checked', this.checked);
+            });
 
             $('#btn_leave_group').click(function () {
                 const selected = $('#groups_table_body input[type=checkbox]:checked')
-                    .map((_, el) => $(el).val()) // ✅ 改这里
+                    .map((_, el) => $(el).val())
                     .get();
-
                 if (selected.length === 0) {
                     return layer.msg('请先选择要退出的群组');
                 }
-
                 layer.confirm('确认要退出选中的 ' + selected.length + ' 个群组吗？', function (index) {
                     $.ajax({
                         url: '/api/groups/leave',
@@ -380,7 +413,6 @@
                         data: JSON.stringify({ group_ids: selected }),
                         contentType: 'application/json',
                         success: function (res) {
-                            console.log(res);
                             if (res.success) {
                                 layer.msg('已退出所选群组');
                                 $('#btn_fetch_groups').click();
@@ -395,60 +427,153 @@
                     layer.close(index);
                 });
             });
+            window.openGroup = function (groupId) {
+                // 获取群组详情
+                $.get('/api/groups/data', { g: groupId }, function (g) {
 
+                    // 构造表单 HTML
+                    const formHtml = `
+                        <form class="layui-form" style="margin:16px;">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">群号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" value="${g.id}" readonly class="layui-input">
+                                </div>
+                            </div>
 
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">启用状态</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" id="group_enabled" lay-skin="switch" lay-text="启用|停用" ${g.enabled ? 'checked' : ''}>
+                                </div>
+                            </div>
 
-            // 发送
-            $('#btn_send_once').click(function () {
-                var target = $('#send_target').val();
-                var text = $('#send_message').val();
-                if (!target || !text) { layer.msg('目标或消息为空', { icon: 0 }); return }
-                $.post('/api/send', JSON.stringify({ target: target, text: text }), function (res) {
-                    $('#send_result').text(JSON.stringify(res));
-                    layer.msg('请求已发送');
-                }, 'json').fail(function () { layer.msg('发送请求失败', { icon: 0 }); });
-            });
+                            <div class="layui-form-item" style="text-align:center;margin-top:20px;">
+                                <button type="button" class="layui-btn" id="btn_save_group">保存设置</button>
+                                <button type="button" class="layui-btn layui-btn-normal" id="btn_manage_members">成员管理</button>
+                            </div>
+                        </form>
+                    `;
 
-            $('#btn_send_broadcast').click(function () {
-                var text = $('#send_message').val();
-                if (!text) { layer.msg('消息为空', { icon: 0 }); return }
-                if (!confirm('确认发送广播给所有已订阅的对象吗？')) return;
-                $.post('/api/broadcast', JSON.stringify({ text: text }), function (res) {
-                    layer.msg(res.msg || '已请求广播');
-                }, 'json').fail(function () { layer.msg('广播请求失败', { icon: 0 }); });
-            });
+                    // 打开弹窗
+                    layer.open({
+                        type: 1,
+                        title: '群组设置 - ' + g.id,
+                        area: ['420px', '400px'],
+                        content: formHtml,
+                        success: function (layero, index) {
+                            layui.form.render();
+                            // 保存群设置
+                            $('#btn_save_group').click(function () {
+                                const updated = {
+                                    id: g.id,
+                                    enabled: $('#group_enabled').is(':checked')
+                                };
 
-            // 日志
-            $('#btn_fetch_logs').click(function () {
-                var level = $('#log_level').val();
-                $.get('/api/logs', { level: level }, function (res) {
-                    $('#logs_area').text((res || []).join('\n'));
-                }).fail(function () { layer.msg('获取日志失败', { icon: 0 }); });
-            });
+                                $.ajax({
+                                    url: '/api/groups/update',
+                                    type: 'POST',
+                                    data: JSON.stringify(updated),
+                                    contentType: 'application/json',
+                                    success: function (res) {
+                                        if (res.success) {
+                                            layer.msg('已保存群组设置');
+                                            layer.close(index);
+                                            $('#btn_fetch_groups').click(); // 刷新表格
+                                        } else {
+                                            layer.msg('保存失败：' + (res.error || '未知错误'));
+                                        }
+                                    },
+                                    error: function () {
+                                        layer.msg('网络错误，无法保存');
+                                    }
+                                });
+                            });
 
-            // 设置保存
-            $('#btn_save_settings').click(function () {
-                var data = { name: $('#setting_name').val(), heartbeat: Number($('#setting_heartbeat').val()) };
-                $.ajax({ url: '/api/settings', type: 'POST', contentType: 'application/json', data: JSON.stringify(data), success: function (res) { layer.msg('保存成功', { icon: 1 }); }, error: function () { layer.msg('保存失败', { icon: 0 }); } });
-            });
+                            // 打开成员管理弹窗
+                            $('#btn_manage_members').click(function () {
+                                layer.msg("施工中");
+                            });
+                        }
+                    });
 
-            // 仪表盘：自动轮询统计
-            function fetchStats() {
-                $.get('/api/stats', function (res) {
-                    $('#stat_online_bot').text('机器人在线：' + (res.online ? '是' : '否'));
-                    $('#stat_msgs').text('收到消息：' + (res.total || 0));
                 }).fail(function () {
-                    $('#stat_online_bot').text('机器人在线：未知（请求失败）');
+                    layer.msg('获取群组详情失败');
+                });
+            };
+
+
+
+
+
+            $('#btn_send_once').click(function () {
+                const target = $('#send_target').val().trim();
+                const message = $('#send_message').val().trim();
+                const file = $('#send_file')[0].files[0];
+                const mode = $('#send_mode').val(); // 用户选择发送模式
+
+                if (!target || (!message && !file)) {
+                    return layer.msg('请填写目标或消息/选择文件');
+                }
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const base64Data = e.target.result;
+                        const sendData = {
+                            target: target,
+                            message: message,
+                            file: base64Data,
+                            file_type: file.type,
+                            send_mode: mode // 发送模式
+                        };
+                        sendToServer(sendData);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    sendToServer({ target, message, send_mode: 'text' });
+                }
+            });
+
+            function sendToServer(data) {
+                $.ajax({
+                    url: '/api/send',
+                    type: 'POST',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function (res) {
+                        $('#send_result').append(`<div>发送到 ${data.target}：${res.success ? '成功' : '失败'}</div>`);
+                    },
+                    error: function () {
+                        $('#send_result').append(`<div>发送到 ${data.target}：网络错误</div>`);
+                    }
                 });
             }
+
+
+            function fetchStats() {
+                $.get('/api/stats', function (res) {
+                    // 机器人在线状态
+                    $('#stat_online_bot').text('机器人在线：' + (res.online ? '是' : '否'));
+                    // 收到消息总数
+                    $('#stat_msgs').text('收到消息：' + (res.total || 0));
+                    // 新增显示字段
+                    $('#stat_status').text('状态：' + (res.status || '--'));
+                    $('#stat_recode').text('重连码：' + (res.recode));
+                    $('#stat_good').text('情况：' + (res.good));
+                }).fail(function () {
+                    $('#stat_online_bot').text('机器人在线：未知（请求失败）');
+                    $('#stat_status').text('状态：未知');
+                    $('#stat_recode').text('重连码：未知');
+                    $('#stat_good').text('情况：未知');
+                });
+            }
+
             // 初次加载时执行一次
             fetchStats();
-            // 每 10 秒轮询一次（可根据需求调整）
-            setInterval(fetchStats, 10000);
+            // 每 5 秒轮询一次
+            setInterval(fetchStats, 5000);
 
-            window.openGroup = function (id) {
-                layer.msg('打开群组管理: ' + id);
-            }
 
             // 模拟事件发送
             $('#btn_send_sim').click(function () {

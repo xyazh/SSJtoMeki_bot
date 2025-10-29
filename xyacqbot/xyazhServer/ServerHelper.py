@@ -49,6 +49,9 @@ class ServerHelper:
             data = bytes(data, encoding="utf8")
         h = hmac.new(key, data, digestmod='SHA256')
         return h.hexdigest()
+    
+    def splitPath(self, path: str) -> list[str]:
+        return path.split("/")
 
     def splitKeyword(self, s: str) -> list[str]:
         result = []

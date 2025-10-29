@@ -1,6 +1,7 @@
 import socket
 import ssl
 import logging
+from ..xyazhServer.ConsoleMessage import ConsoleMessage
 
 if __name__ == '__main__':
     from RequestData import RequestData
@@ -40,11 +41,13 @@ class HTTPSRequest:
             self.ssl_sock.close()
 
     def execute(self, request_data:bytes|RequestData)->ResponseData|None:
+        data = None
         try:
             self.sendRequest(request_data)
-            return ResponseData(self.receiveResponse())
-        except BaseException as e:
+            data = ResponseData(self.receiveResponse())
+        except Exception as e:
+            ConsoleMessage.printError(e)
             logging.exception(e)
-            return None
         finally:
             self.close()
+        return data

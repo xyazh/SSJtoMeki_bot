@@ -1,4 +1,6 @@
 import socket
+import logging
+from ..xyazhServer.ConsoleMessage import ConsoleMessage
 
 if __name__ == '__main__':
     from RequestData import RequestData
@@ -34,9 +36,14 @@ class HTTPRequest:
         if self.sock:
             self.sock.close()
 
-    def execute(self, request_data:bytes|RequestData)->ResponseData:
+    def execute(self, request_data:bytes|RequestData)->ResponseData|None:
+        data = None
         try:
             self.sendRequest(request_data)
-            return ResponseData(self.receiveResponse())
+            data = ResponseData(self.receiveResponse())
+        except Exception as e:
+            ConsoleMessage.printError(e)
+            logging.exception(e)
         finally:
             self.close()
+        return data
