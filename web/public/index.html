@@ -253,7 +253,7 @@
 
         <!-- 发送测试/广播 -->
         <div id="view_send" class="view" style="display:none">
-            <h3>发送测试 / 广播</h3>
+            <h3>发送测试 / 广播 (发送文件可能会有延迟，请勿连续点击)</h3>
             <div class="card" style="margin-top:12px">
                 <div class="layui-form-item">
                     <label class="layui-form-label">目标</label>
@@ -542,7 +542,7 @@
                     data: JSON.stringify(data),
                     contentType: 'application/json',
                     success: function (res) {
-                        $('#send_result').append(`<div>发送到 ${data.target}：${res.success ? '成功' : '失败'}</div>`);
+                        $('#send_result').append(`<div>发送到 ${data.target}：${res.success ? '成功' : '失败'}:${res.error}</div>`);
                     },
                     error: function () {
                         $('#send_result').append(`<div>发送到 ${data.target}：网络错误</div>`);

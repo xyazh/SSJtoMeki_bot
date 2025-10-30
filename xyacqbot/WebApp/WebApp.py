@@ -1,12 +1,12 @@
 import json
 from collections import deque
-from ..xyazhServer.PageManager import PageManager
 from ..xyazhServer.Server import Server
 from .BaseWebApp import BaseWebApp
 from typing import TYPE_CHECKING
 from ..packet.PacketBase import PacketBase
 from ..packet.PacketMsg import PacketMsg, ImageSegment
 from ..datamanager.GlobleDataManager import GlobalDataManager
+from ..msg.MsgBuilder import MsgBuilder
 if TYPE_CHECKING:
     from ..xyazhServer.App import App
     from ..Cqserver import Cqserver
@@ -154,4 +154,40 @@ class WebApp(BaseWebApp):
         else:
             global_data_manager.removeEnbaleGroup(data.get("id"))
         s.sendTextPage(json.dumps({"success": True}),
+                       "application/json;charset=utf-8")
+
+    @BaseWebApp.page("/api/send", "POST")
+    def sendGroup(self, s: "Server"):
+        data = s.readPostData(-1)
+        try:
+            data: dict = json.loads(data)
+        except Exception as e:
+            s.send_error(400, json.dumps({"success": False, "error": str(e)}))
+            return
+        group_id = data.get("target")
+        msg = data.get("message")
+        file_base64 = data.get("file")
+        file_type = data.get("file_type")
+        send_mode = data.get("send_mode")
+        if group_id == None:
+            s.send_error(400)
+            return
+        if msg == None and file_base64 == None:
+            s.send_error(400)
+            return
+        msg_builder = MsgBuilder()
+        msg_builder.updateText(msg)
+        if file_base64 != None:
+            if send_mode == "image_sticker":
+                msg_builder.updateImage(file_base64)
+            elif send_mode == "audio_voice":
+                msg_builder.updateRecord(file_base64)
+            elif send_mode == "video_video":
+                msg_builder.updateVideo(file_base64)
+            else:
+                s.sendTextPage(json.dumps({"success": False, "error": "暂不支持发送文件"}),
+                               "application/json;charset=utf-8")
+                return
+        self.cq_server.sendGroupMsg(msg_builder, group_id)
+        s.sendTextPage(json.dumps({"success": True, "error": ""}),
                        "application/json;charset=utf-8")

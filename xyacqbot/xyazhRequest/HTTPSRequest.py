@@ -10,6 +10,7 @@ else:
     from .RequestData import RequestData
     from .ResponseData import ResponseData
 
+
 class HTTPSRequest:
     def __init__(self, hostname, port=443):
         self.hostname = hostname
@@ -20,9 +21,10 @@ class HTTPSRequest:
 
     def _createConnection(self):
         self.sock = socket.create_connection((self.hostname, self.port))
-        self.ssl_sock = self.context.wrap_socket(self.sock, server_hostname=self.hostname)
+        self.ssl_sock = self.context.wrap_socket(
+            self.sock, server_hostname=self.hostname)
 
-    def sendRequest(self, request_data:bytes|RequestData):
+    def sendRequest(self, request_data: bytes | RequestData):
         if self.ssl_sock is None:
             self._createConnection()
         self.ssl_sock.sendall(request_data)
@@ -40,14 +42,15 @@ class HTTPSRequest:
         if self.ssl_sock:
             self.ssl_sock.close()
 
-    def execute(self, request_data:bytes|RequestData)->ResponseData|None:
+    def execute(self, request_data: bytes | RequestData, ignore: bool = False) -> ResponseData | None:
         data = None
         try:
             self.sendRequest(request_data)
             data = ResponseData(self.receiveResponse())
         except Exception as e:
-            ConsoleMessage.printError(e)
-            logging.exception(e)
+            if not ignore:
+                ConsoleMessage.printError(e)
+                logging.exception(e)
         finally:
             self.close()
         return data

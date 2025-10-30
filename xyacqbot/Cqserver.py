@@ -131,7 +131,7 @@ class Cqserver:
         for f in self.on_event_fuctions:
             f(p)
 
-    def send(self, h_path: str, data: dict = None) -> ResponseData | None:
+    def send(self, h_path: str, data: dict = None, ignore: bool = False) -> ResponseData | None:
         h_requse = HTTPRequest(self.ip, self.send_port)
         h_type = "GET"
         if data is not None:
@@ -142,8 +142,10 @@ class Cqserver:
             "Host": self.ip
         })
         h_data.setJsonData(data)
-        result = h_requse.execute(h_data)
+        result = h_requse.execute(h_data, ignore=ignore)
         if result is None:
+            if ignore:
+                return None
             ConsoleMessage.printError(
                 f"Cqserver request failed path: {h_path}")
             return None
@@ -205,7 +207,7 @@ class Cqserver:
         return data
 
     def _getStatus(self) -> ResponseData | None:
-        return self.send("/get_status", {})
+        return self.send("/get_status", {}, ignore=True)
 
     def getStatus(self) -> dict:
         """

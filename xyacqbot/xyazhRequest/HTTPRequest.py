@@ -9,6 +9,7 @@ else:
     from .RequestData import RequestData
     from .ResponseData import ResponseData
 
+
 class HTTPRequest:
     def __init__(self, hostname, port=80):
         self.hostname = hostname
@@ -18,7 +19,7 @@ class HTTPRequest:
     def _createConnection(self):
         self.sock = socket.create_connection((self.hostname, self.port))
 
-    def sendRequest(self, request_data:bytes|RequestData):
+    def sendRequest(self, request_data: bytes | RequestData):
         if self.sock is None:
             self._createConnection()
         self.sock.sendall(request_data)
@@ -36,14 +37,15 @@ class HTTPRequest:
         if self.sock:
             self.sock.close()
 
-    def execute(self, request_data:bytes|RequestData)->ResponseData|None:
+    def execute(self, request_data: bytes | RequestData, ignore: bool = False) -> ResponseData | None:
         data = None
         try:
             self.sendRequest(request_data)
             data = ResponseData(self.receiveResponse())
         except Exception as e:
-            ConsoleMessage.printError(e)
-            logging.exception(e)
+            if not ignore:
+                ConsoleMessage.printError(e)
+                logging.exception(e)
         finally:
             self.close()
         return data
