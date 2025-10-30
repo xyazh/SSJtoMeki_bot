@@ -1,4 +1,7 @@
 import json
+import threading
+import time
+import random
 from collections import deque
 from ..xyazhServer.Server import Server
 from .BaseWebApp import BaseWebApp
@@ -7,6 +10,7 @@ from ..packet.PacketBase import PacketBase
 from ..packet.PacketMsg import PacketMsg, ImageSegment
 from ..datamanager.GlobleDataManager import GlobalDataManager
 from ..msg.MsgBuilder import MsgBuilder
+from ..xyazhServer.ConsoleMessage import ConsoleMessage
 if TYPE_CHECKING:
     from ..xyazhServer.App import App
     from ..Cqserver import Cqserver
@@ -188,6 +192,25 @@ class WebApp(BaseWebApp):
                 s.sendTextPage(json.dumps({"success": False, "error": "暂不支持发送文件"}),
                                "application/json;charset=utf-8")
                 return
-        self.cq_server.sendGroupMsg(msg_builder, group_id)
+        if group_id == "all":
+            def _broadcastTask(self: WebApp, msg_builder):
+                """后台线程执行群发任务"""
+                enable_groups = GlobalDataManager().getEnbaleGroupList()
+                total = len(enable_groups)
+                ConsoleMessage.printC(f"[Broadcast] 开始群发，共 {total} 个群")
+                for i, gid in enumerate(enable_groups, start=1):
+                    try:
+                        self.cq_server.sendGroupMsg(msg_builder, gid)
+                        ConsoleMessage.printC(
+                            f"[Broadcast] ({i}/{total}) 已发送到群 {gid}")
+                    except Exception as e:
+                        print(f"[Broadcast] 发送到群 {gid} 失败: {e}")
+                    if i < total:
+                        delay = random.uniform(1.0, 2.0)
+                        time.sleep(delay)
+            threading.Thread(target=_broadcastTask,
+                             args=(self, msg_builder)).start()
+        else:
+            self.cq_server.sendGroupMsg(msg_builder, group_id)
         s.sendTextPage(json.dumps({"success": True, "error": ""}),
                        "application/json;charset=utf-8")

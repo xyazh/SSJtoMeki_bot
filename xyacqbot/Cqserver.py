@@ -176,6 +176,14 @@ class Cqserver:
         data = {"user_id": user_id, "message": message}
         return self.send("/send_private_msg", data)
 
+    def uploadGroupFile(self, group_id: int, file: str, name: str = None, folder_id: str = None) -> ResponseData | None:
+        data = {"group_id": group_id, "file": file}
+        if name is not None:
+            data["name"] = name
+        if folder_id is not None:
+            data["folder_id"] = folder_id
+        return self.send("/upload_group_file", data)
+
     def leaveGroup(self, group_id: int) -> ResponseData | None:
         data = {"group_id": group_id}
         return self.send("/set_group_leave", data)

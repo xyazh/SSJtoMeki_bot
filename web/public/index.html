@@ -148,8 +148,7 @@
         <div class="menu-item" data-view="messages">消息管理</div>
         <div class="menu-item" data-view="groups">群组管理</div>
         <div class="menu-item" data-view="send">发送测试/广播</div>
-        <div class="menu-item" data-view="settings">机器人设置</div>
-        <div class="menu-item" data-view="devtools">开发者工具</div>
+        <div class="menu-item" data-view="rules">规则</div>
     </div>
 
     <div class="content">
@@ -270,14 +269,9 @@
                     <div class="layui-input-block" style="display:flex;gap:8px;align-items:center;">
                         <input type="file" id="send_file" accept="image/*,audio/*,video/*">
                         <select id="send_mode" class="layui-select">
-                            <option value="auto">自动</option>
                             <option value="image_sticker">图片 → 表情</option>
-                            <option value="image_file">图片 → 文件</option>
                             <option value="audio_voice">音频 → 语音</option>
-                            <option value="audio_file">音频 → 文件</option>
                             <option value="video_video">视频 → 视频</option>
-                            <option value="video_file">视频 → 文件</option>
-                            <option value="file_file">文件 → 文件</option>
                         </select>
                     </div>
                 </div>
@@ -289,39 +283,32 @@
             </div>
         </div>
 
-        <!-- 设置 -->
-        <div id="view_settings" class="view" style="display:none">
-            <h3>机器人设置</h3>
+
+        <!-- 自动回复规则 -->
+        <div id="view_rules" class="view" style="display:none">
+            <h3>自动回复规则</h3>
             <div class="card" style="margin-top:12px">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">机器人名称</label>
-                    <div class="layui-input-block"><input class="layui-input" id="setting_name"></div>
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+                    <button class="layui-btn" id="btn_fetch_rules">获取规则</button>
+                    <button class="layui-btn layui-btn-normal" id="btn_add_rule">新增规则</button>
+                    <button class="layui-btn layui-btn-danger" id="btn_delete_selected">删除（选中）</button>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">心跳间隔（秒）</label>
-                    <div class="layui-input-block"><input class="layui-input" id="setting_heartbeat" type="number">
-                    </div>
-                </div>
-                <div style="margin-top:8px"><button class="layui-btn" id="btn_save_settings">保存设置</button></div>
+                <table class="layui-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="rule_select_all"></th>
+                            <th>关键词 / 触发条件</th>
+                            <th>回复内容</th>
+                            <th>匹配模式</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rules_table_body"></tbody>
+                </table>
             </div>
         </div>
-
-        <!-- 开发者工具 -->
-        <div id="view_devtools" class="view" style="display:none">
-            <h3>开发者工具</h3>
-            <div class="card" style="margin-top:12px">
-                <div><strong>模拟事件</strong></div>
-                <div style="margin-top:8px">
-                    <textarea id="dev_input_json" class="layui-textarea"
-                        placeholder='示例: {"type":"message","from":123,"text":"你好"}'></textarea>
-                    <div style="margin-top:8px"><button class="layui-btn" id="btn_send_sim">发送模拟事件</button></div>
-                </div>
-            </div>
-        </div>
-
-        <div style="height:36px"></div>
     </div>
-
     <script src="./js/jquery-2.1.4.min.js"></script>
     <script src="./layui/layui.js"></script>
     <script>
@@ -503,9 +490,6 @@
             };
 
 
-
-
-
             $('#btn_send_once').click(function () {
                 const target = $('#send_target').val().trim();
                 const message = $('#send_message').val().trim();
@@ -534,6 +518,49 @@
                     sendToServer({ target, message, send_mode: 'text' });
                 }
             });
+
+            $('#btn_send_broadcast').click(function () {
+                const message = $('#send_message').val().trim();
+                const file = $('#send_file')[0].files[0];
+                const mode = $('#send_mode').val(); // 用户选择发送模式
+
+                if (!message && !file) {
+                    return layer.msg('请填写目标或消息/选择文件');
+                }
+
+                // 二级确认弹窗
+                layer.confirm(
+                    '确定要向所有启用群聊发送这条广播吗？',
+                    { icon: 3, title: '确认发送' },
+                    function (index) {
+                        // 用户点击确定后执行发送
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                const base64Data = e.target.result;
+                                const sendData = {
+                                    target: "all",
+                                    message: message,
+                                    file: base64Data,
+                                    file_type: file.type,
+                                    send_mode: mode // 发送模式
+                                };
+                                sendToServer(sendData);
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            sendToServer({
+                                target: "all",
+                                message,
+                                send_mode: 'text'
+                            });
+                        }
+
+                        layer.close(index); // 关闭确认框
+                    }
+                );
+            });
+
 
             function sendToServer(data) {
                 $.ajax({
@@ -575,31 +602,134 @@
             setInterval(fetchStats, 5000);
 
 
-            // 模拟事件发送
-            $('#btn_send_sim').click(function () {
-                var txt = $('#dev_input_json').val();
-                try { var obj = JSON.parse(txt); } catch (e) { layer.msg('JSON 解析错误', { icon: 0 }); return; }
-                $.post('/api/dev/sim', JSON.stringify(obj), function (res) { layer.msg('已发送模拟事件', { icon: 1 }); }, 'json');
+
+            // 获取规则列表
+            function fetchRules() {
+                $.get('/api/rules', function (res) {
+                    var html = '';
+                    (res || []).forEach(function (r) {
+                        html += `
+                <tr>
+                    <td><input type="checkbox" class="rule_check" value="${r.id}"></td>
+                    <td>${r.trigger}</td>
+                    <td>${r.reply}</td>
+                    <td>${r.mode === 'exact' ? '精确匹配' : '模糊匹配'}</td>
+                    <td>${r.enabled ? '启用' : '停用'}</td>
+                    <td>
+                        <button class="layui-btn layui-btn-xs" onclick="editRule('${r.id}')">编辑</button>
+                    </td>
+                </tr>`;
+                    });
+                    $('#rules_table_body').html(html);
+                }).fail(() => layer.msg('获取规则失败', { icon: 0 }));
+            }
+
+            $('#btn_fetch_rules').click(fetchRules);
+            $('#rule_select_all').on('change', function () {
+                $('.rule_check').prop('checked', this.checked);
             });
+
+            // 删除选中规则
+            $('#btn_delete_selected').click(function () {
+                const selected = $('.rule_check:checked').map((_, el) => $(el).val()).get();
+                if (selected.length === 0) return layer.msg('请选择要删除的规则');
+                layer.confirm('确认删除选中的 ' + selected.length + ' 条规则？', function (index) {
+                    $.ajax({
+                        url: '/api/rules/delete',
+                        type: 'POST',
+                        data: JSON.stringify({ ids: selected }),
+                        contentType: 'application/json',
+                        success: function (res) {
+                            if (res.success) {
+                                layer.msg('删除成功');
+                                fetchRules();
+                            } else {
+                                layer.msg('删除失败：' + res.error);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            });
+
+            // 打开新增/编辑规则窗口
+            function openRuleEditor(id) {
+                const editing = id ? '编辑规则' : '新增规则';
+                const rule = id ? (window._rules?.find(r => r.id === id) || {}) : {};
+
+                const formHtml = `
+                    <div style="padding:16px;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">触发条件</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="rule_trigger" value="${rule.trigger || ''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">回复内容</label>
+                            <div class="layui-input-block">
+                                <textarea class="layui-textarea" id="rule_reply">${rule.reply || ''}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">匹配模式</label>
+                            <div class="layui-input-block">
+                                <select id="rule_mode">
+                                    <option value="exact" ${rule.mode === 'exact' ? 'selected' : ''}>精确匹配</option>
+                                    <option value="fuzzy" ${rule.mode === 'fuzzy' ? 'selected' : ''}>模糊匹配</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">是否启用</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" id="rule_enabled" ${rule.enabled ? 'checked' : ''}>
+                            </div>
+                        </div>
+                        <button class="layui-btn" id="btn_save_rule">保存</button>
+                    </div>`;
+
+                layer.open({
+                    type: 1,
+                    title: editing,
+                    area: ['400px', '480px'],
+                    content: formHtml,
+                    success: function (layero, index) {
+                        $('#btn_save_rule').click(function () {
+                            const data = {
+                                id: id,
+                                trigger: $('#rule_trigger').val(),
+                                reply: $('#rule_reply').val(),
+                                mode: $('#rule_mode').val(),
+                                enabled: $('#rule_enabled').is(':checked')
+                            };
+                            $.ajax({
+                                url: '/api/rules/save',
+                                type: 'POST',
+                                data: JSON.stringify(data),
+                                contentType: 'application/json',
+                                success: function (res) {
+                                    if (res.success) {
+                                        layer.msg('保存成功');
+                                        layer.close(index);
+                                        fetchRules();
+                                    } else {
+                                        layer.msg('保存失败：' + (res.error || '未知错误'));
+                                    }
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+
+            // 新增按钮绑定
+            $('#btn_add_rule').click(function () {
+                openRuleEditor();  // 新增
+            });
+
         });
-
     </script>
-
-    <!-- 说明：
-    此页面为前端样板，依赖后端提供如下 REST 接口（示例）：
-      POST /api/admin/login        -> {name,password} 返回 {ok, token, user}
-      GET  /api/stats              -> 返回 {online, today_msgs}
-      GET  /api/messages?q=...     -> 返回消息数组
-      GET  /api/message/:id        -> 返回单条消息
-      DELETE /api/message/:id
-      GET  /api/groups
-      POST /api/send               -> {target,text}
-      POST /api/broadcast          -> {text}
-      GET  /api/logs?level=...
-      POST /api/settings           -> 保存设置
-      POST /api/dev/sim            -> 接收模拟事件
-    根据实际机器人后端实现调整接口与字段。
-  -->
 </body>
 
 </html>
