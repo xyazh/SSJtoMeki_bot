@@ -257,12 +257,12 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">目标</label>
                     <div class="layui-input-block"><input class="layui-input" id="send_target"
-                            placeholder="例如：123456789 或 group:987654"></div>
+                            placeholder="例如：123456789"></div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">消息</label>
                     <div class="layui-input-block"><textarea class="layui-textarea" id="send_message"
-                            placeholder="请输入要发送的文本消息，支持 CQ 码"></textarea></div>
+                            placeholder="请输入要发送的文本消息"></textarea></div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">附件</label>
@@ -614,7 +614,7 @@
                                 <td><input type="checkbox" class="rule_check" value="${r.trigger}"></td>
                                 <td>${r.trigger}</td>
                                 <td>${r.reply}</td>
-                                <td>${r.mode === 'exact' ? '精确匹配' : '模糊匹配'}</td>
+                                <td>${{ exact: '精确匹配', fuzzy: '正则匹配', dsltp: "模板匹配" }[r.mode]}</td>
                                 <td>${r.enabled ? '启用' : '停用'}</td>
                                 <td>
                                     <button class="layui-btn layui-btn-xs" onclick="editRule('${r.trigger}')">编辑</button>
@@ -657,36 +657,37 @@
                 const editing = oldTrigger ? '编辑规则' : '新增规则';
                 const rule = oldTrigger ? (window._rules?.find(r => r.trigger === oldTrigger) || {}) : {};
                 const formHtml = `
-        <div style="padding:16px;">
-            <div class="layui-form-item">
-                <label class="layui-form-label">触发条件</label>
-                <div class="layui-input-block">
-                    <input class="layui-input" id="rule_trigger" value="${rule.trigger || ''}">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">回复内容</label>
-                <div class="layui-input-block">
-                    <textarea class="layui-textarea" id="rule_reply">${rule.reply || ''}</textarea>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">匹配模式</label>
-                <div class="layui-input-block">
-                    <select id="rule_mode">
-                        <option value="exact" ${rule.mode === 'exact' ? 'selected' : ''}>精确匹配</option>
-                        <option value="fuzzy" ${rule.mode === 'fuzzy' ? 'selected' : ''}>模糊匹配</option>
-                    </select>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">是否启用</label>
-                <div class="layui-input-block">
-                    <input type="checkbox" id="rule_enabled" ${rule.enabled ? 'checked' : ''}>
-                </div>
-            </div>
-            <button class="layui-btn" id="btn_save_rule">保存</button>
-        </div>`;
+                    <div style="padding:16px;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">触发条件</label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="rule_trigger" value="${rule.trigger || ''}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">回复内容</label>
+                            <div class="layui-input-block">
+                                <textarea class="layui-textarea" id="rule_reply">${rule.reply || ''}</textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">匹配模式</label>
+                            <div class="layui-input-block">
+                                <select id="rule_mode">
+                                    <option value="exact" ${rule.mode === 'exact' ? 'selected' : ''}>精确匹配</option>
+                                    <option value="fuzzy" ${rule.mode === 'fuzzy' ? 'selected' : ''}>正则匹配</option>
+                                    <option value="dsltp" ${rule.mode === 'dsltp' ? 'selected' : ''}>模板匹配</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">是否启用</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" id="rule_enabled" ${rule.enabled ? 'checked' : ''}>
+                            </div>
+                        </div>
+                        <button class="layui-btn" id="btn_save_rule">保存</button>
+                    </div>`;
 
                 layer.open({
                     type: 1,

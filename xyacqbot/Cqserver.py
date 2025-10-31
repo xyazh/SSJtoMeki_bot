@@ -2,6 +2,7 @@ import urllib.parse
 import typing
 import json
 import os
+import re
 from .xyazhServer import ConsoleMessage, App, Server
 from .xyazhRequest import HTTPRequest, HTTPSRequest, RequestData, ResponseData
 from .packet.PacketMsg import PacketMsg
@@ -12,6 +13,7 @@ from .modsLoader.Container import Container
 from .Order import Order
 from .webApp.WebApp import WebApp
 from .datamanager.GlobleDataManager import GlobalDataManager
+from .DSL import DSL
 
 if typing.TYPE_CHECKING:
     class Mod:
@@ -82,6 +84,29 @@ class Cqserver:
         self.onEvent(self.modOnEvent)
         self.onEvent(self.onMsgEvent)
 
+    def autoReply(self, p: PacketMsg):
+        msg = p.getMsg()
+        global_data_manager = GlobalDataManager()
+        reply_rules = global_data_manager.getAutoReplyRules()
+        for rule in reply_rules.values():
+            if not rule["enabled"]:
+                continue
+            trigger = rule["trigger"]
+            reply = rule["reply"]
+            mode = rule["mode"]
+            if mode == "exact":
+                if msg == trigger:
+                    ConsoleMessage.printDebug(reply)
+            elif mode == "fuzzy":
+                result = re.match(trigger, msg)
+                if result is not None:
+                    ConsoleMessage.printDebug(reply)
+            elif mode == "dsltp":
+                dsl = DSL(trigger)
+                t_data = dsl.template(msg)
+                if t_data is not None:
+                    ConsoleMessage.printDebug(reply)
+
     def onMsgEvent(self, p: PacketBase):
         if not isinstance(p, PacketMsg):
             return
@@ -92,6 +117,7 @@ class Cqserver:
                 return
             ConsoleMessage.printC(
                 f"来自群{p.group_id}{p.getName()}({p.getId()})的消息：{p.getMsg()}")
+            self.autoReply(p)
 
     def serverRun(self):
         self.printTitleVison()
