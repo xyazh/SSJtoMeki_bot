@@ -21,7 +21,7 @@ class Server(BaseServer,ServerHelper):
         self.app: "App" = app
         super().__init__(request, client_address, server)
 
-    def sendTextPage(self,text:str|bytes,header:str="text/html;charset=utf-8"):
+    def sendTextPage(self,text:str|bytes,header:str="text/html;charset=utf-8",response_code=200):
         if type(text) == str:
             text = bytes(text,encoding="utf8")
         self.send_response(200,"OK")

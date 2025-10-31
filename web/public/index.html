@@ -607,18 +607,19 @@
             function fetchRules() {
                 $.get('/api/rules', function (res) {
                     var html = '';
+                    window._rules = res;
                     (res || []).forEach(function (r) {
                         html += `
-                <tr>
-                    <td><input type="checkbox" class="rule_check" value="${r.id}"></td>
-                    <td>${r.trigger}</td>
-                    <td>${r.reply}</td>
-                    <td>${r.mode === 'exact' ? '精确匹配' : '模糊匹配'}</td>
-                    <td>${r.enabled ? '启用' : '停用'}</td>
-                    <td>
-                        <button class="layui-btn layui-btn-xs" onclick="editRule('${r.id}')">编辑</button>
-                    </td>
-                </tr>`;
+                            <tr>
+                                <td><input type="checkbox" class="rule_check" value="${r.trigger}"></td>
+                                <td>${r.trigger}</td>
+                                <td>${r.reply}</td>
+                                <td>${r.mode === 'exact' ? '精确匹配' : '模糊匹配'}</td>
+                                <td>${r.enabled ? '启用' : '停用'}</td>
+                                <td>
+                                    <button class="layui-btn layui-btn-xs" onclick="editRule('${r.trigger}')">编辑</button>
+                                </td>
+                            </tr>`;
                     });
                     $('#rules_table_body').html(html);
                 }).fail(() => layer.msg('获取规则失败', { icon: 0 }));
@@ -637,7 +638,7 @@
                     $.ajax({
                         url: '/api/rules/delete',
                         type: 'POST',
-                        data: JSON.stringify({ ids: selected }),
+                        data: JSON.stringify({ triggers: selected }),
                         contentType: 'application/json',
                         success: function (res) {
                             if (res.success) {
@@ -652,42 +653,40 @@
                 });
             });
 
-            // 打开新增/编辑规则窗口
-            function openRuleEditor(id) {
-                const editing = id ? '编辑规则' : '新增规则';
-                const rule = id ? (window._rules?.find(r => r.id === id) || {}) : {};
-
+            function openRuleEditor(oldTrigger) {
+                const editing = oldTrigger ? '编辑规则' : '新增规则';
+                const rule = oldTrigger ? (window._rules?.find(r => r.trigger === oldTrigger) || {}) : {};
                 const formHtml = `
-                    <div style="padding:16px;">
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">触发条件</label>
-                            <div class="layui-input-block">
-                                <input class="layui-input" id="rule_trigger" value="${rule.trigger || ''}">
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">回复内容</label>
-                            <div class="layui-input-block">
-                                <textarea class="layui-textarea" id="rule_reply">${rule.reply || ''}</textarea>
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">匹配模式</label>
-                            <div class="layui-input-block">
-                                <select id="rule_mode">
-                                    <option value="exact" ${rule.mode === 'exact' ? 'selected' : ''}>精确匹配</option>
-                                    <option value="fuzzy" ${rule.mode === 'fuzzy' ? 'selected' : ''}>模糊匹配</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">是否启用</label>
-                            <div class="layui-input-block">
-                                <input type="checkbox" id="rule_enabled" ${rule.enabled ? 'checked' : ''}>
-                            </div>
-                        </div>
-                        <button class="layui-btn" id="btn_save_rule">保存</button>
-                    </div>`;
+        <div style="padding:16px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">触发条件</label>
+                <div class="layui-input-block">
+                    <input class="layui-input" id="rule_trigger" value="${rule.trigger || ''}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">回复内容</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" id="rule_reply">${rule.reply || ''}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">匹配模式</label>
+                <div class="layui-input-block">
+                    <select id="rule_mode">
+                        <option value="exact" ${rule.mode === 'exact' ? 'selected' : ''}>精确匹配</option>
+                        <option value="fuzzy" ${rule.mode === 'fuzzy' ? 'selected' : ''}>模糊匹配</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否启用</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" id="rule_enabled" ${rule.enabled ? 'checked' : ''}>
+                </div>
+            </div>
+            <button class="layui-btn" id="btn_save_rule">保存</button>
+        </div>`;
 
                 layer.open({
                     type: 1,
@@ -697,12 +696,13 @@
                     success: function (layero, index) {
                         $('#btn_save_rule').click(function () {
                             const data = {
-                                id: id,
+                                old_trigger: rule.trigger || '',  // 用于编辑时找到旧规则
                                 trigger: $('#rule_trigger').val(),
                                 reply: $('#rule_reply').val(),
                                 mode: $('#rule_mode').val(),
                                 enabled: $('#rule_enabled').is(':checked')
                             };
+
                             $.ajax({
                                 url: '/api/rules/save',
                                 type: 'POST',
@@ -716,6 +716,14 @@
                                     } else {
                                         layer.msg('保存失败：' + (res.error || '未知错误'));
                                     }
+                                },
+                                error: function (xhr) {
+                                    let msg = '保存失败：网络或服务器错误';
+                                    try {
+                                        const resp = JSON.parse(xhr.responseText);
+                                        msg = '保存失败：' + (resp.error || '未知错误');
+                                    } catch (e) { }
+                                    layer.msg(msg);
                                 }
                             });
                         });
@@ -723,10 +731,17 @@
                 });
             }
 
+
             // 新增按钮绑定
             $('#btn_add_rule').click(function () {
                 openRuleEditor();  // 新增
             });
+
+            // 编辑按钮
+            window.editRule = function (trigger) {
+                openRuleEditor(trigger);  // 编辑
+            };
+
 
         });
     </script>

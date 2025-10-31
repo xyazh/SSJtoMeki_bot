@@ -6,7 +6,7 @@ class GlobalDataManager(DataManager):
         super().__init__(file_path="global_data.json")
 
     def getEnbaleGroupList(self) -> list[str]:
-        return self.data.get("enable_group_list",[])
+        return self.data.get("enable_group_list", [])
 
     def setEnbaleGroupList(self, li: list[str]) -> None:
         self.data["enable_group_list"] = li
@@ -24,3 +24,27 @@ class GlobalDataManager(DataManager):
             return
         groups.remove(group_id)
         self.data["enable_group_list"] = list(groups)
+
+    def appendAutoReplyRules(self, trigger: str, reply: str, mode: str = 'exact', enabled: bool = False) -> None:
+        rules: dict[dict] = self.data.get("auto_reply_rules", {})
+        rules[trigger] = {
+            "trigger": trigger,
+            "reply": reply,
+            "mode": mode,
+            "enabled": enabled
+        }
+        self.data["auto_reply_rules"] = rules
+
+    def getAutoReplyRules(self) -> dict[str,dict]:
+        return self.data.get("auto_reply_rules", {})
+
+    def removeAutoReplyRules(self, trigger: str | list) -> None:
+        rules: dict[dict] = self.data.get("auto_reply_rules", {})
+        if isinstance(trigger, str):
+            if trigger in rules:
+                del rules[trigger]
+        elif isinstance(trigger, list):
+            for t in trigger:
+                if t in rules:
+                    del rules[t]
+        self.data["auto_reply_rules"] = rules

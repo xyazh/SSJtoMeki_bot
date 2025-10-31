@@ -214,3 +214,50 @@ class WebApp(BaseWebApp):
             self.cq_server.sendGroupMsg(msg_builder, group_id)
         s.sendTextPage(json.dumps({"success": True, "error": ""}),
                        "application/json;charset=utf-8")
+
+    @BaseWebApp.page("/api/rules/save", "POST")
+    def rulesSave(self, s: "Server"):
+        data = s.readPostData(-1)
+        try:
+            data: dict = json.loads(data)
+        except Exception as e:
+            s.send_error(400, json.dumps({"success": False, "error": str(e)}))
+            return
+        trigger = data.get("trigger")
+        reply = data.get("reply")
+        mode = data.get("mode", "exact")
+        enabled = data.get("enabled", False)
+        if trigger == None or trigger == "":
+            s.sendTextPage(json.dumps(
+                {"success": False, "error": "触发词不能为空"}),
+                "application/json;charset=utf-8", 400)
+            return
+        if reply == None or reply == "":
+            s.sendTextPage(json.dumps(
+                {"success": False, "error": "回复不能为空"}),
+                "application/json;charset=utf-8", 400)
+            return
+        global_data_manager = GlobalDataManager()
+        global_data_manager.appendAutoReplyRules(trigger, reply, mode, enabled)
+        s.sendTextPage(json.dumps({"success": True, "error": ""}),
+                       "application/json;charset=utf-8")
+
+    @BaseWebApp.page("/api/rules", "GET")
+    def rulesGet(self, s: "Server"):
+        global_data_manager = GlobalDataManager()
+        rules = global_data_manager.getAutoReplyRules()
+        rules = [{"trigger": k, "reply": v["reply"], "mode": v["mode"], "enabled": v["enabled"]} for k, v in rules.items()]
+        s.sendTextPage(json.dumps(rules), "application/json;charset=utf-8")
+
+    @BaseWebApp.page("/api/rules/delete", "POST")
+    def rulesDelete(self, s: "Server"):
+        data = s.readPostData(-1)
+        try:
+            data: dict = json.loads(data)
+        except Exception as e:
+            s.send_error(400, json.dumps({"success": False, "error": str(e)}))
+            return
+        triggers = data.get("triggers",[])
+        GlobalDataManager().removeAutoReplyRules(triggers)
+        s.sendTextPage(json.dumps({"success": True, "error": ""}),
+                       "application/json;charset=utf-8")
