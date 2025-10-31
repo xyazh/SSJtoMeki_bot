@@ -16,7 +16,6 @@ class TemplateEngine:
     def render(self, **env):
         local_env = dict(env)
         global_env = {}
-
         code = self.template
         def assign_replacer(match):
             var, expr = match.groups()
