@@ -1,4 +1,62 @@
 import re
+import random
+import time
+from dataclasses import dataclass, field
+from typing import List, Optional, Union, Literal, Dict, Any
+
+
+@dataclass
+class UserData:
+    id: int
+    nickname: str
+    card: Optional[str] = None
+    sex: Optional[Literal["male", "female", "unknown"]] = None
+    age: Optional[int] = None
+    level: Optional[str] = None
+    role: Optional[Literal["owner", "admin", "member"]] = None
+    data: Dict[str, Any] = field(default_factory=dict)
+
+    def getName(self) -> str:
+        name = self.card
+        if name == "" or name is None:
+            name = self.nickname
+        return name
+
+
+class Template:
+    def __init__(self, kw: dict = None):
+        if kw is None:
+            kw = {}
+        self.__dict__["kw"] = kw  # 直接设置底层字典，避免触发 __setattr__
+
+    def __setattr__(self, name, value):
+        self.__dict__["kw"][name] = value
+
+    def __getattr__(self, name):
+        return self.__dict__["kw"].get(name, None)
+
+
+class Random:
+    def randint(self, a: int, b: int) -> int:
+        return random.randint(a, b)
+
+    def random(self) -> float:
+        return random.random()
+
+    def choice(self, *args) -> Any:
+        return random.choice(args)
+
+    def gauss(self, mu: float, sigma: float) -> float:
+        return random.gauss(mu, sigma)
+
+
+class Time:
+    def dateTime(self) -> float:
+        return time.time()
+
+    def strTime(self, ft: str = "%Y-%m-%d %H:%M:%S") -> str:
+        return time.strftime(ft, time.localtime())
+
 
 class TemplateEngine:
     """
@@ -17,6 +75,7 @@ class TemplateEngine:
         local_env = dict(env)
         global_env = {}
         code = self.template
+
         def assign_replacer(match):
             var, expr = match.groups()
             try:
@@ -31,7 +90,6 @@ class TemplateEngine:
             return local_env["_result"]
         except Exception as e:
             return f"<格式化错误:{e}>"
-        
 
 
 if __name__ == "__main__":

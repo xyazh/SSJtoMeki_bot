@@ -5,20 +5,8 @@
     "auto_reply_rules": {
         "114": {
             "trigger": "114",
-            "reply": "514",
+            "reply": "{user_data}",
             "mode": "exact",
-            "enabled": true
-        },
-        "[0-9]": {
-            "trigger": "[0-9]",
-            "reply": "123",
-            "mode": "fuzzy",
-            "enabled": true
-        },
-        "[e:emun('.','/')]use [count:int] [item:str]": {
-            "trigger": "[e:emun('.','/')]use [count:int] [item:str]",
-            "reply": "ok",
-            "mode": "dsltp",
             "enabled": true
         }
     }

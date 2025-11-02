@@ -312,6 +312,30 @@
     <script src="./js/jquery-2.1.4.min.js"></script>
     <script src="./layui/layui.js"></script>
     <script>
+        // 将字符串安全转义为 HTML 属性值
+        function escapeHTMLAttr(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')   // 必须最先转义
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        // 从属性中恢复原始字符串
+        function unescapeHTMLAttr(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
+                .replace(/&amp;/g, '&'); // 最后还原
+        }
+
+
+
         // 简单前端逻辑：视图切换 / 调用后端 API（需要服务端实现对应接口）
         $(function () {
             // 菜单切换
@@ -617,13 +641,20 @@
                                 <td>${{ exact: '精确匹配', fuzzy: '正则匹配', dsltp: "模板匹配" }[r.mode]}</td>
                                 <td>${r.enabled ? '启用' : '停用'}</td>
                                 <td>
-                                    <button class="layui-btn layui-btn-xs" onclick="editRule('${r.trigger}')">编辑</button>
+                                    <button class="layui-btn layui-btn-xs btn-edit-rule" data-trigger="${r.trigger}">编辑</button>
                                 </td>
                             </tr>`;
                     });
                     $('#rules_table_body').html(html);
+
+                    // 给所有编辑按钮绑定事件
+                    $('.btn-edit-rule').off('click').on('click', function () {
+                        const trigger = unescapeHTMLAttr($(this).data('trigger'));
+                        openRuleEditor(trigger);
+                    });
                 }).fail(() => layer.msg('获取规则失败', { icon: 0 }));
             }
+
 
             $('#btn_fetch_rules').click(fetchRules);
             $('#rule_select_all').on('change', function () {
@@ -737,13 +768,6 @@
             $('#btn_add_rule').click(function () {
                 openRuleEditor();  // 新增
             });
-
-            // 编辑按钮
-            window.editRule = function (trigger) {
-                openRuleEditor(trigger);  // 编辑
-            };
-
-
         });
     </script>
 </body>

@@ -13,7 +13,9 @@ from .modsLoader.Container import Container
 from .Order import Order
 from .webApp.WebApp import WebApp
 from .datamanager.GlobleDataManager import GlobalDataManager
+from .datamanager.UserDataManager import UserDataManager
 from .DSL import DSL
+from .TemplateEngine import TemplateEngine, UserData, Template, Random, Time
 
 if typing.TYPE_CHECKING:
     class Mod:
@@ -88,24 +90,37 @@ class Cqserver:
         msg = p.getMsg()
         global_data_manager = GlobalDataManager()
         reply_rules = global_data_manager.getAutoReplyRules()
+        user = UserData(p.getId(), p.getNickname(), p.getCardname(
+        ), p.sender.sex, p.sender.age, p.sender.level, p.sender.role)
+        user_data = UserDataManager(p.getId())
+        random = Random()
+        time = Time()
         for rule in reply_rules.values():
             if not rule["enabled"]:
                 continue
             trigger = rule["trigger"]
-            reply = rule["reply"]
+            reply = TemplateEngine(rule["reply"])
             mode = rule["mode"]
             if mode == "exact":
                 if msg == trigger:
-                    ConsoleMessage.printDebug(reply)
+                    result = reply.render(
+                        user=user, user_data=user_data, random=random, time=time)
+                    self.sendGroupMsg(result, p.group_id)
             elif mode == "fuzzy":
                 result = re.match(trigger, msg)
                 if result is not None:
-                    ConsoleMessage.printDebug(reply)
+                    result = reply.render(
+                        user=user, user_data=user_data, random=random, time=time)
+                    self.sendGroupMsg(result, p.group_id)
             elif mode == "dsltp":
                 dsl = DSL(trigger)
                 t_data = dsl.template(msg)
-                if t_data is not None:
-                    ConsoleMessage.printDebug(reply)
+                if t_data is None:
+                    continue
+                template = Template(t_data)
+                result = reply.render(
+                    user=user, template=template, user_data=user_data, random=random, time=time)
+                self.sendGroupMsg(result, p.group_id)
 
     def onMsgEvent(self, p: PacketBase):
         if not isinstance(p, PacketMsg):
