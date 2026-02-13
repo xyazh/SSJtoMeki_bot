@@ -34,12 +34,15 @@ if typing.TYPE_CHECKING:
 
 
 class Cqserver:
+    instance = None
+
     def __init__(self, ip: str, send_port: int, lisent_port: int, web_port: int):
         self.ip = ip
         self.send_port = send_port
         self.lisent_port = lisent_port
         self.web_port = web_port
         self.on_event_fuctions: list[typing.Callable] = []
+        Cqserver.instance = self
 
     def onEvent(self, fuction: typing.Callable):
         self.on_event_fuctions.append(fuction)

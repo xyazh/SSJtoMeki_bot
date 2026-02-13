@@ -53,7 +53,6 @@ class PageManager:
     def register(self,path: str, t: str = "GET"):
         def r(fuc):
             self.addPath(path, fuc, t)
-            print(fuc)
             return fuc
         return r
 
