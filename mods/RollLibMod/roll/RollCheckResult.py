@@ -5,11 +5,9 @@ MSG = ["大成功", "极难成功", "困难成功", "普通成功", "失败", "�
 
 
 @dataclass
-class RollResult:
+class RollDiceResult:
     level: int
     value: int | float | complex
-    values: tuple[int | float | complex]
-    is_all_values: bool
 
     @property
     def msg(self) -> str:
@@ -29,4 +27,4 @@ class RollResult:
         return 3
 
     def __str__(self) -> str:
-        return f"RollResult<level: {self.level},value: {self.value},values: {str(self.values[:10])[:-1]+', ...)' if len(self.values)>10 else str(self.values)}"
+        return f"RollResult<level: {self.level},value: {self.value}"

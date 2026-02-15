@@ -20,34 +20,40 @@ class RandomGen:
 
     def nextBytes(self, n: int) -> bytes:
         return self.rand.randbytes(n)
+    
+    def nextComplex(self) -> complex:
+        return self.rand.random() + self.rand.random() * 1j
 
     def choice(self, *args: object) -> object:
         return self.rand.choice(args)
 
     def randListFromI(self, len, ran: Iterable[_T] = range(10)) -> list[_T]:
         return [self.choice(*ran) for _ in range(len)]
+    
+    def gauss(self, mu, sigma):
+        return self.rand.gauss(mu, sigma)
 
     def randListFronF(self, len, fuc: Callable[[Any], _T] = random.random, args: tuple[Any] = None) -> list[_T]:
         if args is None:
             return [fuc() for _ in range(len)]
         return [fuc(*args) for _ in range(len)]
 
-    def bestRandomGuass(self, mu: float, sigma: float, n: float):
+    def bestRandomGauss(self, mu: float, sigma: float, n: float):
         """
         生成范围大小为n的高斯分布随机数
         """
         lower = mu - n
         upper = mu + n
-        return self.bestRandomGuassRange(mu, sigma, lower, upper)
+        return self.bestRandomGaussRange(mu, sigma, lower, upper)
 
-    def bestRandomGuassRange(self, mu: float, sigma: float, lower: float, upper: float):
+    def bestRandomGaussRange(self, mu: float, sigma: float, lower: float, upper: float):
         """
         生成在[lower, upper]范围内的高斯分布随机数
         """
-        r = self.rand.gauss(mu, sigma)
+        r = self.gauss(mu, sigma)
         lower, upper = min(lower, upper), max(lower, upper)
         while r < lower or r > upper:
-            r = self.rand.gauss(mu, sigma)
+            r = self.gauss(mu, sigma)
         return r
 
     def randomSplitInt(self, n: int, m: int, l: int) -> list[int]:
