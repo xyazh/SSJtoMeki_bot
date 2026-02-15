@@ -11,7 +11,16 @@ class Dice:
     def setRandomGen(self, rand: RandomGen):
         self.rand = rand
 
-    def dInt(self, count: int, faces: int) -> RollDiceResult:
+    def dInt(self, r_count: int, r_faces: int) -> RollDiceResult:
+        sub = 1
+        count = r_count
+        faces = r_faces
+        if r_count < 0:
+            count = -r_count
+            sub *= -1
+        if r_faces < 0:
+            faces = -r_faces
+            sub *= -1
         max_count = self.max_count
         outsum = 0
         outlen = 0
@@ -23,11 +32,20 @@ class Dice:
             outsum = round(self.rand.gauss(mu, sigma))
             min_sum = outlen * 1
             max_sum = outlen * faces
-            outsum = max(min_sum, min(outsum, max_sum))
-        result = tuple(self.rand.nextInt(1, faces) for _ in range(count))
+            outsum = max(min_sum, min(outsum, max_sum)) * sub
+        result = tuple(self.rand.nextInt(1, faces) * sub for _ in range(count))
         return RollDiceResult(result, outsum, outlen)
 
-    def dFloat(self, count: float, faces: float) -> RollDiceResult:
+    def dFloat(self, r_count: int, r_faces: int) -> RollDiceResult:
+        sub = 1
+        count = r_count
+        faces = r_faces
+        if r_count < 0:
+            count = -r_count
+            sub *= -1
+        if r_faces < 0:
+            faces = -r_faces
+            sub *= -1
         max_count = self.max_count
         outsum = 0.0
         outlen = 0
@@ -39,15 +57,16 @@ class Dice:
             outsum = self.rand.gauss(mu, sigma)
             min_sum = 0.0
             max_sum = outlen * faces
-            outsum = max(min_sum, min(outsum, max_sum))
-        result = tuple(self.rand.nextFloat() * faces for _ in range(count))
+            outsum = max(min_sum, min(outsum, max_sum)) * sub
+        result = tuple(self.rand.nextFloat() * sub *
+                       faces for _ in range(count))
         return RollDiceResult(result, outsum, outlen)
 
     def dComplex(self, count: complex, faces: complex) -> RollDiceResult:
         max_count = self.max_count
         outsum = 0.0 + 0.0j
         outlen = 0
-        if count > max_count:
+        if count.imag > max_count:
             outlen = count - max_count
             count = max_count
             mu = outlen * (faces / 2)
