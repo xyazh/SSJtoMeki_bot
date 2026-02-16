@@ -2,7 +2,7 @@ import sys
 from dataclasses import dataclass
 from typing import Iterator
 from itertools import islice
-from .Comparator import Comparator
+from ..tools.Comparator import Comparator
 
 
 @dataclass

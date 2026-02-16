@@ -1,6 +1,6 @@
 import math
 from .tools.RandomGen import RandomGen
-from .RollDiceResult import RollDiceResult
+from .result.RollDiceResult import RollDiceResult
 
 
 class Dice:
