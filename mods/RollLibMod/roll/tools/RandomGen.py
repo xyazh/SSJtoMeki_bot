@@ -12,8 +12,8 @@ class RandomGen:
     def nextInt(self, a: int, b: int) -> int:
         return self.rand.randint(a, b)
 
-    def nextFloat(self) -> float:
-        return self.rand.random()
+    def nextFloat(self,scal = 1) -> float:
+        return self.rand.random() * scal
 
     def nextBool(self) -> bool:
         return self.rand.randint(0, 1) == 0
@@ -21,8 +21,8 @@ class RandomGen:
     def nextBytes(self, n: int) -> bytes:
         return self.rand.randbytes(n)
     
-    def nextComplex(self) -> complex:
-        return self.rand.random() + self.rand.random() * 1j
+    def nextComplex(self,scal_real = 1,scal_imag = 1) -> complex:
+        return self.rand.random() * scal_real + self.rand.random() * 1j * scal_imag
 
     def choice(self, *args: object) -> object:
         return self.rand.choice(args)

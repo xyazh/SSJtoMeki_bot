@@ -1,3 +1,4 @@
+import sys
 from dataclasses import dataclass
 from typing import Iterator
 from itertools import islice
@@ -6,18 +7,23 @@ from .Comparator import Comparator
 
 @dataclass
 class RollDiceResult:
-    values: tuple[int | float | complex]
+    values: tuple[int | float | complex] | None
     outsum: int | float | complex = 0
     outlen: int = 0
     limit: int = 10
 
+    def lenValues(self) -> int:
+        if self.values is None:
+            return 0
+        return len(self.values)
+
     def __getitem__(self, index: int) -> int | float | complex:
-        total_len = len(self.values) + self.outlen
+        total_len = self.lenValues() + self.outlen
         if index < 0:
             index += total_len
         if not 0 <= index < total_len:
             raise IndexError("Index out of range")
-        if index < len(self.values):
+        if index < self.lenValues():
             return self.values[index]
         if self.outlen == 0:
             raise IndexError("Index out of range")
@@ -27,7 +33,8 @@ class RollDiceResult:
         return avg
 
     def __iter__(self) -> Iterator[int | float | complex]:
-        yield from self.values
+        if self.values is not None:
+            yield from self.values
         if self.outlen:
             avg = self.outsum / self.outlen
             if isinstance(avg, float) and avg.is_integer():
@@ -36,22 +43,28 @@ class RollDiceResult:
                 yield avg
 
     def __len__(self) -> int:
-        return len(self.values) + self.outlen
+        s = self.size()
+        if s < sys.maxsize:
+            return s
+        raise OverflowError("Result len is too large, use size() instead")
 
     def __str__(self) -> str:
         limit = self.limit
-        length = len(self)
+        length = self.size()
         if length > limit:
             items = list(islice(self, limit))
-            return f"RollResult<{', '.join(map(str, items))}, ...>"
-        return f"RollResult<{', '.join(map(str, self))}>"
+            return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(str, items))}, ...>"
+        return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(str, self))}>"
 
     def __repr__(self):
         return self.__str__()
+    
+    def size(self) -> int:
+        return self.lenValues() + self.outlen
 
     def toStr(self) -> str:
         limit = self.limit
-        length = len(self)
+        length = self.size()
         if length > limit:
             items = list(islice(self, limit))
             return f"{', '.join(map(str, items))}, ..."
@@ -70,12 +83,14 @@ class RollDiceResult:
         return min(min(values), Comparator(self.outsum / self.outlen)).value
 
     def sum(self) -> int | float | complex:
+        if self.values is None:
+            return self.outsum
         return sum(self.values) + self.outsum
 
     def avg(self) -> int | float | complex:
-        return self.sum() / (len(self.values) + self.outlen)
+        return self.sum() / (self.lenValues() + self.outlen)
 
     def count(self, a: int | float | complex, b: int | float | complex) -> list[int | float | complex]:
         a = Comparator(a)
         b = Comparator(b)
-        return [i for i in self.values if a <= Comparator(i) <= b]
+        return [i for i in ([] if self.values is None else self.values) if a <= Comparator(i) <= b]

@@ -12,6 +12,8 @@ class Dice:
         self.rand = rand
 
     def dInt(self, r_count: int, r_faces: int) -> RollDiceResult:
+        if not (isinstance(r_count, int) and isinstance(r_faces, int)):
+            raise TypeError("Invalid type")
         sub = 1
         count = r_count
         faces = r_faces
@@ -28,7 +30,7 @@ class Dice:
             outlen = count - max_count
             count = max_count
             mu = outlen * (1 + faces) / 2
-            sigma = math.sqrt(outlen * (faces**2 - 1) / 12)
+            sigma = (outlen * (faces**2 - 1) / 12)**0.5
             outsum = round(self.rand.gauss(mu, sigma))
             min_sum = outlen * 1
             max_sum = outlen * faces
@@ -36,7 +38,7 @@ class Dice:
         result = tuple(self.rand.nextInt(1, faces) * sub for _ in range(count))
         return RollDiceResult(result, outsum, outlen)
 
-    def dFloat(self, r_count: int, r_faces: int) -> RollDiceResult:
+    def dFloat(self, r_count: int | float, r_faces: float) -> RollDiceResult:
         sub = 1
         count = r_count
         faces = r_faces
@@ -46,44 +48,75 @@ class Dice:
         if r_faces < 0:
             faces = -r_faces
             sub *= -1
-        max_count = self.max_count
-        outsum = 0.0
-        outlen = 0
-        if count > max_count:
-            outlen = count - max_count
-            count = max_count
-            mu = outlen * (faces / 2)
-            sigma = math.sqrt(outlen * (faces**2 / 12))
+        if isinstance(count, int) or (isinstance(count, float) and count.is_integer()):
+            count = int(count)
+            max_count = self.max_count
+            outsum = 0.0
+            outlen = 0
+            if count > max_count:
+                outlen = count - max_count
+                count = max_count
+                mu = outlen * (faces / 2)
+                sigma = (outlen * (faces**2 / 12))**0.5
+                outsum = self.rand.gauss(mu, sigma)
+                min_sum = 0.0
+                max_sum = outlen * faces
+                outsum = max(min_sum, min(outsum, max_sum)) * sub
+            result = tuple(self.rand.nextFloat() * sub *
+                           faces for _ in range(count))
+            return RollDiceResult(result, outsum, outlen)
+        elif isinstance(count, float):
+            mu = count * (faces / 2)
+            sigma = (count * (faces**2 / 12))**0.5
             outsum = self.rand.gauss(mu, sigma)
             min_sum = 0.0
-            max_sum = outlen * faces
+            max_sum = count * faces
             outsum = max(min_sum, min(outsum, max_sum)) * sub
-        result = tuple(self.rand.nextFloat() * sub *
-                       faces for _ in range(count))
-        return RollDiceResult(result, outsum, outlen)
+            return RollDiceResult(None, outsum)
+        else:
+            raise TypeError("Invalid type")
 
-    def dComplex(self, count: complex, faces: complex) -> RollDiceResult:
-        max_count = self.max_count
-        outsum = 0.0 + 0.0j
-        outlen = 0
-        if count.imag > max_count:
-            outlen = count - max_count
-            count = max_count
-            mu = outlen * (faces / 2)
-            sigma = math.sqrt(outlen * (faces**2 / 12))
-            outsum_i = self.rand.gauss(mu, sigma)
-            min_sum_i = 0.0
-            max_sum_i = outlen * faces
-            outsum_i = max(min_sum_i, min(outsum_i, max_sum_i))
+    def dComplex(self, r_count: complex | float | int, r_faces: complex) -> RollDiceResult:
+        if not isinstance(r_faces, complex):
+            r_faces = complex(r_faces)
+        sub_i = 1 + 1j
+        faces = r_faces.real
+        faces_i = r_faces.imag
+        if faces < 0:
+            faces = -faces
+            sub_i = -sub_i.real + 1j * sub_i.imag
+        if faces_i < 0:
+            faces_i = -faces_i
+            sub_i = sub_i.real - 1j * sub_i.imag
+        if isinstance(r_count, int) or (isinstance(r_count, float) and r_count.is_integer()):
+            count = r_count
+            sub = 1
+            if count < 0:
+                count = -r_count
+                sub *= -1
+            count = int(count)
+            max_count = self.max_count
+            outsum = 0.0
+            outlen = 0
+            if count > max_count:
+                outlen = count - max_count
+                count = max_count
+                mu = outlen * (faces / 2)
+                sigma = (outlen * (faces**2 / 12))**0.5
+                outsum = self.rand.gauss(mu, sigma) * sub
+            result = tuple(self.rand.nextComplex(
+                sub_i.real * faces.real, sub_i.imag * faces.imag) * sub for _ in range(count))
+            return RollDiceResult(result, outsum, outlen)
+        elif isinstance(r_count, complex) or isinstance(r_count, float):
+            count = complex(r_count)
+            mu = count * (faces / 2)
+            sigma = (count * (faces**2 / 12))**0.5
             outsum = self.rand.gauss(mu, sigma)
-            min_sum = 0.0
-            max_sum = outlen * faces
-            outsum = max(min_sum, min(outsum, max_sum))
-            outsum = outsum + outsum_i * 1j
-        result = tuple(self.rand.nextComplex * faces for _ in range(count))
-        return RollDiceResult(result, outsum, outlen)
+            return RollDiceResult(None, outsum)
+        else:
+            raise TypeError("Invalid type")
 
-    def d(self, count: int | float | complex, faces: int | float | complex) -> RollDiceResult | None:
+    def d(self, count: int | float | complex, faces: int | float | complex) -> RollDiceResult:
         if isinstance(count, complex) or isinstance(faces, complex):
             return self.dComplex(count, faces)
         elif isinstance(count, float) or isinstance(faces, float):
@@ -91,4 +124,4 @@ class Dice:
         elif isinstance(count, int) and isinstance(faces, int):
             return self.dInt(count, faces)
         else:
-            return None
+            raise TypeError("Invalid type")
