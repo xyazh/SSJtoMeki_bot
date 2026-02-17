@@ -14,3 +14,10 @@ class RollHelper:
             return True
         except ValueError:
             return False
+    @staticmethod
+    def foramtValue(value):
+        if isinstance(value, float):
+            return "%.4f" % value
+        if isinstance(value, complex):
+            return "%.4f+%.4fj" % (value.real, value.imag)
+        return str(value)

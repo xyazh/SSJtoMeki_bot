@@ -2,11 +2,12 @@ import sys
 from dataclasses import dataclass
 from typing import Iterator
 from itertools import islice
+from ..tools.RollHelper import RollHelper
 from ..tools.Comparator import Comparator
 
 
 @dataclass
-class RollDiceResult:
+class DiceResult:
     values: tuple[int | float | complex] | None
     outsum: int | float | complex = 0
     outlen: int = 0
@@ -53,22 +54,27 @@ class RollDiceResult:
         length = self.size()
         if length > limit:
             items = list(islice(self, limit))
-            return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(str, items))}, ...>"
-        return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(str, self))}>"
+            return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(RollHelper.foramtValue, items))}, ...>"
+        return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(RollHelper.foramtValue, self))}>"
 
     def __repr__(self):
         return self.__str__()
     
-    def size(self) -> int:
-        return self.lenValues() + self.outlen
-
-    def toStr(self) -> str:
+    def toStr(self,sep:str = ", ") -> str:
         limit = self.limit
         length = self.size()
-        if length > limit:
-            items = list(islice(self, limit))
-            return f"{', '.join(map(str, items))}, ..."
-        return f"{', '.join(map(str, self))}"
+        if length == 0:
+            items = [RollHelper.foramtValue(self.outsum)]
+        elif length > limit:
+            items = list(map(RollHelper.foramtValue,islice(self, limit)))
+            items.append(RollHelper.foramtValue("..."))
+        else:
+            items = map(RollHelper.foramtValue,self)
+        return sep.join(items)
+
+
+    def size(self) -> int:
+        return self.lenValues() + self.outlen
 
     def max(self) -> int | float | complex:
         values = (Comparator(i) for i in self.values)

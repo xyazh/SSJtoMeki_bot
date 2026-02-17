@@ -1,6 +1,10 @@
 import re
 import random
 from .RollHelper import RollHelper
+from .Dice import Dice
+
+class ExpressionError(Exception):
+    pass
 
 
 class Expression:
@@ -9,6 +13,10 @@ class Expression:
                           "*": 2, "/": 2, "^": 3,
                           "D": 4, "d": 4}
         self.expression = self.replace(expression)
+        self.dice = Dice()
+
+    def _foramtValue(self, value):
+        return RollHelper.foramtValue(value)
 
     def replace(self, s: str) -> str:
         s = s.replace("（", "(")
@@ -22,7 +30,7 @@ class Expression:
         s = s.replace("(-", "(0-")
         return s
 
-    def toRpn(self, right_associative=None):
+    def toRpn(self, right_associative=None) -> list[str | complex | float | int]:
         precedence = self.operators
         tokens = re.findall(r"[-+*/^Ddij()\?]|\d+\.?\d*", self.expression)
         if right_associative is None:
@@ -31,7 +39,10 @@ class Expression:
         output_queue = []
         for token in tokens:
             if RollHelper.isNumber(token):
-                output_queue.append(float(token))
+                token = float(token)
+                if token.is_integer():
+                    token = int(token)
+                output_queue.append(token)
             elif token in ("i", "j"):
                 output_queue.append(complex(0, 1))
             elif token == "(":
@@ -62,43 +73,54 @@ class Expression:
             output_queue.append(operator_stack.pop())
         return output_queue
 
-    def count(self, output_queue, trace: bool = True):
+    def count(self, output_queue, trace:bool=True) -> tuple[complex | float | int, list[tuple[str]] | None]:
         operand_stack = []
         steps = []
         for token in output_queue:
             if isinstance(token, (float, int, complex)):
-                operand_stack.append(token)
+                operand_stack.append(
+                    (token, str(token if token == token else token)))
             else:
                 if token in ["D", "d"]:
-                    n = operand_stack.pop()
-                    m = operand_stack.pop()
-                    result = RollHelper.d(m, n)
+                    n_val, n_str = operand_stack.pop()
+                    m_val, m_str = operand_stack.pop()
+                    rolls = self.dice.d(m_val, n_val)
+                    total = rolls.sum()
+                    expr_str = f"({m_str})d{n_str}"
                     if trace:
-                        steps.append(f"{m}d{n} -> {result}")
-                    operand_stack.append(result)
+                        steps.append(
+                            (expr_str,
+                             f"{expr_str}={RollHelper.foramtValue(total)}[{expr_str}={rolls.toStr(sep='+')}]")
+                        )
+                    operand_stack.append((total, str(total)))
                 else:
-                    b = operand_stack.pop()
-                    a = operand_stack.pop() if operand_stack else None
+                    b_val, b_str = operand_stack.pop()
+                    a_val, a_str = operand_stack.pop()
                     if token == "+":
-                        result = a + b
+                        result = a_val + b_val
                     elif token == "-":
-                        result = (a if a is not None else 0) - b
+                        result = a_val - b_val
                     elif token == "*":
-                        result = a * b
+                        result = a_val * b_val
                     elif token == "/":
-                        result = a / b
+                        result = a_val / b_val
                     elif token == "^":
-                        result = a ** b
-                    elif token == "?":
-                        result = random.choice((a, b))
-                    if trace:
-                        steps.append(f"{a} {token} {b} -> {result}")
-                    operand_stack.append(result)
-        final = operand_stack.pop()
+                        result = a_val ** b_val
+                    expr_str = f"{a_str}{token}{b_str}"
+                    operand_stack.append((result, expr_str))
+        final_val, final_expr = operand_stack.pop()
         if trace:
-            return final, steps
-        return final
+            return final_val, steps
+        return final_val, None
 
-    
-    def eval(self) -> complex | float | int:
-        return self.count(self.toRpn())
+    def eval(self, trace:bool=True) -> tuple[complex | float | int, list[dict[str, str]] | None]:
+        try:
+            return self.count(self.toRpn(),trace)
+        except (IndexError, SyntaxError):
+            raise ExpressionError("Invalid expression syntax") from None
+        except ZeroDivisionError:
+            raise ExpressionError("Division by zero") from None
+        except OverflowError:
+            raise ExpressionError("Number too large") from None
+        except Exception as e:
+            raise ExpressionError(f"Unexpected error: {e}") from e
