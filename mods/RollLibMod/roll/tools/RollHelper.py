@@ -14,6 +14,7 @@ class RollHelper:
             return True
         except ValueError:
             return False
+        
     @staticmethod
     def foramtValue(value):
         if isinstance(value, float):

@@ -5,7 +5,7 @@ from ..result.DiceResult import DiceResult
 
 class Dice:
     def __init__(self):
-        self.max_count = 100
+        self.max_count = 500
         self.rand: RandomGen = RandomGen()
 
     def setRandomGen(self, rand: RandomGen):

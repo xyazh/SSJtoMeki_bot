@@ -77,16 +77,24 @@ class DiceResult:
         return self.lenValues() + self.outlen
 
     def max(self) -> int | float | complex:
-        values = (Comparator(i) for i in self.values)
+        if self.values is not None and len(self.values) > 0:
+            values = (Comparator(i) for i in self.values)
+            if self.outlen == 0:
+                return max(values).value
+            return max(max(values), Comparator(self.outsum / self.outlen)).value
         if self.outlen == 0:
-            return max(values).value
-        return max(max(values), Comparator(self.outsum / self.outlen)).value
+            return 0
+        return self.outsum / self.outlen
 
     def min(self) -> int | float | complex:
-        values = (Comparator(i) for i in self.values)
+        if self.values is not None and len(self.values) > 0:
+            values = (Comparator(i) for i in self.values)
+            if self.outlen == 0:
+                return min(values).value
+            return min(min(values), Comparator(self.outsum / self.outlen)).value
         if self.outlen == 0:
-            return min(values).value
-        return min(min(values), Comparator(self.outsum / self.outlen)).value
+            return 0
+        return self.outsum / self.outlen
 
     def sum(self) -> int | float | complex:
         if self.values is None:
