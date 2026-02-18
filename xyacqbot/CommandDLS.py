@@ -74,7 +74,7 @@ class Template:
 
 
 
-class DSL:
+class CommandDLS:
     def __init__(self, dsl: str):
         self.dsl = dsl
         self.compileDsl(dsl)
@@ -146,7 +146,7 @@ class DSL:
 
 if __name__ == "__main__":
     # 示例
-    d = DSL("[e:emun('.','/')]use [count:int] [item:str] [do:str] [damege:float]")
+    d = CommandDLS("[e:emun('.','/')]use [count:int] [item:str] [do:str] [damege:float]")
     text = "/use 1 apple eat 1.1"
     print("RESULT:", d.template(text))
     text = ".use 1 apple eat 1.1"

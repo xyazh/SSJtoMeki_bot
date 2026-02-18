@@ -2,8 +2,11 @@ from .DataManager import DataManager
 
 
 class GlobalDataManager(DataManager):
-    def __init__(self):
-        super().__init__(file_path="global_data.json")
+    def __new__(cls, file_path="./data/global_data.json"):
+        return super().__new__(cls, file_path)
+
+    def __init__(self, file_path="./data/global_data.json"):
+        super().__init__(file_path)
 
     def getEnbaleGroupList(self) -> list[str]:
         return self.data.get("enable_group_list", [])
@@ -35,7 +38,7 @@ class GlobalDataManager(DataManager):
         }
         self.data["auto_reply_rules"] = rules
 
-    def getAutoReplyRules(self) -> dict[str,dict]:
+    def getAutoReplyRules(self) -> dict[str, dict]:
         return self.data.get("auto_reply_rules", {})
 
     def removeAutoReplyRules(self, trigger: str | list) -> None:
@@ -48,3 +51,9 @@ class GlobalDataManager(DataManager):
                 if t in rules:
                     del rules[t]
         self.data["auto_reply_rules"] = rules
+
+    def getWebappToken(self)->str|None:
+        return self.data.get("webapp_token")
+    
+    def setWebappToken(self, token:str)->None:
+        self.data["webapp_token"] = token

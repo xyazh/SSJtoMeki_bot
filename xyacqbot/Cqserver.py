@@ -10,11 +10,10 @@ from .packet.PacketBase import PacketBase
 from .msg.MsgBuilder import MsgBuilder
 from .modsLoader.ModsLoader import ModLoader
 from .modsLoader.Container import Container
-from .Order import Order
 from .webApp.WebApp import WebApp
 from .datamanager.GlobleDataManager import GlobalDataManager
 from .datamanager.UserDataManager import UserDataManager
-from .DSL import DSL
+from .CommandDLS import CommandDLS
 from .TemplateEngine import TemplateEngine, UserData, Template, Random, Time
 
 if typing.TYPE_CHECKING:
@@ -116,7 +115,7 @@ class Cqserver:
                         user=user, user_data=user_data, random=random, time=time)
                     self.sendGroupMsg(result, p.group_id)
             elif mode == "dsltp":
-                dsl = DSL(trigger)
+                dsl = CommandDLS(trigger)
                 t_data = dsl.template(msg)
                 if t_data is None:
                     continue

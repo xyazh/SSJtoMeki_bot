@@ -23,7 +23,7 @@ class WebApp(BaseWebApp):
         self._real_root = "./web/public"
         self._virtual_root = "/res"
         self.app.page_manager.addFileTree(
-            self._real_root, self._virtual_root, self._virtualPath)
+            self._real_root, self._virtual_root, self._virtualPath, token=self.token)
         cq_server.onEvent(self.onEvent)
         self.__init_other__()
 
@@ -41,9 +41,13 @@ class WebApp(BaseWebApp):
             self.msg_count += 1
             self.message_queue.append(p)
 
-    @BaseWebApp.page("/favicon.ico", "GET")
+    @BaseWebApp.page("/favicon.ico", "GET", False)
     def fav(self, s: Server):
-        s.sendFile(".\\web\\images\\favicon.png")
+        s.sendFile(".\web\public\images\favicon.png")
+
+    @BaseWebApp.page("/login", "GET", False)
+    def login(self, s: Server):
+        s.sendFile(".\web\private\login.html")
 
     @BaseWebApp.page("/index", "GET")
     @BaseWebApp.page("/index.html", "GET")
@@ -246,7 +250,8 @@ class WebApp(BaseWebApp):
     def rulesGet(self, s: "Server"):
         global_data_manager = GlobalDataManager()
         rules = global_data_manager.getAutoReplyRules()
-        rules = [{"trigger": k, "reply": v["reply"], "mode": v["mode"], "enabled": v["enabled"]} for k, v in rules.items()]
+        rules = [{"trigger": k, "reply": v["reply"], "mode": v["mode"],
+                  "enabled": v["enabled"]} for k, v in rules.items()]
         s.sendTextPage(json.dumps(rules), "application/json;charset=utf-8")
 
     @BaseWebApp.page("/api/rules/delete", "POST")
@@ -257,7 +262,7 @@ class WebApp(BaseWebApp):
         except Exception as e:
             s.send_error(400, json.dumps({"success": False, "error": str(e)}))
             return
-        triggers = data.get("triggers",[])
+        triggers = data.get("triggers", [])
         GlobalDataManager().removeAutoReplyRules(triggers)
         s.sendTextPage(json.dumps({"success": True, "error": ""}),
                        "application/json;charset=utf-8")

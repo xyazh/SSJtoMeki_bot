@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Token 登录</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 8px;
+            background: #0078d4;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #005fa3;
+        }
+        .msg {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h3>请输入 Token</h3>
+    <input type="text" id="tokenInput" placeholder="输入访问 Token">
+    <button onclick="submitToken()">提交</button>
+    <div class="msg" id="msg"></div>
+</div>
+
+<script>
+function submitToken() {
+    const token = document.getElementById("tokenInput").value.trim();
+
+    if (!token) {
+        document.getElementById("msg").innerText = "Token 不能为空";
+        return;
+    }
+
+    // 写入 cookie
+    document.cookie = "token=" + encodeURIComponent(token) + "; path=/";
+
+    // 跳转回首页（你可以改成任意路径）
+    window.location.href = "/res/index.html";
+}
+</script>
+
+</body>
+</html>

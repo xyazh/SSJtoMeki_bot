@@ -1,13 +1,18 @@
 import json
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .PageManager import Token
+
 
 class Tree:
     def __init__(self):
-        self.child_nodes:dict[str,Tree] = {}
+        self.child_nodes: dict[str, Tree] = {}
         self.leaf = None
         self.val = None
-        self.parent_node:Tree|None = None
+        self.parent_node: Tree | None = None
+        self.token: "Token|None" = None
 
-    def _get(self)->dict:
+    def _get(self) -> dict:
         r = {}
         if self.child_nodes == {}:
             return r
@@ -18,7 +23,7 @@ class Tree:
 
     def __str__(self) -> str:
         try:
-            r = json.dumps(self._get(),ensure_ascii=False,indent=4)
+            r = json.dumps(self._get(), ensure_ascii=False, indent=4)
         except:
             r = str(self._get())
         return r
