@@ -4,7 +4,7 @@ from .DataManager import DataManager
 class UserDataManager(DataManager):
     def __new__(cls, qq: str):
         file_path = f"./data/user/{qq}.json"
-        return super().__new__(cls,file_path)
+        return super().__new__(cls, file_path)
 
     def __init__(self, qq: str):
         self.qq = qq
