@@ -41,5 +41,17 @@ class UserRollData(UserDataManager):
     def getCard(self, name: str) -> PlCard | None:
         return self.cards.get(name, None)
     
-    def getBindingCard(self) -> PlCard | None:
+    def getBindingCard(self,create:bool=False) -> PlCard | None:
+        if create and self.bindind_card is None:
+            self.bindind_card = self.createCard("空白卡")
         return self.bindind_card
+    
+    def removeCard(self, name: str):
+        card = self.getCard(name)
+        if card is not None:
+            del self.cards[name]
+            if self.bindind_card == card:
+                self.bindind_card = None
+
+    def cardsList(self) -> list[PlCard]:
+        return list(self.cards.values())

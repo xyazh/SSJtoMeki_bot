@@ -108,13 +108,32 @@ class PlCard:
             return
         self.other_attrs[key] = val
 
-    def setAttrFromDSL(self,dsl:str) -> None:
+    def setAttrFromDSL(self, dsl: str) -> tuple[list[int | float | complex], list[str], list[dict[str, str]]]:
+        result0: list[int | float | complex] = []
+        result1: list[str] = []
+        result2: list[dict[str, str]] = []
         for key, expr in self.parseDSL(dsl).items():
-            try: 
-                val = Expression(expr).eval()[0]
+            result_str = expr
+            if expr[0] in ("+", "-", "*", "/", "^"):
+                key_enum: AttrEnum = AttrEnum[key]
+                old_val = self.builtin_attrs.get(key_enum, key_enum.dis_val)
+                if old_val is None:
+                    old_val = self.other_attrs.get(key, 0)
+                result_str = f"{key}[{old_val}]{result_str}"
+                expr = f"{old_val}{expr}"
+            result_str = f"{key}={result_str}"
+            try:
+                exp_result = Expression(expr).eval()
+                val = exp_result[0]
+                result0.append(val)
+                result_str = f"{result_str}={val}"
+                result1.append(result_str)
+                result2.extend(exp_result[1])
                 self.setAttr(key, val)
             except Exception:
                 continue
+
+        return result0,result1, result2
 
     def parseDSL(self, exp: str) -> dict[str, str]:
         _, alias_pattern = _buildAliasData()
