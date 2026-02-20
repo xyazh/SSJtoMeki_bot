@@ -118,10 +118,10 @@ if __name__ == "__main__":
     template_text = """
     {data.user.name}尝试使用{temp.count}个{temp.name}，
     但是库存只有{data.user.inv.get(temp.name,0)}个{temp.name}，
-    所以使用了{n:=data.user.inv.get(temp.name,0)}个{temp.name}，
-    这{n}个{temp.name}效果拔群
+    所以使用了{q:=data.user.inv.get(temp.name,0)}个{temp.name}，
+    这{q}个{random.choice(1,2,3)}效果拔群
     """
 
     engine = TemplateEngine(template_text)
-    result = engine.render(data=data, temp=temp)
+    result = engine.render(data=data, temp=temp, random=Random())
     print(result)
