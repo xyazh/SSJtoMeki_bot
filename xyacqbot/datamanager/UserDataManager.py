@@ -44,5 +44,7 @@ class UserDataManager(DataManager):
         else:
             return self.data.get(key, None)
 
-    def setAttr(self, key: str, value):
+    def setAttr(self, key: str, value, t=None):
+        if t is not None:
+            value = t(value)
         self.data[key] = value
