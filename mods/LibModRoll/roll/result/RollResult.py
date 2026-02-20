@@ -16,9 +16,14 @@ class RollResult:
     level: int = -1
     ref: int | float | complex = 80
     ref_name: str = ""
+    punishment_or_bonus: bool = False
 
     @property
     def msg(self) -> str:
+        if self.punishment_or_bonus:
+            if self.level < 4:
+                return "成功"
+            return "失败"
         if 0 <= self.level < len(MSG):
             return MSG[self.level]
         return ""
@@ -143,33 +148,34 @@ class RAResult:
     def toStr(self, sep: str = ", ") -> str:
         limit = self.limit
         length = self.size()
+        attr_val = RollHelper.foramtValue(self.attr_val)
         if length > limit:
             items = list(islice(self.rollResults(), limit))
             result_s = (
-                f"{RollHelper.foramtValue(item.value)}|{item.msg}"
+                f"{RollHelper.foramtValue(item.value)}/{attr_val}|{item.msg}"
                 for item in items)
             return f"{sep.join(result_s)}{sep}..."
         items = self.rollResults()
         result_s = (
-            f"{RollHelper.foramtValue(item.value)}|{item.msg}"
+            f"{RollHelper.foramtValue(item.value)}/{attr_val}|{item.msg}"
             for item in items)
         return f"{sep.join(result_s)}"
 
     def bonus(self):
-        value = self.dice_result.max()
+        value = self.dice_result.min()
         result = RollResult(
             value, "1d100", f"(1)d100={RollHelper.foramtValue(value)}[(1)d100={RollHelper.foramtValue(value)}]",
-            ref=self.attr_val, ref_name=self.attr_name)
+            ref=self.attr_val, ref_name=self.attr_name, punishment_or_bonus=True)
         if self.rule:
             return result.checkRaw()
         else:
             return result.checkCus()
 
     def punishment(self):
-        value = self.dice_result.min()
+        value = self.dice_result.max()
         result = RollResult(
             value, "1d100", f"(1)d100={RollHelper.foramtValue(value)}[(1)d100={RollHelper.foramtValue(value)}]",
-            ref=self.attr_val, ref_name=self.attr_name)
+            ref=self.attr_val, ref_name=self.attr_name, punishment_or_bonus=True)
         if self.rule:
             return result.checkRaw()
         else:

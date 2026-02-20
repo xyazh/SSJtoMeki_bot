@@ -33,7 +33,6 @@ class Template:
         self.variable = vt[0].rstrip("?")
         self.optional = vt[0].endswith("?")
         type_expr = vt[1].strip()
-
         if type_expr.startswith("emun("):
             args_str = type_expr[len("emun("):-1]
             args = [
@@ -42,10 +41,8 @@ class Template:
                 if a.strip()
             ]
             self.type = SAFE_TYPES["emun"](*args)
-
         elif type_expr in SAFE_TYPES:
             self.type = SAFE_TYPES[type_expr]
-
         else:
             raise ValueError(f"Unknown or unsafe type: {type_expr}")
 
@@ -53,8 +50,6 @@ class Template:
         original_len = len(data)
         data = data.lstrip()
         lstrip_len = original_len - len(data)
-
-        # ========== str ==========
         if self.type is str:
             if end_delimiter:
                 idx = data.find(end_delimiter)
@@ -67,32 +62,23 @@ class Template:
             else:
                 value = data
                 consumed = len(data)
-
             return value, consumed + lstrip_len
-
-        # ========== int ==========
         elif self.type is int:
             m = re.match(r"(\d+)", data)
             if m:
                 value = int(m.group(1))
                 consumed = m.end()
                 return value, consumed + lstrip_len
-
-        # ========== float ==========
         elif self.type is float:
             m = re.match(r"(\d+(?:\.\d+)?)", data)
             if m:
                 value = float(m.group(1))
                 consumed = m.end()
                 return value, consumed + lstrip_len
-
-        # ========== emun ==========
         elif callable(self.type):
             val, consumed = self.type(data)
             if val is not None:
                 return val, consumed + lstrip_len
-
-        # ========== fail ==========
         if self.optional:
             return None, 0
 
@@ -110,7 +96,6 @@ class CommandDLS:
         l = len(dsl)
         dsl = dsl + " "
         i = 0
-
         while i < l:
             if dsl[i] == "[" and dsl[i + 1] != "[":
                 if stack:
@@ -148,27 +133,19 @@ class CommandDLS:
         result = {}
         offset = 0
         parts = self.compiled_dsl
-
         for i, s in enumerate(parts):
-
-            # ===== 固定字符串 =====
             if isinstance(s, str):
-                idx = text.find(s, offset)
-                if idx == -1:
+                if not text.startswith(s, offset):
                     return None
-                offset = idx + len(s)
+                offset += len(s)
                 continue
-
-            # ===== 变量 =====
             next_fixed = None
             for j in range(i + 1, len(parts)):
                 if isinstance(parts[j], str):
                     next_fixed = parts[j]
                     break
-
             segment = text[offset:]
             val, consumed = s.extract(segment, end_delimiter=next_fixed)
-
             if val is None:
                 if not s.optional:
                     return None
@@ -176,8 +153,6 @@ class CommandDLS:
 
             result[s.variable] = val
             offset += consumed
-
-        # ===== 严格匹配检查 =====
         if full_match:
             remaining = text[offset:].strip()
             if remaining:
@@ -188,11 +163,7 @@ class CommandDLS:
 
 if __name__ == "__main__":
     d = CommandDLS(
-        "[e:emun('.','/')]use [count:int] [item:str] [do:str] [damage:float]"
+        "[e:emun('.','/')]use [do:str]"
     )
-
-    print("CASE1:", d.template("/use 1 apple eat"))
-    print("CASE1:", d.template("/use 1 apple eat", True))
-    print("CASE2:", d.template(".use 1 apple eat 1.1 23423423421"))
-    print("CASE3:", d.template(".use 1 apple eat 1.1 23423423421", True))
-    print("CASE4:", d.template(".use 1 apple eat 1.1", True))
+    print("CASE1:", d.template("/1 apple use eat"))
+    print("CASE2:", d.template("/use eat"))

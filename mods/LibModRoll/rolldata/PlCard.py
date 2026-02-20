@@ -161,3 +161,8 @@ class PlCard:
             expr = "".join(expr_chars).strip() or "0"
             result[word] = expr
         return result
+    
+
+    def copyFrom(self,card: "PlCard"):
+        self.builtin_attrs = card.builtin_attrs.copy()
+        self.other_attrs = card.other_attrs.copy()
