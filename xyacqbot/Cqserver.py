@@ -35,8 +35,9 @@ if typing.TYPE_CHECKING:
 class Cqserver:
     instance = None
 
-    def __init__(self, ip: str, send_port: int, lisent_port: int, web_port: int):
+    def __init__(self, ip: str, http_ip: str, send_port: int, lisent_port: int, web_port: int):
         self.ip = ip
+        self.http_ip = http_ip
         self.send_port = send_port
         self.lisent_port = lisent_port
         self.web_port = web_port
@@ -73,7 +74,7 @@ class Cqserver:
         print(f" * Multi functional dice rolling bot made with Python by Xyazh")
         print(f" * Http发送地址 {self.ip}:{self.send_port}")
         print(f" * Http接收上报地址 http://{self.ip}:{self.lisent_port}/")
-        print(f" * 后台管理地址 http://{self.ip}:{self.web_port}/res/index.html")
+        print(f" * 后台管理地址 http://{self.http_ip}:{self.web_port}/res/index.html")
         print(f" * アトリは、高性能ですから!")
         print(f" * ---------------------------------")
 
@@ -139,7 +140,7 @@ class Cqserver:
     def serverRun(self):
         self.printTitleVison()
         self.newLisentApp(self.ip, self.lisent_port)
-        self.newWebApp(self.ip, self.web_port)
+        self.newWebApp(self.http_ip, self.web_port)
         print("\r\n\r\n")
         self.initFuc()
 
