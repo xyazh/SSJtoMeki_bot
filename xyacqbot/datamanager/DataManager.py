@@ -77,5 +77,7 @@ class DataManager:
             except Exception:
                 pass
 
+print(DataManager._instances)
+
 # 程序退出时保存所有实例
 atexit.register(DataManager._saveAll)

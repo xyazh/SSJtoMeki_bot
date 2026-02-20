@@ -1,4 +1,6 @@
 import re
+import logging
+from xyacqbot.xyazhServer.ConsoleMessage import ConsoleMessage
 from .AttrEnum import AttrEnum
 from ..roll.tools.Expression import Expression
 
@@ -130,10 +132,11 @@ class PlCard:
                 result1.append(result_str)
                 result2.extend(exp_result[1])
                 self.setAttr(key, val)
-            except Exception:
+            except Exception as e:
+                ConsoleMessage.printError(e)
+                logging.exception(e)
                 continue
-
-        return result0,result1, result2
+        return result0, result1, result2
 
     def parseDSL(self, exp: str) -> dict[str, str]:
         _, alias_pattern = _buildAliasData()
@@ -161,8 +164,7 @@ class PlCard:
             expr = "".join(expr_chars).strip() or "0"
             result[word] = expr
         return result
-    
 
-    def copyFrom(self,card: "PlCard"):
+    def copyFrom(self, card: "PlCard"):
         self.builtin_attrs = card.builtin_attrs.copy()
         self.other_attrs = card.other_attrs.copy()

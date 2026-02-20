@@ -7,7 +7,10 @@ class AttrEnumMeta(EnumMeta):
         raise NotImplementedError()
 
     def __getitem__(cls, item):
-        return cls._missing_(item)
+        try:
+            return super().__getitem__(item)
+        except KeyError:
+            return cls._missing_(item)
 
 
 class AttrEnum(Enum, metaclass=AttrEnumMeta):
@@ -110,4 +113,4 @@ class AttrEnum(Enum, metaclass=AttrEnumMeta):
 
 
 if __name__ == "__main__":
-    print(AttrEnum["STR"])
+    print(AttrEnum["SPOT_HIDDEN"])
