@@ -42,7 +42,7 @@ def help(msg: PacketMsg, e: str, sub: str = None):
             category = sub2.get("category")
             page = sub2.get("page", 1)
             msg += Command.help(category, page)
-    msg += "\r\n\r\n用命令要注意不要忘了参数，参数前一定要加空格；可以用help命令加上具体命令来查看具体命令用法"
+    msg += "用命令要注意不要忘了参数，参数前一定要加空格；可以用help命令加上具体命令来查看具体命令用法"
     return msg
 
 
