@@ -21,7 +21,6 @@ def _buildAliasData() -> tuple[dict[str, AttrEnum], str]:
     for attr in AttrEnum:
         for name in attr.names:
             alias_map[name] = attr
-
     sorted_aliases = sorted(alias_map.keys(), key=len, reverse=True)
     alias_pattern = "|".join(map(re.escape, sorted_aliases))
     return alias_map, alias_pattern
