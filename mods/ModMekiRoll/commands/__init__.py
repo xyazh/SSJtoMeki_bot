@@ -43,6 +43,19 @@ def r(msg: PacketMsg, e: str, exp: str = ""):
 
 
 @Command(
+    "[e:emun('.','/','。')]rrule",
+    sign="rrule",
+    desc="切换检定规则，目前有标准规则和简易规则，默认使用标准规则",
+    category="跑团"
+)
+def rrule(msg: PacketMsg, e: str):
+    config = RollConfig()
+    rule = config.getRules()
+    config.setRules(not rule)
+    return f"#切换检定规则为{'标准' if rule else '简易'}规则"
+
+
+@Command(
     "[e:emun('.','/','。')][ra:emun('ra','ra '][count:int]#[arr:str]",
     sign="ra [count:int]#[arr:str]",
     desc="检定一个属性, #前表示检定次数",
@@ -307,3 +320,37 @@ def pcshow(msg: PacketMsg, name: str = "", **kw):
         return f"未找到角色卡: {name}"
     card.toData()
     return f"当前角色卡: \r\n{card.toData()}"
+
+
+@Command(
+    "[e:emun('.','/','。')]ti",
+    sign="ti",
+    desc="临时疯狂症状",
+    category="跑团",
+)
+def ti(msg: PacketMsg, **kw):
+    li = [
+        "失忆：调查员会发现自己只记得最后身处的安全地点，却没有任何来到这里的记忆。例如，调查员前一刻还在家中吃着早饭，下一刻就已经直面着不知名的怪物。这将会持续 1D10 轮。",
+        "假性残疾：调查员陷入了心理性的失明，失聪以及躯体缺失感中，持续 1D10 轮。",
+        "暴力倾向：调查员陷入了六亲不认的暴力行为中，对周围的敌人与友方进行着无差别的攻击，持续 1D10 轮。",
+        "偏执：调查员陷入了严重的偏执妄想之中，持续１Ｄ１０轮。有人在暗中窥视着他们，同伴中有人背叛了他们，没有人可以信任，万事皆虚。",
+        "人际依赖：守秘人适当参考调查员的背景中重要之人的条目，调查员因为一些原因而降他人误认为了他重要的人并且努力的会与那个人保持那种关系，持续 1D10 轮",
+        "昏厥：调查员当场昏倒，并需要 1D10 轮才能苏醒。",
+        "逃避行为：调查员会用任何的手段试图逃离现在所处的位置，即使这意味着开走唯一一辆交通工具并将其它人抛诸脑后，调查员会试图逃离 1D10轮。",
+        "竭嘶底里：调查员表现出大笑，哭泣，嘶吼，害怕等的极端情绪表现，持续 1D10 轮。",
+        "恐惧：调查员通过一次 D100 或者由守秘人选择，来从恐惧症状表中选择一个恐惧源，就算这一恐惧的事物是并不存在的，调查员的症状会持续1D10 轮。",
+        "躁狂：调查员通过一次 D100 或者由守秘人选择，来从躁狂症状表中选择一个躁狂的诱因，这个症状将会持续 1D10 轮。",
+    ]
+    ti_val = ROLL.dice.dInt(1, 10).values[0]-1
+    ti_msg = li[ti_val]
+
+
+
+@Command(
+    "[e:emun('.','/','。')]li",
+    sign="li",
+    desc="总结疯狂症状",
+    category="跑团",
+)
+def li(msg: PacketMsg, **kw):
+    pass

@@ -5,7 +5,9 @@ _T = TypeVar("_T")
 
 
 class RandomGen:
-    def __init__(self, seed=time.time()):
+    def __init__(self, seed=None):
+        if seed is None:
+            seed = time.time_ns()
         self.seed = seed
         self.rand = random.Random(seed)
 
