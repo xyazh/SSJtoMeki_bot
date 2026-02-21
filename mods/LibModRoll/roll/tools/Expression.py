@@ -3,9 +3,10 @@ import random
 from .RollHelper import RollHelper
 from .Dice import Dice
 
+DICE = Dice()
+
 class ExpressionError(Exception):
     pass
-
 
 class Expression:
     def __init__(self, expression: str):
@@ -13,7 +14,7 @@ class Expression:
                           "*": 2, "/": 2, "^": 3,
                           "D": 4, "d": 4}
         self.expression = self.replace(expression)
-        self.dice = Dice()
+        self.dice = DICE
 
     def _foramtValue(self, value):
         return RollHelper.foramtValue(value)
