@@ -5,6 +5,13 @@ _T = TypeVar("_T")
 
 
 class RandomGen:
+    _instance = None
+
+    def __new__(cls):
+        if RandomGen._instance is None:
+            RandomGen._instance = object.__new__(cls)
+        return RandomGen._instance
+
     def __init__(self, seed=None):
         if seed is None:
             seed = time.time_ns()

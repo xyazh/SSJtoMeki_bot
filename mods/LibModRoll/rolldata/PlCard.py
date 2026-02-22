@@ -122,7 +122,10 @@ class PlCard:
                     old_val = self.other_attrs.get(key, 0)
                 result_str = f"{key}[{old_val}]{result_str}"
                 expr = f"{old_val}{expr}"
-            result_str = f"{key}={result_str}"
+            if result_str.isdigit():
+                result_str = key
+            else:
+                result_str = f"{key}={result_str}"
             try:
                 exp_result = Expression(expr).eval()
                 val = exp_result[0]
@@ -145,6 +148,8 @@ class PlCard:
         n = len(normalized)
         while i < n:
             start = i
+            if 0 == i:
+                i += 1
             while i < n and not VALID_EXPR_PATTERN.fullmatch(normalized[i]):
                 i += 1
             if start == i:
