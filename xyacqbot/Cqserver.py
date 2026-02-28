@@ -15,6 +15,7 @@ from .datamanager.GlobleDataManager import GlobalDataManager
 from .datamanager.UserDataManager import UserDataManager
 from .CommandDLS import CommandDLS
 from .TemplateEngine import TemplateEngine, UserData, Template, Random, Time
+from .timer.Timer import Timer
 
 if typing.TYPE_CHECKING:
     class Mod:
@@ -85,6 +86,7 @@ class Cqserver:
         pass
 
     def initFuc(self):
+        Timer.run()
         self.loadMods()
         self.onEvent(self.modOnEvent)
         self.onEvent(self.onMsgEvent)

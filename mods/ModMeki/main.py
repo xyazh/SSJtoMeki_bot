@@ -6,6 +6,7 @@ from xyacqbot.packet.PacketBase import PacketBase
 from xyacqbot.packet.PacketMsg import PacketMsg
 from xyacqbot.modsLoader.Container import Container
 from xyacqbot.xyazhServer.ConsoleMessage import ConsoleMessage
+from xyacqbot.timer.Timer import Timer
 
 try:
     from mods.LibModCommand.command.Command import Command

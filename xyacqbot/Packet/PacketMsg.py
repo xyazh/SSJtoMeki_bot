@@ -1,4 +1,3 @@
-import warnings
 from dataclasses import dataclass, field
 from typing import List, Optional, Union, Literal, Dict, Any
 from .PacketBase import PacketBase
