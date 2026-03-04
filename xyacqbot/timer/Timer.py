@@ -46,7 +46,7 @@ class Timer:
             cls._thread = threading.Thread(
                 target=cls._thread_main, name="TimerLoop", daemon=True)
             cls._thread.start()
-            ConsoleMessage.printC("[Timer] 定时器启动")
+            ConsoleMessage.print("定时器线程启动",titles=["TIMER"])
         cls._ready.wait()
 
     @classmethod
@@ -134,7 +134,7 @@ class Timer:
             delay = func_or_delay
         if delay is None:
             raise TypeError("setTimeout requires delay")
-        ConsoleMessage.printC(f"[Timer] setTimeout {func_or_delay} {delay}")
+        ConsoleMessage.printMsg(f"[Timer] setTimeout {func_or_delay} {delay}")
         return cls._build_decorator(_schedule, delay)
 
     @classmethod
@@ -164,7 +164,7 @@ class Timer:
             interval = func_or_interval
         if interval is None:
             raise TypeError("setInterval requires interval")
-        ConsoleMessage.printC(
+        ConsoleMessage.printMsg(
             f"[Timer] setInterval {func_or_interval} {interval}")
         return cls._build_decorator(_schedule, interval)
 
@@ -199,7 +199,7 @@ class Timer:
             date = func_or_date
         if date is None:
             raise TypeError("setTimeoutAt requires date")
-        ConsoleMessage.printC(f"[Timer] setTimeoutAt {func_or_date} {date}")
+        ConsoleMessage.printMsg(f"[Timer] setTimeoutAt {func_or_date} {date}")
         return cls._build_decorator(_schedule, date)
 
     @classmethod
@@ -239,7 +239,7 @@ class Timer:
             time_str = func_or_time
         if time_str is None:
             raise TypeError("setDailyAt requires time_str")
-        ConsoleMessage.printC(
+        ConsoleMessage.printMsg(
             f"[Timer] setDailyAt {func_or_time} {time_str}")
         return cls._build_decorator(_schedule, time_str)
 

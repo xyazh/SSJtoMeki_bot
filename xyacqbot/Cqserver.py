@@ -75,8 +75,8 @@ class Cqserver:
         print(f" * Multi functional dice rolling bot made with Python by Xyazh")
         print(f" * Http发送地址 {self.ip}:{self.send_port}")
         print(f" * Http接收上报地址 http://{self.ip}:{self.lisent_port}/")
-        print(f" * 后台管理地址 http://{self.http_ip}:{self.web_port}/res/index.html")
-        print(f" * アトリは、高性能ですから!")
+        print(
+            f" * 后台管理地址 http://{self.http_ip}:{self.web_port}/res/index.html")
         print(f" * ---------------------------------")
 
     def initLisentFunc(self):
@@ -90,6 +90,8 @@ class Cqserver:
         self.loadMods()
         self.onEvent(self.modOnEvent)
         self.onEvent(self.onMsgEvent)
+        ConsoleMessage.print("Cqserver已就绪", titles=["SERVER"])
+        ConsoleMessage.print("アトリは、高性能ですから!", titles=["SERVER"])
 
     def autoReply(self, p: PacketMsg):
         msg = p.getMsg()
@@ -132,10 +134,10 @@ class Cqserver:
             return
         if p.message_type == "group":
             if p.shouldIgnore():
-                ConsoleMessage.printC(
+                ConsoleMessage.printMsg(
                     f"忽略群{p.group_id}{p.getName()}({p.getId()})的消息：{p.getMsg()}")
                 return
-            ConsoleMessage.printC(
+            ConsoleMessage.printMsg(
                 f"来自群{p.group_id}{p.getName()}({p.getId()})的消息：{p.getMsg()}")
             self.autoReply(p)
 

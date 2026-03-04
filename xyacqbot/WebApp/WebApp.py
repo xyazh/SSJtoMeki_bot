@@ -201,11 +201,11 @@ class WebApp(BaseWebApp):
                 """后台线程执行群发任务"""
                 enable_groups = GlobalDataManager().getEnbaleGroupList()
                 total = len(enable_groups)
-                ConsoleMessage.printC(f"[Broadcast] 开始群发，共 {total} 个群")
+                ConsoleMessage.printMsg(f"[Broadcast] 开始群发，共 {total} 个群")
                 for i, gid in enumerate(enable_groups, start=1):
                     try:
                         self.cq_server.sendGroupMsg(msg_builder, gid)
-                        ConsoleMessage.printC(
+                        ConsoleMessage.printMsg(
                             f"[Broadcast] ({i}/{total}) 已发送到群 {gid}")
                     except Exception as e:
                         print(f"[Broadcast] 发送到群 {gid} 失败: {e}")

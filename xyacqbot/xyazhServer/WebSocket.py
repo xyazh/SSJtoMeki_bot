@@ -37,7 +37,7 @@ class WebSocket:
         self._server = s
         self.wfile: BinaryIO = s.wfile
         self.rfile: BinaryIO = s.rfile
-        ConsoleMessage.printMsg("New websockets-client connected")
+        ConsoleMessage.printInfo("New websockets-client connected")
 
     def _old_webSocketSend(self, msg: bytes) -> bool:
         token = b"\x81"
@@ -81,7 +81,7 @@ class WebSocket:
             b1, b2 = self.readBytes(2)
         except SocketError as e:
             if e.errno == errno.ECONNRESET:
-                ConsoleMessage.printMsg("Client closed connection.")
+                ConsoleMessage.printInfo("Client closed connection.")
                 return None,"error"
             b1, b2 = 0, 0
         except ValueError as e:
@@ -93,7 +93,7 @@ class WebSocket:
         payload_length = b2 & PAYLOAD_LEN
 
         if opcode == OPCODE_CLOSE_CONN:
-            ConsoleMessage.printMsg("Client asked to close connection.")
+            ConsoleMessage.printInfo("Client asked to close connection.")
             return None,"close"
         if not masked:
             ConsoleMessage.printWarning("Client must always be masked.")

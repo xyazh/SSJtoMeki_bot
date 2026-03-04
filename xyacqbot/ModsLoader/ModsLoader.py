@@ -27,7 +27,7 @@ class ModLoader:
         mod = importlib.import_module(full_module_name)
         # 注册到 loaded_mods
         self.loaded_mods[mod_name] = mod
-        ConsoleMessage.printC(f"加载模块 {mod_name}")
+        ConsoleMessage.print(f"加载模块 {mod_name}",titles=["LOADER"])
         return mod
 
     def loadAll(self):

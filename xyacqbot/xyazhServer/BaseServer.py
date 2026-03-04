@@ -255,7 +255,7 @@ class BaseServer(BaseHTTPRequestHandler):
         elif code >= 400:
             ConsoleMessage.printWarning(log)
         else:
-            ConsoleMessage.printMsg(log)
+            ConsoleMessage.printInfo(log)
         self.send_response_only(code, message)
         self.send_header('Server', self.version_string())
         self.send_header('Date', self.date_time_string())
