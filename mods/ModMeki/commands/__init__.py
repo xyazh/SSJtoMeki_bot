@@ -191,3 +191,16 @@ def point(msg: PacketMsg, **kw):
     qq_id = msg.getId()
     user = UserDataManager(qq_id)
     return "%s，当前拥有点数：%d" % (msg.getName(), user.data.get("point", 1))
+
+
+@Command(
+    "[e:emun('.','/','。')]point",
+    sign="point",
+    desc="查看当前点数",
+    category="常用",
+)
+def point(msg: PacketMsg, **kw):
+    qq_id = msg.getId()
+    user = UserDataManager(qq_id)
+    return "%s，当前拥有点数：%d" % (msg.getName(), user.data.get("point", 1))
+

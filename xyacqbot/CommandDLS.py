@@ -81,7 +81,6 @@ class Template:
                 return val, consumed + lstrip_len
         if self.optional:
             return None, 0
-
         return None, None
 
 
@@ -129,7 +128,7 @@ class CommandDLS:
         over_stack = [x for x in over_stack if x != ""]
         self.compiled_dsl = over_stack
 
-    def template(self, text: str, full_match: bool = False):
+    def template(self, text: str, full_match: bool = False) -> dict[str, str | float | int | complex | object] | None:
         result = {}
         offset = 0
         parts = self.compiled_dsl

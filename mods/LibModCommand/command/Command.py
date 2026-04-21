@@ -1,23 +1,35 @@
 import logging
 from xyacqbot.CommandDLS import CommandDLS
 from xyacqbot.xyazhServer.ConsoleMessage import ConsoleMessage
+from typing import Callable
+
+
+class CustomParser:
+    def __init__(self, fuc: Callable[[str], list[str | float | int | complex | object]]):
+        self.fuc = fuc
+
+    def template(self, text: str, *args) -> dict[str, str | float | int | complex | object] | None:
+        return self.fuc(text)
 
 
 class CommandInfo:
-    def __init__(self, func, template_str, sign, desc, category, hidden=False):
+    def __init__(self, func, template, sign, desc, category, hidden=False):
         self.func = func
-        self.template_str = template_str
+        self.template_str = template
         self.sign = sign
         self.desc = desc
         self.category = category
         self.hidden = hidden
-        self.parser = CommandDLS(template_str)
+        if isinstance(template, str):
+            self.parser = CommandDLS(template)
+        else:
+            self.parser = CustomParser(template)
 
 
 class Command:
     registry: dict[str, list[CommandInfo]] = {}
 
-    def __init__(self, template: str, sign: str = "", desc: str = "", category: str = "default", hidden=False):
+    def __init__(self, template: str | Callable[[str], list[str | float | int | complex | object]], sign: str = "", desc: str = "", category: str = "default", hidden=False):
         self.template = template
         self.sign = sign
         self.desc = desc
@@ -27,7 +39,7 @@ class Command:
     def __call__(self, func):
         info = CommandInfo(
             func=func,
-            template_str=self.template,
+            template=self.template,
             sign=self.sign,
             desc=self.desc,
             category=self.category,
