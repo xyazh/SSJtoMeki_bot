@@ -29,10 +29,6 @@ class Main:
             ConsoleMessage.printError("ModMeki需要LibModRoll模块，该模块未安装")
             raise ImportError("ModMeki需要LibModRoll模块，该模块未安装")
         from . import commands
-        try:
-            from . import mcp
-        except ImportError:
-            ConsoleMessage.printError("未安装MCP模块，无法启用MCP服务")
 
 
 

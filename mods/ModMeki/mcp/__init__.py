@@ -14,13 +14,13 @@ MCP = FastMCP()
 def sign(qq_id: int) -> str:
     """
     签到
-    :param qq_id: qq号
+    :param qq_id: 用户的qq号（5-11位的数字）
     :return: 签到信息
     """
     user = UserDataManager(qq_id)
     last_time = user.data.get("last_time", 0)
     if (last_time + 8 * 3600) // (24 * 3600) == (time.time() + 8 * 3600) // (24 * 3600):
-        return "%.2f秒前签到过，今日已签到" % time.time()-last_time
+        return "%.2f秒前签到过，今日已签到" % (time.time()-last_time)
     n = user.data.get("n", 1)
     p = user.data.get("point", 1)
     ap = random.randint(int(n//2), n)
@@ -35,7 +35,7 @@ def sign(qq_id: int) -> str:
 def jrrp(qq_id: int) -> str:
     """
     运势
-    :param qq_id: qq号
+    :param qq_id: 用户的qq号（5-11位的数字）
     :return: 运势信息
     """
     user = UserDataManager(qq_id)
