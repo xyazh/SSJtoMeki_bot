@@ -16,7 +16,7 @@ class RollHelper:
             return False
         
     @staticmethod
-    def foramtValue(value):
+    def formatValue(value):
         if isinstance(value, float):
             return "%.4f" % value
         if isinstance(value, complex):

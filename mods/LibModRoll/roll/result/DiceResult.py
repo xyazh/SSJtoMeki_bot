@@ -54,8 +54,8 @@ class DiceResult:
         length = self.size()
         if length > limit:
             items = list(islice(self, limit))
-            return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(RollHelper.foramtValue, items))}, ...>"
-        return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(RollHelper.foramtValue, self))}>"
+            return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(RollHelper.formatValue, items))}, ...>"
+        return f"RollResult[size={length}, sum={self.sum()}]<{', '.join(map(RollHelper.formatValue, self))}>"
 
     def __repr__(self):
         return self.__str__()
@@ -64,12 +64,12 @@ class DiceResult:
         limit = self.limit
         length = self.size()
         if length == 0:
-            items = [RollHelper.foramtValue(self.outsum)]
+            items = [RollHelper.formatValue(self.outsum)]
         elif length > limit:
-            items = list(map(RollHelper.foramtValue,islice(self, limit)))
-            items.append(RollHelper.foramtValue("..."))
+            items = list(map(RollHelper.formatValue,islice(self, limit)))
+            items.append(RollHelper.formatValue("..."))
         else:
-            items = map(RollHelper.foramtValue,self)
+            items = map(RollHelper.formatValue,self)
         return sep.join(items)
 
 

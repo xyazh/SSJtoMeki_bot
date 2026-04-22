@@ -113,7 +113,7 @@ class RAResult:
     def rollResults(self) -> Iterator[RollResult]:
         for value in self.dice_result:
             result = RollResult(
-                value, "1d100", f"(1)d100={RollHelper.foramtValue(value)}[(1)d100={RollHelper.foramtValue(value)}]",
+                value, "1d100", f"(1)d100={RollHelper.formatValue(value)}[(1)d100={RollHelper.formatValue(value)}]",
                 ref=self.attr_val, ref_name=self.attr_name)
             if self.rule:
                 yield result.checkRaw()
@@ -123,7 +123,7 @@ class RAResult:
     def rollTrueResult(self) -> Iterator[RollResult]:
         for value in self.dice_result.values:
             result = RollResult(
-                value, "1d100", f"(1)d100={RollHelper.foramtValue(value)}[(1)d100={RollHelper.foramtValue(value)}]",
+                value, "1d100", f"(1)d100={RollHelper.formatValue(value)}[(1)d100={RollHelper.formatValue(value)}]",
                 ref=self.attr_val, ref_name=self.attr_name)
             if self.rule:
                 yield result.checkRaw()
@@ -136,35 +136,35 @@ class RAResult:
         if length > limit:
             items = list(islice(self.rollResults(), limit))
             result_s = (
-                f"{RollHelper.foramtValue(item.value)}|{item.msg}"
+                f"{RollHelper.formatValue(item.value)}|{item.msg}"
                 for item in items)
             return f"RAResult[size={length}]<{', '.join(result_s)}, ...>"
         items = self.rollResults()
         result_s = (
-            f"{RollHelper.foramtValue(item.value)}|{item.msg}"
+            f"{RollHelper.formatValue(item.value)}|{item.msg}"
             for item in items)
         return f"RAResult[size={length}]<{', '.join(result_s)}>"
 
     def toStr(self, sep: str = ", ") -> str:
         limit = self.limit
         length = self.size()
-        attr_val = RollHelper.foramtValue(self.attr_val)
+        attr_val = RollHelper.formatValue(self.attr_val)
         if length > limit:
             items = list(islice(self.rollResults(), limit))
             result_s = (
-                f"{RollHelper.foramtValue(item.value)}/{attr_val}|{item.msg}"
+                f"{RollHelper.formatValue(item.value)}/{attr_val}|{item.msg}"
                 for item in items)
             return f"{sep.join(result_s)}{sep}..."
         items = self.rollResults()
         result_s = (
-            f"{RollHelper.foramtValue(item.value)}/{attr_val}|{item.msg}"
+            f"{RollHelper.formatValue(item.value)}/{attr_val}|{item.msg}"
             for item in items)
         return f"{sep.join(result_s)}"
 
     def bonus(self):
         value = self.dice_result.min()
         result = RollResult(
-            value, "1d100", f"(1)d100={RollHelper.foramtValue(value)}[(1)d100={RollHelper.foramtValue(value)}]",
+            value, "1d100", f"(1)d100={RollHelper.formatValue(value)}[(1)d100={RollHelper.formatValue(value)}]",
             ref=self.attr_val, ref_name=self.attr_name, punishment_or_bonus=True)
         if self.rule:
             return result.checkRaw()
@@ -174,7 +174,7 @@ class RAResult:
     def punishment(self):
         value = self.dice_result.max()
         result = RollResult(
-            value, "1d100", f"(1)d100={RollHelper.foramtValue(value)}[(1)d100={RollHelper.foramtValue(value)}]",
+            value, "1d100", f"(1)d100={RollHelper.formatValue(value)}[(1)d100={RollHelper.formatValue(value)}]",
             ref=self.attr_val, ref_name=self.attr_name, punishment_or_bonus=True)
         if self.rule:
             return result.checkRaw()

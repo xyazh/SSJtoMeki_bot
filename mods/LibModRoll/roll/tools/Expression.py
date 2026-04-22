@@ -17,7 +17,7 @@ class Expression:
         self.dice = DICE
 
     def _foramtValue(self, value):
-        return RollHelper.foramtValue(value)
+        return RollHelper.formatValue(value)
 
     def replace(self, s: str) -> str:
         s = s.replace("（", "(")
@@ -91,7 +91,7 @@ class Expression:
                     if trace:
                         steps.append(
                             (expr_str,
-                             f"{expr_str}={RollHelper.foramtValue(total)}[{expr_str}={rolls.toStr(sep='+')}]")
+                             f"{expr_str}={RollHelper.formatValue(total)}[{expr_str}={rolls.toStr(sep='+')}]")
                         )
                     operand_stack.append((total, str(total)))
                 else:

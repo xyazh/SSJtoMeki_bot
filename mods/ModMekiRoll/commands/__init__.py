@@ -31,7 +31,7 @@ def r(msg: PacketMsg, e: str, exp: str = ""):
     config = RollConfig()
     try:
         result = ROLL.r(exp, rule=config.getRules())
-        value = RollHelper.foramtValue(result.value)
+        value = RollHelper.formatValue(result.value)
         step = [stp[1] for stp in result.steps]
         if len(step) > 10:
             step = step[:10]
