@@ -7,10 +7,10 @@ from xyacqbot.CommandDLS import CommandDLS
 from xyacqbot.xyazhServer.ConsoleMessage import ConsoleMessage
 from mods.LibModMCP.MCP import MCP
 
-MCP = MCP()
+_MCP = MCP()
 
 
-@MCP.tool()
+@_MCP.tool()
 def sign(qq_id: int) -> str:
     """
     签到
@@ -31,7 +31,7 @@ def sign(qq_id: int) -> str:
     return "第%d天签到获得：%dP" % (n, ap)
 
 
-@MCP.tool()
+@_MCP.tool()
 def jrrp(qq_id: int) -> str:
     """
     运势
@@ -69,8 +69,12 @@ def jrrp(qq_id: int) -> str:
         r += "，今天已经测过了"
     return "今日的幸运指数是%i %s" % (100-ys, r)
 
-MCP.settings.host = "127.0.0.1"
-MCP.settings.port = 37101
-MCP.run("sse")
-
-ConsoleMessage.print("MCP已加载", titles=["MEKIMOD"])
+@_MCP.tool()
+def point(qq_id: int) -> int:
+    """
+    查看当前点数
+    :param qq_id: 用户的qq号（5-11位的数字）
+    :return: 点数
+    """
+    user = UserDataManager(qq_id)
+    return user.data.get("point", 1)

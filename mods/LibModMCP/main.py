@@ -15,7 +15,7 @@ class Main:
         Main.instance = Main()
         Main.MCP = None
         try:
-            from .MCP import MCP
+            from mods.LibModMCP.MCP import MCP
         except ImportError:
             ConsoleMessage.printError("未安装MCP库，无法启用MCP服务，请自行安装")
         Main.MCP = MCP()
