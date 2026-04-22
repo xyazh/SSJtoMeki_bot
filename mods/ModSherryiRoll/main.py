@@ -28,14 +28,14 @@ class Main:
         Main.cqserver = Cqserver.instance
         Main.instance = Main()
         if Command is None:
-            ConsoleMessage.printError("ModMeki需要LibModCommand模块，该模块未安装")
-            raise ImportError("ModMeki需要LibModCommand模块，该模块未安装")
+            ConsoleMessage.printError("ModSherry需要LibModCommand模块，该模块未安装")
+            raise ImportError("ModSherry需要LibModCommand模块，该模块未安装")
         if Roll is None:
-            ConsoleMessage.printError("ModMeki需要LibModRoll模块，该模块未安装")
-            raise ImportError("ModMeki需要LibModRoll模块，该模块未安装")
+            ConsoleMessage.printError("ModSherry需要LibModRoll模块，该模块未安装")
+            raise ImportError("ModSherry需要LibModRoll模块，该模块未安装")
         from . import commands
         if MCP is None:
-            ConsoleMessage.printWarning("ModMeki需要LibModMCP模块，该模块未安装")
+            ConsoleMessage.printWarning("ModSherry需要LibModMCP模块，该模块未安装")
         else:
             from . import mcp
 

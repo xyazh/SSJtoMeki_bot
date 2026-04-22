@@ -9,7 +9,7 @@ from xyacqbot.helper.RollHelper import RollHelper
 from xyacqbot.CommandDLS import CommandDLS
 
 
-BOT_NAME = "Meki"
+BOT_NAME = "雪莉"
 
 
 @Command(
@@ -26,7 +26,7 @@ BOT_NAME = "Meki"
     hidden=True
 )
 def help(msg: PacketMsg, e: str, sub: str = None):
-    msg = "#------帮助------\r\nMulti functional bot made with Python by Xyazh\r\n\r\nmeki酱在这里哟~\r\n"
+    msg = "#------帮助------\r\nMulti functional bot made with Python by Xyazh\r\n\r\n雪莉酱在这里哟~\r\n"
     if sub is None:
         msg += Command.help()
     else:
@@ -180,18 +180,6 @@ def jrrp(msg: PacketMsg, **kw):
         r += "今天已经测过运势了" if not flag else random.choice(["街上好安静啊", "大哥哥......", "打完这场仗我就会老家结婚", "听好，在我回来之前不要乱走", "已经没什么好怕的了",
                                                          "你们先走我马上就来", "身体好轻", "因为我不再是一个人了", "什么声音，我去看看", "完了，这次真的完了", "没关系，问题不大（", "嗯？是错觉吗"])
     return "%s今日的幸运指数是%i %s" % (msg.getName(), 100-ys, r)
-
-
-@Command(
-    "[e:emun('.','/','。')]point",
-    sign="point",
-    desc="查看当前点数",
-    category="常用",
-)
-def point(msg: PacketMsg, **kw):
-    qq_id = msg.getId()
-    user = UserDataManager(qq_id)
-    return "%s，当前拥有点数：%d" % (msg.getName(), user.data.get("point", 1))
 
 
 @Command(

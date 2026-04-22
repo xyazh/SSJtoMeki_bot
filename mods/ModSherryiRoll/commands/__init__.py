@@ -11,7 +11,7 @@ from mods.LibModRoll.roll.tools.RollHelper import RollHelper
 from .msg import D, D0, D1, D2, D3, D4, D5, D6, D7, D8, D9
 
 
-BOT_NAME = "Meki"
+BOT_NAME = "雪莉"
 
 ROLL = Roll()
 
@@ -39,7 +39,7 @@ def r(msg: PacketMsg, e: str, exp: str = ""):
         steps = "\r\n".join(step)
         return f"{msg.getName()}投了骰子: \r\n{exp}={value}\r\nstep: {steps}"
     except Exception as e:
-        return f"哈？杂鱼大哥哥怎么骰子都不会骰？\r\n{e}"
+        return f"啊嘞？{BOT_NAME}好像把骰子搞坏了\r\n{e}"
 
 
 @Command(
@@ -91,10 +91,10 @@ def ra(msg: PacketMsg, e: str, ra: str, count: int = 1, arr: str = ""):
     level = result.rollResults().__next__().level
     d: D = [D0, D1, D2, D3, D4, D5][level]
     if count == 1:
-        return f"#命运之书为“{msg.getName()}”进行了“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n# Meki：{d.choice()}"
+        return f"#命运之书为“{msg.getName()}”进行了“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n# {BOT_NAME}：{d.choice()}"
     n = result.count()
     count_s = f"大成功:{n[0]}、极难成功:{n[1]}、困难成功:{n[2]}、普通成功:{n[3]}、失败:{n[4]}、大失败:{n[5]}"
-    return f"#命运之书为“{msg.getName()}”进行了{count}次“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n# Meki：让我看看都有些啥\r\n# {count_s}"
+    return f"#命运之书为“{msg.getName()}”进行了{count}次“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n# {BOT_NAME}：让我看看都有些什么\r\n# {count_s}"
 
 
 @Command(
@@ -132,10 +132,10 @@ def rb(msg: PacketMsg, e: str, rb: str, count: int = 2, arr: str = ""):
     result = ROLL.ra(arr, val, count, config.getRules())
     b = result.bonus()
     if b.level < 4:
-        meki_msg = D6.choice()
+        bot_msg = D6.choice()
     else:
-        meki_msg = D7.choice()
-    return f"#福音之书为“{msg.getName()}”进行了“{arr}”祝福检定，\r\n#神圣精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\nMeki：{meki_msg}\r\n"
+        bot_msg = D7.choice()
+    return f"#福音之书为“{msg.getName()}”进行了“{arr}”祝福检定，\r\n#神圣精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{BOT_NAME}：{bot_msg}\r\n"
 
 
 @Command(
@@ -176,10 +176,10 @@ def rp(msg: PacketMsg, e: str, rp: str, count: int = 2, arr: str = ""):
     result = ROLL.ra(arr, val, count, config.getRules())
     b = result.punishment()
     if b.level < 4:
-        meki_msg = D8.choice()
+        bot_msg = D8.choice()
     else:
-        meki_msg = D9.choice()
-    return f"#灾厄之书为“{msg.getName()}”进行了“{arr}”诅咒检定，\r\n#黯殇精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\nMeki：{meki_msg}\r\n"
+        bot_msg = D9.choice()
+    return f"#灾厄之书为“{msg.getName()}”进行了“{arr}”诅咒检定，\r\n#黯殇精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{BOT_NAME}：{bot_msg}\r\n"
 
 
 @Command(

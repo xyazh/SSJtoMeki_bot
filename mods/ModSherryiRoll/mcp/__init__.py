@@ -2,15 +2,10 @@ from mods.LibModRoll.roll.tools.RollHelper import RollHelper
 from mods.LibModRoll.rolldata.UserRollData import UserRollData
 from mods.LibModRoll.rolldata.RollConfig import RollConfig
 from mods.LibModRoll.roll.Roll import Roll
-from mods.LibModRoll.roll.result.RollResult import RollResult, RAResult
+from mods.LibModRoll.roll.result.RollResult import RAResult
 from mods.LibModMCP.MCP import MCP
 
 
-import random
-import time
-
-
-BOT_NAME = "Meki"
 
 ROLL = Roll()
 _MCP = MCP()
