@@ -298,6 +298,8 @@ def pccopy(msg: PacketMsg, name1: str = "", name2: str = "", **kw):
     if not card2:
         return f"未找到角色卡: {name2}"
     if not card1:
+        if len(data.cardsList()) >= 25:
+            return f"未找到{name1}，且已超过25张角色卡，无法创建"
         card1 = data.createCard(name1)
     card1.copyFrom(card2)
     return f"已复制角色卡: {card2.name}到{card1.name}"
@@ -318,7 +320,6 @@ def pcshow(msg: PacketMsg, name: str = "", **kw):
         card = data.getCard(name)
     if not card:
         return f"未找到角色卡: {name}"
-    card.toData()
     return f"当前角色卡: \r\n{card.toData()}"
 
 
