@@ -156,7 +156,7 @@ def setAttribute(qq_id: int, data: dict[str, int | float | complex | str]) -> st
 
 
 @_MCP.tool()
-def showAttribute(qq_id: int, *attribute_names: str) -> dict[str, str]:
+def showAttribute(qq_id: int, attribute_names: list[str]) -> dict[str, str]:
     """
     显示属性
     :param qq_id: 用户的qq号（5-11位的数字）
