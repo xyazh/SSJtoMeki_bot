@@ -5,9 +5,9 @@ from xyacqbot.datamanager.UserDataManager import UserDataManager
 from xyacqbot.helper.RollHelper import RollHelper
 from xyacqbot.CommandDLS import CommandDLS
 from xyacqbot.xyazhServer.ConsoleMessage import ConsoleMessage
-from mcp.server.fastmcp import FastMCP
+from mods.LibModMCP.MCP import MCP
 
-MCP = FastMCP()
+MCP = MCP()
 
 
 @MCP.tool()

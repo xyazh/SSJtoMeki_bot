@@ -12,6 +12,10 @@ try:
     from mods.LibModCommand.command.Command import Command
 except ImportError:
     Command = None
+try:
+    from mods.LibModMCP.MCP import MCP
+except ImportError:
+    MCP = None
 
 class Main:
     cqserver: Cqserver = None
@@ -23,12 +27,12 @@ class Main:
         Main.instance = Main()
         if Command is None:
             ConsoleMessage.printError("ModMeki需要LibModCommand模块，该模块未安装")
-            raise ImportError("ModMeki需要LibModCommand模块，该模块未安装")
-        from . import commands
-        try:
+        else:
+            from . import commands
+        if MCP is None:
+            ConsoleMessage.printWarning("ModMeki需要LibModMCP模块，该模块未安装")
+        else:
             from . import mcp
-        except ImportError:
-            ConsoleMessage.printError("未安装MCP模块，无法启用MCP服务")
 
 
     @staticmethod

@@ -25,6 +25,10 @@ if typing.TYPE_CHECKING:
                 ...
 
             @staticmethod
+            def postInit():
+                ...
+
+            @staticmethod
             def onBotOtherEvent(packet: PacketBase):
                 ...
 
@@ -58,6 +62,9 @@ class Cqserver:
                 Container("cqserver", self, "object")
             ]
             mod.Main.main(containers)
+        for mod in self.mods.values():
+            if hasattr(mod.Main, "postInit"):
+                mod.Main.postInit()
 
     def modOnEvent(self, p: PacketBase):
         mods = self.mod_loader.getMods()
