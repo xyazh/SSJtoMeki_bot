@@ -1,5 +1,6 @@
 import random
 import time
+import os
 from mods.LibModCommand.command.Command import Command
 from xyacqbot.Cqserver import Cqserver
 from xyacqbot.packet.PacketMsg import PacketMsg
@@ -203,4 +204,3 @@ def point(msg: PacketMsg, **kw):
     qq_id = msg.getId()
     user = UserDataManager(qq_id)
     return "%s，当前拥有点数：%d" % (msg.getName(), user.data.get("point", 1))
-
