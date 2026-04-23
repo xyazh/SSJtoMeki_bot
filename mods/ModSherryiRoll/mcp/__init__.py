@@ -304,9 +304,8 @@ def playerCardShow(qq_id: int, card_name: str) -> str:
     return f"当前角色卡: {card.toData()}"
 
 
-
 @_MCP.tool()
-def tempMadness()-> str:
+def tempMadness() -> str:
     """
     临时疯狂
     :return: 临时疯狂描述
@@ -314,11 +313,12 @@ def tempMadness()-> str:
     :desc: 临时疯狂描述，用户可能使用的语句：ti
     """
     rand = RandomGen()
-    name, desc = rand.choice(INSANE_TEMP)
+    name, desc = rand.choice(*INSANE_TEMP)
     return f"临时疯狂-{name}：{desc}"
 
+
 @_MCP.tool()
-def summarizeMadness()-> str:
+def summarizeMadness() -> str:
     """
     总结疯狂
     :return: 总结疯狂描述
@@ -326,11 +326,12 @@ def summarizeMadness()-> str:
     :desc: 总结疯狂描述，用户可能使用的语句：li
     """
     rand = RandomGen()
-    name, desc = rand.choice(INSANE_UNCERTAIN)
+    name, desc = rand.choice(*INSANE_UNCERTAIN)
     return f"总结疯狂-{name}：{desc}"
 
+
 @_MCP.tool()
-def phobia()-> str:
+def phobia() -> str:
     """
     恐惧症
     :return: 恐惧症描述
@@ -338,14 +339,15 @@ def phobia()-> str:
     :desc: 恐惧症描述，用户可能使用的语句：ph
     """
     rand = RandomGen()
-    result = rand.choice(PHOBIA)
+    result = rand.choice(*PHOBIA)
     name, desc = result
     dice = Dice()
     duration = dice.dInt(1, 10)
     return f"恐惧症-{name}: {desc} 持续1d10={duration}小时"
 
+
 @_MCP.tool()
-def mania()-> str:
+def mania() -> str:
     """
     狂躁症
     :return: 狂躁症描述
@@ -353,7 +355,7 @@ def mania()-> str:
     :desc: 狂躁症描述，用户可能使用的语句：ma
     """
     rand = RandomGen()
-    result = rand.choice(MANIA)
+    result = rand.choice(*MANIA)
     name, desc = result
     dice = Dice()
     duration = dice.dInt(1, 10)

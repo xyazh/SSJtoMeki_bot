@@ -331,7 +331,7 @@ def pcshow(msg: PacketMsg, name: str = "", **kw):
 )
 def ti(msg: PacketMsg, **kw):
     rand = RandomGen()
-    result = rand.choice(INSANE_TEMP)
+    result = rand.choice(*INSANE_TEMP)
     name, desc = result
     return f"{BOT_NAME}发现{msg.getName()}似乎出现一点小麻烦呢：『{name}』{desc}。看起来有点棘手呢，但{BOT_NAME}相信一定能慢慢应对的~"
 
@@ -343,7 +343,7 @@ def ti(msg: PacketMsg, **kw):
 )
 def li(msg: PacketMsg, **kw):
     rand = RandomGen()
-    result = rand.choice(INSANE_UNCERTAIN)
+    result = rand.choice(*INSANE_UNCERTAIN)
     name, desc = result
     return f"{BOT_NAME}总结了一下{msg.getName()}现在的状况：『{name}』{desc} 啊呀，虽然有点麻烦，但也不是什么大问题，慢慢调整就好啦~"
 
@@ -356,7 +356,7 @@ def li(msg: PacketMsg, **kw):
 )
 def ph(msg: PacketMsg, **kw):
     rand = RandomGen()
-    result = rand.choice(PHOBIA)
+    result = rand.choice(*PHOBIA)
     name, desc = result
     dice = Dice()
     duration = dice.dInt(1, 10)
@@ -371,7 +371,7 @@ def ph(msg: PacketMsg, **kw):
 )
 def ma(msg: PacketMsg, **kw):
     rand = RandomGen()
-    result = rand.choice(MANIA)
+    result = rand.choice(*MANIA)
     name, desc = result
     dice = Dice()
     duration = dice.dInt(1, 10)
