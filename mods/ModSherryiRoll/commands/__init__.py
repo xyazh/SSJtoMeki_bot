@@ -1,14 +1,14 @@
-import random
-import time
-
 from xyacqbot.packet.PacketMsg import PacketMsg
 from xyacqbot.helper.RollHelper import RollHelper as XRollHelper
 from mods.LibModCommand.command.Command import Command
 from mods.LibModRoll.roll.Roll import Roll
+from mods.LibModRoll.roll.tools.Dice import Dice
+from mods.LibModRoll.roll.tools.RandomGen import RandomGen
 from mods.LibModRoll.rolldata.RollConfig import RollConfig
 from mods.LibModRoll.rolldata.UserRollData import UserRollData
 from mods.LibModRoll.roll.tools.RollHelper import RollHelper
 from .msg import D, D0, D1, D2, D3, D4, D5, D6, D7, D8, D9
+from ..coc7 import INSANE_TEMP, INSANE_UNCERTAIN, PHOBIA, MANIA
 
 
 BOT_NAME = "雪莉"
@@ -330,22 +330,10 @@ def pcshow(msg: PacketMsg, name: str = "", **kw):
     category="跑团",
 )
 def ti(msg: PacketMsg, **kw):
-    li = [
-        "失忆：调查员会发现自己只记得最后身处的安全地点，却没有任何来到这里的记忆。例如，调查员前一刻还在家中吃着早饭，下一刻就已经直面着不知名的怪物。这将会持续 1D10 轮。",
-        "假性残疾：调查员陷入了心理性的失明，失聪以及躯体缺失感中，持续 1D10 轮。",
-        "暴力倾向：调查员陷入了六亲不认的暴力行为中，对周围的敌人与友方进行着无差别的攻击，持续 1D10 轮。",
-        "偏执：调查员陷入了严重的偏执妄想之中，持续１Ｄ１０轮。有人在暗中窥视着他们，同伴中有人背叛了他们，没有人可以信任，万事皆虚。",
-        "人际依赖：守秘人适当参考调查员的背景中重要之人的条目，调查员因为一些原因而降他人误认为了他重要的人并且努力的会与那个人保持那种关系，持续 1D10 轮",
-        "昏厥：调查员当场昏倒，并需要 1D10 轮才能苏醒。",
-        "逃避行为：调查员会用任何的手段试图逃离现在所处的位置，即使这意味着开走唯一一辆交通工具并将其它人抛诸脑后，调查员会试图逃离 1D10轮。",
-        "竭嘶底里：调查员表现出大笑，哭泣，嘶吼，害怕等的极端情绪表现，持续 1D10 轮。",
-        "恐惧：调查员通过一次 D100 或者由守秘人选择，来从恐惧症状表中选择一个恐惧源，就算这一恐惧的事物是并不存在的，调查员的症状会持续1D10 轮。",
-        "躁狂：调查员通过一次 D100 或者由守秘人选择，来从躁狂症状表中选择一个躁狂的诱因，这个症状将会持续 1D10 轮。",
-    ]
-    ti_val = ROLL.dice.dInt(1, 10).values[0]-1
-    ti_msg = li[ti_val]
-
-
+    rand = RandomGen()
+    result = rand.choice(INSANE_TEMP)
+    name, desc = result
+    return f"{BOT_NAME}发现{msg.getName()}似乎出现一点小麻烦呢：『{name}』{desc}。看起来有点棘手呢，但{BOT_NAME}相信一定能慢慢应对的~"
 
 @Command(
     "[e:emun('.','/','。')]li",
@@ -354,4 +342,37 @@ def ti(msg: PacketMsg, **kw):
     category="跑团",
 )
 def li(msg: PacketMsg, **kw):
-    pass
+    rand = RandomGen()
+    result = rand.choice(INSANE_UNCERTAIN)
+    name, desc = result
+    return f"{BOT_NAME}总结了一下{msg.getName()}现在的状况：『{name}』{desc} 啊呀，虽然有点麻烦，但也不是什么大问题，慢慢调整就好啦~"
+
+
+@Command(
+    "[e:emun('.','/','。')]ph",
+    sign="ph",
+    desc="恐惧症",
+    category="跑团",
+)
+def ph(msg: PacketMsg, **kw):
+    rand = RandomGen()
+    result = rand.choice(PHOBIA)
+    name, desc = result
+    dice = Dice()
+    duration = dice.dInt(1, 10)
+    return f"{BOT_NAME}注意到{msg.getName()}的一点小问题：『{name}』{desc} 持续大概 1d10={duration} 小时呢……唔，虽然有点吓人，不过慢慢调整就没问题啦~"
+
+
+@Command(
+    "[e:emun('.','/','。')]ma",
+    sign="ma",
+    desc="狂躁症",
+    category="跑团",
+)
+def ma(msg: PacketMsg, **kw):
+    rand = RandomGen()
+    result = rand.choice(MANIA)
+    name, desc = result
+    dice = Dice()
+    duration = dice.dInt(1, 10)
+    return f"{BOT_NAME}发现{msg.getName()}有一点小混乱：『{name}』{desc} 持续大概 1d10={duration} 小时呢……哎呀，好像有点手忙脚乱，不过{BOT_NAME}相信一定能应付好的~"

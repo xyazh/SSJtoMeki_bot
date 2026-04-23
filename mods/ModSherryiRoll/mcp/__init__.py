@@ -4,7 +4,9 @@ from mods.LibModRoll.rolldata.RollConfig import RollConfig
 from mods.LibModRoll.roll.Roll import Roll
 from mods.LibModRoll.roll.result.RollResult import RAResult
 from mods.LibModMCP.MCP import MCP
-
+from mods.LibModRoll.roll.tools.Dice import Dice
+from mods.LibModRoll.roll.tools.RandomGen import RandomGen
+from ..coc7 import INSANE_TEMP, INSANE_UNCERTAIN, PHOBIA, MANIA
 
 
 ROLL = Roll()
@@ -300,3 +302,59 @@ def playerCardShow(qq_id: int, card_name: str) -> str:
     if not card:
         return f"未找到角色卡: {card_name}"
     return f"当前角色卡: {card.toData()}"
+
+
+
+@_MCP.tool()
+def ti()-> str:
+    """
+    临时疯狂
+    :return: 临时疯狂描述
+    :command_name: ti
+    :desc: 临时疯狂描述，用户可能使用的语句：ti
+    """
+    rand = RandomGen()
+    name, desc = rand.choice(INSANE_TEMP)
+    return f"临时疯狂-{name}：{desc}"
+
+@_MCP.tool()
+def li()-> str:
+    """
+    总结疯狂
+    :return: 总结疯狂描述
+    :command_name: li
+    :desc: 总结疯狂描述，用户可能使用的语句：li
+    """
+    rand = RandomGen()
+    name, desc = rand.choice(INSANE_UNCERTAIN)
+    return f"总结疯狂-{name}：{desc}"
+
+@_MCP.tool()
+def ph()-> str:
+    """
+    恐惧症
+    :return: 恐惧症描述
+    :command_name: ph
+    :desc: 恐惧症描述，用户可能使用的语句：ph
+    """
+    rand = RandomGen()
+    result = rand.choice(PHOBIA)
+    name, desc = result
+    dice = Dice()
+    duration = dice.dInt(1, 10)
+    return f"恐惧症-{name}: {desc} 持续1d10={duration}小时"
+
+@_MCP.tool()
+def ma()-> str:
+    """
+    狂躁症
+    :return: 狂躁症描述
+    :command_name: ma
+    :desc: 狂躁症描述，用户可能使用的语句：ma
+    """
+    rand = RandomGen()
+    result = rand.choice(MANIA)
+    name, desc = result
+    dice = Dice()
+    duration = dice.dInt(1, 10)
+    return f"狂躁症-{name}: {desc} 持续1d10={duration}小时"
