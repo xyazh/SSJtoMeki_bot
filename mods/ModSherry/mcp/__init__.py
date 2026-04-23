@@ -218,7 +218,7 @@ def foodList() -> list[str]:
     """
     root_dir = Path('./data/dishes/')
     files_dict = {}
-    for f in root_dir.rglob('*'):
+    for f in root_dir.rglob('*.md'):  # 只匹配 .md 文件
         if f.is_file():
             files_dict[f.stem] = str(f)
     return list(files_dict.keys())
@@ -232,7 +232,7 @@ def howToCook(food_name: str) -> str:
     """
     root_dir = Path('./data/dishes/')
     files_dict = {}
-    for f in root_dir.rglob('*'):
+    for f in root_dir.rglob('*.md'):  # 只匹配 .md 文件
         if f.is_file():
             files_dict[f.stem] = str(f)
     if food_name not in files_dict:
@@ -243,4 +243,3 @@ def howToCook(food_name: str) -> str:
             return f.read()
     except Exception as e:
         return f"读取 {food_name} 时出错: {e}"
-    
