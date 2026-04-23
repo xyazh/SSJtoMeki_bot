@@ -306,7 +306,7 @@ def playerCardShow(qq_id: int, card_name: str) -> str:
 
 
 @_MCP.tool()
-def ti()-> str:
+def tempMadness()-> str:
     """
     临时疯狂
     :return: 临时疯狂描述
@@ -318,7 +318,7 @@ def ti()-> str:
     return f"临时疯狂-{name}：{desc}"
 
 @_MCP.tool()
-def li()-> str:
+def summarizeMadness()-> str:
     """
     总结疯狂
     :return: 总结疯狂描述
@@ -330,7 +330,7 @@ def li()-> str:
     return f"总结疯狂-{name}：{desc}"
 
 @_MCP.tool()
-def ph()-> str:
+def phobia()-> str:
     """
     恐惧症
     :return: 恐惧症描述
@@ -345,7 +345,7 @@ def ph()-> str:
     return f"恐惧症-{name}: {desc} 持续1d10={duration}小时"
 
 @_MCP.tool()
-def ma()-> str:
+def mania()-> str:
     """
     狂躁症
     :return: 狂躁症描述
