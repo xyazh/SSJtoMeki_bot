@@ -342,7 +342,7 @@ def phobia() -> str:
     result = rand.choice(*PHOBIA)
     name, desc = result
     dice = Dice()
-    duration = dice.dInt(1, 10)
+    duration = dice.dInt(1, 10).values[0]
     return f"恐惧症-{name}: {desc} 持续1d10={duration}小时"
 
 
@@ -358,5 +358,5 @@ def mania() -> str:
     result = rand.choice(*MANIA)
     name, desc = result
     dice = Dice()
-    duration = dice.dInt(1, 10)
+    duration = dice.dInt(1, 10).values[0]
     return f"狂躁症-{name}: {desc} 持续1d10={duration}小时"

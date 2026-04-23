@@ -359,7 +359,7 @@ def ph(msg: PacketMsg, **kw):
     result = rand.choice(*PHOBIA)
     name, desc = result
     dice = Dice()
-    duration = dice.dInt(1, 10)
+    duration = dice.dInt(1, 10).values[0]
     return f"{BOT_NAME}注意到{msg.getName()}的一点小问题：『{name}』{desc} 持续大概 1d10={duration} 小时呢……唔，虽然有点吓人，不过慢慢调整就没问题啦~"
 
 
@@ -374,5 +374,5 @@ def ma(msg: PacketMsg, **kw):
     result = rand.choice(*MANIA)
     name, desc = result
     dice = Dice()
-    duration = dice.dInt(1, 10)
+    duration = dice.dInt(1, 10).values[0]
     return f"{BOT_NAME}发现{msg.getName()}有一点小混乱：『{name}』{desc} 持续大概 1d10={duration} 小时呢……哎呀，好像有点手忙脚乱，不过{BOT_NAME}相信一定能应付好的~"
