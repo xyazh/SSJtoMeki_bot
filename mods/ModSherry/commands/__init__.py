@@ -1,6 +1,5 @@
 import random
 import time
-import os
 from mods.LibModCommand.command.Command import Command
 from xyacqbot.Cqserver import Cqserver
 from xyacqbot.packet.PacketMsg import PacketMsg

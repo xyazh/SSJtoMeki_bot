@@ -5,11 +5,9 @@ import base64
 import hashlib
 import string
 import datetime
-from xyacqbot.packet.PacketMsg import PacketMsg
+from pathlib import Path
 from xyacqbot.datamanager.UserDataManager import UserDataManager
 from xyacqbot.helper.RollHelper import RollHelper
-from xyacqbot.CommandDLS import CommandDLS
-from xyacqbot.xyazhServer.ConsoleMessage import ConsoleMessage
 from mods.LibModMCP.MCP import MCP
 
 _MCP = MCP()
@@ -210,3 +208,39 @@ def formatTime(timestamp: int = None, fmt: str = "%Y-%m-%d %H:%M:%S") -> str:
     """格式化时间"""
     ts = timestamp or int(time.time())
     return datetime.datetime.fromtimestamp(ts).strftime(fmt)
+
+
+@_MCP.tool()
+def foodList() -> list[str]:
+    """
+    获取所有储存有食谱的食物列表
+    :return: 食谱列表
+    """
+    root_dir = Path('./data/dishes/')
+    files_dict = {}
+    for f in root_dir.rglob('*'):
+        if f.is_file():
+            files_dict[f.stem] = str(f)
+    return list(files_dict.keys())
+
+@_MCP.tool()
+def howToCook(food_name: str) -> str:
+    """
+    获取已储存的指定食物的食谱
+    :param food_name: 食物名称
+    :return: 食谱内容
+    """
+    root_dir = Path('./data/dishes/')
+    files_dict = {}
+    for f in root_dir.rglob('*'):
+        if f.is_file():
+            files_dict[f.stem] = str(f)
+    if food_name not in files_dict:
+        return f"没有找到 {food_name} 的食谱"
+    file_path = files_dict[food_name]
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except Exception as e:
+        return f"读取 {food_name} 时出错: {e}"
+    
