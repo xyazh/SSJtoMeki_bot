@@ -214,6 +214,7 @@ def formatTime(timestamp: int = None, fmt: str = "%Y-%m-%d %H:%M:%S") -> str:
 def foodList() -> list[str]:
     """
     获取所有储存有食谱的食物列表
+    :desc: 当用户问吃什么的时候，可以调用这个tool然后从里面选择一个
     :return: 食谱列表
     """
     root_dir = Path('./data/dishes/')
@@ -227,6 +228,7 @@ def foodList() -> list[str]:
 def howToCook(food_name: str) -> str:
     """
     获取已储存的指定食物的食谱
+    :desc: 当用户问怎么做的时候，如果是foodList获取的食物，可以调用这个tool查询做法
     :param food_name: 食物名称
     :return: 食谱内容
     """
