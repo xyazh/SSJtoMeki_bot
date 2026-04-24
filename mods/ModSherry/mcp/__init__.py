@@ -211,7 +211,7 @@ def formatTime(timestamp: int = None, fmt: str = "%Y-%m-%d %H:%M:%S") -> str:
 
 
 @_MCP.tool()
-def foodList() -> list[str]:
+def foodList() -> str:
     """
     获取所有储存有食谱的食物列表
     :desc: 当用户问吃什么的时候，可以调用这个tool然后从里面选择一个
@@ -222,7 +222,7 @@ def foodList() -> list[str]:
     for f in root_dir.rglob('*.md'):  # 只匹配 .md 文件
         if f.is_file():
             files_dict[f.stem] = str(f)
-    return list(files_dict.keys())
+    return f"当前食物列表：{str(list(files_dict.keys()))}"
 
 @_MCP.tool()
 def howToCook(food_name: str) -> str:
