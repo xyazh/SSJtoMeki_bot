@@ -58,13 +58,15 @@ class MCP(FastMCP):
     
     def add_tool(self, fn, *args, **kwargs):
         @functools.wraps(fn)
-        def wrapper(self, *call_args, **call_kwargs):
+        def wrapper(*call_args, **call_kwargs):
             ConsoleMessage.print("MCP工具调用", fn.__name__,
                                 call_args, call_kwargs, titles=["MCP"])
-            result = fn(self, *call_args, **call_kwargs)
+            result = fn(*call_args, **call_kwargs)
             ConsoleMessage.print("MCP工具返回", fn.__name__,
                                 result, titles=["MCP"])
+            return result
         return super().add_tool(wrapper, *args, **kwargs)
+
 
 
 
