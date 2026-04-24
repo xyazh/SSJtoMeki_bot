@@ -214,7 +214,7 @@ def formatTime(timestamp: int = None, fmt: str = "%Y-%m-%d %H:%M:%S") -> str:
 def foodList() -> str:
     """
     获取所有储存有食谱的食物列表
-    :desc: 当用户问吃什么的时候，可以调用这个tool然后从里面选择一个
+    :desc: 返回目前存有食谱的全部食物
     :return: 食谱列表
     """
     root_dir = Path('./data/dishes/')
@@ -245,3 +245,17 @@ def howToCook(food_name: str) -> str:
             return f.read()
     except Exception as e:
         return f"读取 {food_name} 时出错: {e}"
+    
+@_MCP.tool()
+def choiceFood() -> str:
+    """
+    随机获取一个食物
+    :desc: 当用户问吃什么的时候，可以调用这个tool
+    :return: 食物名称
+    """
+    root_dir = Path('./data/dishes/')
+    files_dict = {}
+    for f in root_dir.rglob('*.md'):  # 只匹配 .md 文件
+        if f.is_file():
+            files_dict[f.stem] = str(f)
+    return random.choice(list(files_dict.keys()))
