@@ -34,7 +34,7 @@ def searchSong(msg: PacketMsg, name: str = "", **kw):
         song = result[0]
         if song.get("type") != "base64":
             return
-        data = base64.b64decode(song.get("string"))
+        data = song.get("string")
         send_msg = MsgBuilder()
         send_msg.updateImage(f"base64://{data}")
         Cqserver.instance.sendGroupMsg(send_msg, msg.group_id)
