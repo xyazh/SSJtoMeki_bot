@@ -7,7 +7,6 @@ from tsugu_api_core import register_client
 from tsugu_api_core.client import Client as _Client
 from tsugu_api_core.client import Request, Response
 
-
 class Client(_Client):
     @classmethod
     def register(cls):
@@ -36,7 +35,6 @@ class Client(_Client):
         host = parsed_url.hostname
         port = parsed_url.port
         path = parsed_url.path
-        print(f"{host}:{port}")
         if "https" in request.url:
             if port is None:
                 port = 443
