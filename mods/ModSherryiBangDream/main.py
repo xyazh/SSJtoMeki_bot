@@ -6,11 +6,12 @@ from xyacqbot.xyazhServer.ConsoleMessage import ConsoleMessage
 
 try:
     from mods.LibModCommand.command.Command import Command
-    from .Client import Client
 except ImportError:
     Command = None
-    Client == None
-
+try:
+    from .Client import Client
+except ImportError:
+    Client = None
 
 class Main:
     cqserver: Cqserver = None

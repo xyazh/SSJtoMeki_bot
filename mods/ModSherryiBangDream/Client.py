@@ -36,16 +36,15 @@ class Client(_Client):
         host = parsed_url.hostname
         port = parsed_url.port
         path = parsed_url.path
+        print(f"{host}:{port}")
         if "https" in request.url:
             if port is None:
                 port = 443
             h_request = HTTPSRequest(host, port)
-            h_request.ssl_sock.settimeout(120)
         else:
             if port is None:
                 port = 80
             h_request = HTTPRequest(host, port)
-        h_request.sock.settimeout(120)
         h_request_data = RequestData(request.method.upper(), path)
         h_request_data.addBodys(request.headers)
         h_request_data.addBody("Host", f"{host}:{port}")

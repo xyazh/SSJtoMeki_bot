@@ -10,14 +10,11 @@ from xyacqbot.datamanager.UserDataManager import UserDataManager
 from xyacqbot.helper.RollHelper import RollHelper
 from xyacqbot.CommandDLS import CommandDLS
 from tsugu_api import *
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
 
 BOT_NAME = "雪莉"
 
 def threadWrapper(fn, *args, **kwargs):
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(fn, *args, **kwargs)
-        future.result(timeout=120)
+    threading.Thread(target=fn, args=args, kwargs=kwargs).start()
 
 
 
