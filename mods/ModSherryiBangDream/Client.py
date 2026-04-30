@@ -2,10 +2,12 @@ from typing import Any
 from typing_extensions import override
 from urllib.parse import urlparse
 from xyacqbot.xyazhRequest import HTTPRequest, HTTPSRequest, RequestData
+from xyacqbot.xyazhServer import ConsoleMessage
 from tsugu_api import *
 from tsugu_api_core import register_client
 from tsugu_api_core.client import Client as _Client
 from tsugu_api_core.client import Request, Response
+
 
 class Client(_Client):
     @classmethod
@@ -15,7 +17,7 @@ class Client(_Client):
     @override
     def __enter__(self) -> 'Client':
         return self
-    
+
     @override
     async def __aenter__(self) -> 'Client':
         raise RuntimeError(
@@ -49,6 +51,8 @@ class Client(_Client):
         h_request_data.addBody("Connection", f"close")
         h_request_data.setJsonData(request.data)
         h_response = h_request.execute(h_request_data)
+        ConsoleMessage.print(
+            f"{request.method}>>{request.url}|{h_response.status_code}",titles=["TSUGU"])
         return Response(
             h_response.un_chunks_body,
             h_response.status_code
