@@ -12,6 +12,7 @@ class ResponseData:
         self.status_code = 0
         self.reason_phrase = ""
         self.chunks: list[bytes] = []
+        self.cookies: list[str] = []
         self._parseResponse()
 
     def _parseResponse(self):
@@ -28,6 +29,8 @@ class ResponseData:
             header = header.decode("utf-8")
             key, value = header.split(":", 1)
             self.headers[key.strip()] = value.strip()
+            if key.strip().lower() == "set-cookie":
+                self.cookies.append(value)
         self.body = body_part
         # 检查是否为分块传输编码
         if self.headers.get("Transfer-Encoding", "").lower() == "chunked":
@@ -70,7 +73,7 @@ class ResponseData:
         if len(self.chunks) == 1:
             return self._json(self.chunks[0].decode("utf-8",errors="ignore"))
         else:
-            return [self._json(chunk.decode("utf-8",errors="ignore")) for chunk in self.chunks]
+            return self._json(self.text_un_chunks_body)
 
     def __str__(self):
         return f"HTTP/{self.status_code} {self.reason_phrase}\n{self.headers}\n\n{self.text_body}"

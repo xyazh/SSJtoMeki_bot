@@ -97,7 +97,7 @@ class PlCard:
 
     def getAttr(self, key: str, dis: int | float | complex | None = None) -> int | float | complex | None:
         key_enum = AttrEnum[key]
-        val = self.builtin_attrs.get(key_enum, dis)
+        val = self.builtin_attrs.get(key_enum)
         if val is None:
             val = self.other_attrs.get(key, dis)
         return val

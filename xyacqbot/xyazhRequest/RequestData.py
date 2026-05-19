@@ -1,5 +1,6 @@
 import json
 
+
 class RequestData(bytearray):
     def __init__(self, h_type, h_path, h_version="HTTP/1.1"):
         super().__init__()
@@ -18,7 +19,7 @@ class RequestData(bytearray):
         self.__body["Content-Length"] = str(len(data))
         self.updateByteArray()
 
-    def setJsonData(self, data: dict|list):
+    def setJsonData(self, data: dict | list):
         json_data = json.dumps(data)
         self.setData(json_data.encode("utf-8"))
 
@@ -31,6 +32,12 @@ class RequestData(bytearray):
             self.__body[key] = data[key]
         self.updateByteArray()
 
+    def addCookie(self, key, value):
+        self.addBody("Cookie", f"{key}={value}")
+
+    def addCookies(self, data: dict):
+        cookie_str = [f"{key}={value}" for key, value in data.items()]
+        self.addBody("Cookie", "; ".join(cookie_str))
 
     def bodyToStr(self) -> str:
         body = ""
@@ -59,7 +66,6 @@ class RequestData(bytearray):
 
     def toBytes(self) -> bytes:
         return bytes(self)
-    
 
 
 if __name__ == "__main__":
