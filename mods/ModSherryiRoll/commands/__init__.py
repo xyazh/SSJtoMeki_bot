@@ -324,6 +324,23 @@ def pcshow(msg: PacketMsg, name: str = "", **kw):
 
 
 @Command(
+    "[e:emun('.','/','。')][pc:emun('coc7','coc7 ')][count:int]",
+    sign="coc7 [count:int=5]",
+    desc="查看角色卡数据",
+    category="跑团",
+)
+@Command(
+    "[e:emun('.','/','。')][pc:emun('coc7','coc7 ')][count:int]",
+    sign="coc7",
+    desc="查看角色卡数据",
+    category="跑团",
+    hidden=True
+)
+def coc7(msg: PacketMsg, **kw):
+    return f"{BOT_NAME}正在努力适配COC7的规则呢，敬请期待哦~"
+
+
+@Command(
     "[e:emun('.','/','。')]ti",
     sign="ti",
     desc="临时疯狂症状",

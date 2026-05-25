@@ -1,3 +1,5 @@
+from mods.LibModRoll.rolldata.AttrEnum import AttrEnum
+
 INSANE_TEMP = [
     ("失忆", "调查员只记得最后身处的安全地点，却没有任何来到这里的记忆"),
     ("残疾", "调查员陷入了心理性的失明､失聪或躯体缺失感中"),
@@ -23,6 +25,7 @@ INSANE_UNCERTAIN  = [
     ("恐惧", "恐惧症状表 D100"),
     ("躁狂", "躁狂症状表 D100")
 ]
+
 PHOBIA = [
     ("洗澡恐惧症", "对于洗涤或洗澡的恐惧"),
     ("恐高症", "对于身处高处的恐惧"),
@@ -227,3 +230,15 @@ MANIA = [
     ("嗜外狂", "痴迷于异国的事物"),
     ("喜兽癖", "对待动物的态度近乎疯狂地友好")
 ]
+
+COC7 = {
+    AttrEnum.STR: "3d6*5",
+    AttrEnum.CON: "3d6*5",
+    AttrEnum.SIZ: "(2d6+6)*5",
+    AttrEnum.DEX: "3d6*5",
+    AttrEnum.APP: "3d6*5",
+    AttrEnum.INT: "(2d6+6)*5",
+    AttrEnum.POW: "3d6*5",
+    AttrEnum.EDU: "(2d6+6)*5",
+    AttrEnum.LUK: "3d6*5",
+}

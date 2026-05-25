@@ -1,7 +1,7 @@
 import random
 import re
 import math
-
+from itertools import combinations
 
 class RollHelper:
     @staticmethod
@@ -337,6 +337,20 @@ class RollHelper:
         两边略高中间高
         """
         return RollHelper.surpriseDistribution(0, 16, 51, 21, 100, 16, 1, 100, 9, 32, 9)
+    
+    @staticmethod
+    def splitAll(s: str, n: int):
+        length = len(s)
+        if n < 1 or n > length:
+            return
+        for cuts in combinations(range(1, length), n - 1):
+            parts = []
+            start = 0
+            for end in cuts:
+                parts.append(s[start:end])
+                start = end
+            parts.append(s[start:])
+            yield parts
     
 
 if __name__ == "__main__":
