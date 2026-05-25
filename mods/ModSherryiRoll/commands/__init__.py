@@ -349,7 +349,7 @@ def coc7(msg: PacketMsg, count: int = 5, **kw):
         attrs.append(f"共计:{sum2}/{sum1}")
         cards.append(" ".join(attrs))
     s_cards = '\r\n'.join(cards)
-    return f"的调查员作成:\r\n{s_cards}"
+    return f"{msg.getName()}的调查员作成:\r\n{s_cards}"
 
 
 @Command(
