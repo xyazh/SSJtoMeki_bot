@@ -55,7 +55,7 @@ class Command:
         r_text = []
         for cmds in cls.registry.values():
             for cmd in cmds:
-                result = cmd.parser.template(text, True)
+                result = cmd.parser.template(text)
                 if not result:
                     continue
                 try:

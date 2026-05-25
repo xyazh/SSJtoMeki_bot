@@ -56,13 +56,13 @@ def rrule(msg: PacketMsg, e: str):
 
 
 @Command(
-    "[e:emun('.','/','。')][ra:emun('ra','ra '][count:int]#[arr:str]",
+    "[e:emun('.','/','。')][ra:emun('ra','ra ')][count:int]#[arr:str]",
     sign="ra [count:int]#[arr:str]",
     desc="检定一个属性, #前表示检定次数",
     category="跑团",
 )
 @Command(
-    "[e:emun('.','/','。')][ra:emun('ra','ra '][arr:str]",
+    "[e:emun('.','/','。')][ra:emun('ra','ra ')][arr:str]",
     sign="ra [arr:str]",
     desc="检定一个属性",
     category="跑团",
@@ -98,13 +98,13 @@ def ra(msg: PacketMsg, e: str, ra: str, count: int = 1, arr: str = ""):
 
 
 @Command(
-    "[e:emun('.','/','。')][rb:emun('rb','rb '][count:int]#[arr:str]",
+    "[e:emun('.','/','。')][rb:emun('rb','rb ')][count:int]#[arr:str]",
     sign="rb [count:int]#[arr:str]",
     desc="奖励骰, #前表示检定次数",
     category="跑团",
 )
 @Command(
-    "[e:emun('.','/','。')][rb:emun('rb','rb '][arr:str]",
+    "[e:emun('.','/','。')][rb:emun('rb','rb ')][arr:str]",
     sign="rb [arr:str]",
     desc="奖励骰，默认两次取最小",
     category="跑团",
@@ -139,13 +139,13 @@ def rb(msg: PacketMsg, e: str, rb: str, count: int = 2, arr: str = ""):
 
 
 @Command(
-    "[e:emun('.','/','。')][rp:emun('rp','rp '][count:int]#[arr:str]",
+    "[e:emun('.','/','。')][rp:emun('rp','rp ')][count:int]#[arr:str]",
     sign="rp [count:int]#[arr:str]",
     desc="惩罚骰, #前表示检定次数",
     category="跑团",
 )
 @Command(
-    "[e:emun('.','/','。')][rp:emun('rp','rp '][arr:str]",
+    "[e:emun('.','/','。')][rp:emun('rp','rp ')][arr:str]",
     sign="rp [arr:str]",
     desc="惩罚骰，默认两次取最大",
     category="跑团",
@@ -183,7 +183,7 @@ def rp(msg: PacketMsg, e: str, rp: str, count: int = 2, arr: str = ""):
 
 
 @Command(
-    "[e:emun('.','/','。')][st:emun('st','st '][arr:str]",
+    "[e:emun('.','/','。')][st:emun('st','st ')][arr:str]",
     sign="st [arr:str]",
     desc="设置角色卡的属性",
     category="跑团",
@@ -201,7 +201,7 @@ def st(msg: PacketMsg, e: str, st: str, arr: str = ""):
 
 
 @Command(
-    "[e:emun('.','/','。')][show:emun('show','show '][arr:str]",
+    "[e:emun('.','/','。')][show:emun('show','show ')][arr:str]",
     sign="show [arr:str]",
     desc="查看属性值",
     category="跑团",

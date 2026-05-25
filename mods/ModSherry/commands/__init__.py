@@ -33,8 +33,8 @@ def help(msg: PacketMsg, e: str, sub: str = None):
             [f"'{cat}'" for i, cat in enumerate(list(Command.registry.keys()))])
         help1 = CommandDLS(f"[category:emun({help_arg})]")
         help2 = CommandDLS(f"[category:emun({help_arg})] [page:int]")
-        sub1 = help1.template(sub, True)
-        sub2 = help2.template(sub, True)
+        sub1 = help1.template(sub)
+        sub2 = help2.template(sub)
         if sub1:
             category = sub1.get("category")
             msg += Command.help(category, 1)
