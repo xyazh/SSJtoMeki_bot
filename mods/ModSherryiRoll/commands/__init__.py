@@ -8,9 +8,9 @@ from mods.LibModRoll.roll.result.RollResult import MSG
 from mods.LibModRoll.rolldata.RollConfig import RollConfig
 from mods.LibModRoll.rolldata.UserRollData import UserRollData
 from mods.LibModRoll.roll.tools.RollHelper import RollHelper
+from mods.LibModRoll.rolldata.AttrEnum import AttrEnum
 from .msg import D, D0, D1, D2, D3, D4, D5, D6, D7, D8, D9
-from ..coc7 import INSANE_TEMP, INSANE_UNCERTAIN, PHOBIA, MANIA
-
+from ..coc7 import INSANE_TEMP, INSANE_UNCERTAIN, PHOBIA, MANIA, COC7
 
 BOT_NAME = "雪莉"
 ROLL = Roll()
@@ -60,6 +60,10 @@ def rrule(msg: PacketMsg, **kw):
     category="跑团",
 )
 def ra(msg: PacketMsg, count: int = 1, arr: str = "", **kw):
+    if not arr:
+        return
+    if "#" in arr:
+        return
     if XRollHelper.reFind(r"(\D+\d+)", arr):
         key = ""
         value = ""
@@ -87,7 +91,7 @@ def ra(msg: PacketMsg, count: int = 1, arr: str = "", **kw):
             continue
         count_s.append(f"{MSG[i]}:{n[i]}")
     count_s = "、".join(count_s)
-    return f"#命运之书为“{msg.getName()}”进行了{count}次“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n#让{BOT_NAME}看看都有些什么\r\n# {count_s}"
+    return f"#命运之书为“{msg.getName()}”进行了{count}次“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n#嗯……线索已经很明显了，让{BOT_NAME}看看答案会指向哪里\r\n# {count_s}"
 
 
 @Command(
@@ -102,7 +106,7 @@ def ra(msg: PacketMsg, count: int = 1, arr: str = "", **kw):
     desc="奖励骰，默认两次取最小",
     category="跑团",
 )
-def rb(msg: PacketMsg, e: str, rb: str, count: int = 2, arr: str = ""):
+def rb(msg: PacketMsg, count: int = 2, arr: str = "", **kw):
     if not arr:
         return
     if "#" in arr:
@@ -128,7 +132,7 @@ def rb(msg: PacketMsg, e: str, rb: str, count: int = 2, arr: str = ""):
         bot_msg = D6.choice()
     else:
         bot_msg = D7.choice()
-    return f"#福音之书为“{msg.getName()}”进行了“{arr}”祝福检定，\r\n#神圣精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{bot_msg}\r\n"
+    return f"#福音之书为“{msg.getName()}”进行了“{arr}”祝福检定，\r\n#神圣精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{bot_msg}"
 
 
 @Command(
@@ -143,7 +147,7 @@ def rb(msg: PacketMsg, e: str, rb: str, count: int = 2, arr: str = ""):
     desc="惩罚骰，默认两次取最大",
     category="跑团",
 )
-def rp(msg: PacketMsg, e: str, rp: str, count: int = 2, arr: str = ""):
+def rp(msg: PacketMsg, count: int = 2, arr: str = "", **kw):
     if not arr:
         return
     if "#" in arr:
@@ -170,7 +174,7 @@ def rp(msg: PacketMsg, e: str, rp: str, count: int = 2, arr: str = ""):
         bot_msg = D8.choice()
     else:
         bot_msg = D9.choice()
-    return f"#灾厄之书为“{msg.getName()}”进行了“{arr}”诅咒检定，\r\n#黯殇精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{bot_msg}\r\n"
+    return f"#灾厄之书为“{msg.getName()}”进行了“{arr}”诅咒检定，\r\n#黯殇精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{bot_msg}"
 
 
 @Command(
@@ -316,19 +320,36 @@ def pcshow(msg: PacketMsg, name: str = "", **kw):
 
 @Command(
     "[e:emun('.','/','。')][pc:emun('coc7','coc7 ')][count:int]",
-    sign="coc7 [count:int=5]",
-    desc="查看角色卡数据",
+    sign="coc7 [count:int]",
+    desc="调查员作成，默认5次",
     category="跑团",
 )
 @Command(
-    "[e:emun('.','/','。')][pc:emun('coc7','coc7 ')][count:int]",
+    "[e:emun('.','/','。')][pc:emun('coc7','coc7 ')]",
     sign="coc7",
-    desc="查看角色卡数据",
+    desc="调查员作成",
     category="跑团",
     hidden=True
 )
-def coc7(msg: PacketMsg, **kw):
-    return f"{BOT_NAME}正在努力适配COC7的规则呢，敬请期待哦~"
+def coc7(msg: PacketMsg, count: int = 5, **kw):
+    cards = []
+    count = min(count, 10)
+    for _ in range(count):
+        attrs = []
+        sum1 = 0
+        sum2 = 0
+        for name, exp in COC7.items():
+            result = ROLL.r(exp, rule=True)
+            value = result.value
+            sum1 += value
+            if name != AttrEnum.LUK:
+                sum2 += value
+            name = name.names[3]
+            attrs.append(f"{name}:{value}")
+        attrs.append(f"共计:{sum2}/{sum1}")
+        cards.append(" ".join(attrs))
+    s_cards = '\r\n'.join(cards)
+    return f"的调查员作成:\r\n{s_cards}"
 
 
 @Command(
