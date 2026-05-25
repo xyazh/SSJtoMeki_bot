@@ -217,6 +217,11 @@ class PacketMsg(PacketBase):
             name = self.getNickname()
         return name
 
+    def getSessionId(self) -> int:
+        if self.group_id is None:
+            return self.user_id
+        return self.group_id
+
     def checkOwner(self) -> bool:
         return self.sender.role == "owner"
 

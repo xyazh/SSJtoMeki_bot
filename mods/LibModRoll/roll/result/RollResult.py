@@ -12,7 +12,7 @@ MSG = ["大成功", "极难成功", "困难成功", "普通成功", "失败", "�
 class RollResult:
     value: int | float | complex
     exp: str
-    steps: list[tuple[str, str]] | None = None
+    steps: str | None = None
     level: int = -1
     ref: int | float | complex = 80
     ref_name: str = ""
