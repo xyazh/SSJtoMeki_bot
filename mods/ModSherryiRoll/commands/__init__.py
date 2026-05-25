@@ -4,6 +4,7 @@ from mods.LibModCommand.command.Command import Command
 from mods.LibModRoll.roll.Roll import Roll
 from mods.LibModRoll.roll.tools.Dice import Dice
 from mods.LibModRoll.roll.tools.RandomGen import RandomGen
+from mods.LibModRoll.roll.result.RollResult import MSG
 from mods.LibModRoll.rolldata.RollConfig import RollConfig
 from mods.LibModRoll.rolldata.UserRollData import UserRollData
 from mods.LibModRoll.roll.tools.RollHelper import RollHelper
@@ -15,8 +16,9 @@ BOT_NAME = "雪莉"
 ROLL = Roll()
 E = "[e:emun('.','/','。')]"
 
+
 @Command(
-    f"{E}[e:emun('r','r ')][r:regex({r'^[\?\+\-\*\/\^Dd\.0-9ij\(\)（）【】\[\]\{\}？]+$'})]",
+    "[e:emun('.','/','。')][e:emun('r','r ')][exp:regex([\?\+\-\*\/\^Dd\.0-9ij\(\)（）【】\[\]\{\}？]+)]",
     sign="r [exp:str]",
     desc="投骰子，支持延拓至复数域的运算，默认1d100",
     category="跑团"
@@ -27,41 +29,37 @@ def r(msg: PacketMsg, exp: str = "1d100", **kw):
         result = ROLL.r(exp, rule=config.getRules(msg.getSessionId()))
         value = RollHelper.formatValue(result.value)
         step = result.steps
-        return f"{msg.getName()}投了骰子: \r\n{exp}={step}={value}"
+        return f"{msg.getName()}投了骰子: \r\n{step}={value}"
     except Exception as e:
         return f"啊嘞？{BOT_NAME}好像把骰子搞坏了\r\n{e}"
 
 
 @Command(
-    f"{E}rrule",
+    "[e:emun('.','/','。')]rrule",
     sign="rrule",
     desc="切换检定规则，目前有标准规则和简易规则，默认使用标准规则",
     category="跑团"
 )
-def rrule(msg: PacketMsg, e: str):
+def rrule(msg: PacketMsg, **kw):
     config = RollConfig()
     rule = config.getRules(msg.getSessionId())
-    config.setRules(not rule)
+    config.setRules(msg.getSessionId(), not rule)
     return f"#切换检定规则为{'标准' if rule else '简易'}规则"
 
 
 @Command(
-    f"{E}[ra:emun('ra','ra ')][count:int]#[arr:str]",
+    "[e:emun('.','/','。')][ra:emun('ra','ra ')][count:int]#[arr:str]",
     sign="ra [count:int]#[arr:str]",
     desc="检定一个属性, #前表示检定次数",
     category="跑团",
 )
 @Command(
-    f"{E}[ra:emun('ra','ra ')][arr:str]",
+    "[e:emun('.','/','。')][ra:emun('ra','ra ')][arr:str]",
     sign="ra [arr:str]",
     desc="检定一个属性",
     category="跑团",
 )
-def ra(msg: PacketMsg, e: str, ra: str, count: int = 1, arr: str = ""):
-    if not arr:
-        return
-    if "#" in arr:
-        return
+def ra(msg: PacketMsg, count: int = 1, arr: str = "", **kw):
     if XRollHelper.reFind(r"(\D+\d+)", arr):
         key = ""
         value = ""
@@ -81,20 +79,25 @@ def ra(msg: PacketMsg, e: str, ra: str, count: int = 1, arr: str = ""):
     level = result.rollResults().__next__().level
     d: D = [D0, D1, D2, D3, D4, D5][level]
     if count == 1:
-        return f"#命运之书为“{msg.getName()}”进行了“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n# {BOT_NAME}：{d.choice()}"
+        return f"#命运之书为“{msg.getName()}”进行了“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n{d.choice()}"
     n = result.count()
-    count_s = f"大成功:{n[0]}、极难成功:{n[1]}、困难成功:{n[2]}、普通成功:{n[3]}、失败:{n[4]}、大失败:{n[5]}"
-    return f"#命运之书为“{msg.getName()}”进行了{count}次“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n# {BOT_NAME}：让我看看都有些什么\r\n# {count_s}"
+    count_s = []
+    for i in range(6):
+        if n[i] <= 0:
+            continue
+        count_s.append(f"{MSG[i]}:{n[i]}")
+    count_s = "、".join(count_s)
+    return f"#命运之书为“{msg.getName()}”进行了{count}次“{arr}”检定，\r\n#字符精灵为你呈现出:#【{result.toStr()}】:\r\n#让{BOT_NAME}看看都有些什么\r\n# {count_s}"
 
 
 @Command(
-    f"{E}[rb:emun('rb','rb ')][count:int]#[arr:str]",
+    "[e:emun('.','/','。')][rb:emun('rb','rb ')][count:int]#[arr:str]",
     sign="rb [count:int]#[arr:str]",
     desc="奖励骰, #前表示检定次数",
     category="跑团",
 )
 @Command(
-    f"{E}[rb:emun('rb','rb ')][arr:str]",
+    "[e:emun('.','/','。')][rb:emun('rb','rb ')][arr:str]",
     sign="rb [arr:str]",
     desc="奖励骰，默认两次取最小",
     category="跑团",
@@ -125,17 +128,17 @@ def rb(msg: PacketMsg, e: str, rb: str, count: int = 2, arr: str = ""):
         bot_msg = D6.choice()
     else:
         bot_msg = D7.choice()
-    return f"#福音之书为“{msg.getName()}”进行了“{arr}”祝福检定，\r\n#神圣精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{BOT_NAME}：{bot_msg}\r\n"
+    return f"#福音之书为“{msg.getName()}”进行了“{arr}”祝福检定，\r\n#神圣精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{bot_msg}\r\n"
 
 
 @Command(
-    f"{E}[rp:emun('rp','rp ')][count:int]#[arr:str]",
+    "[e:emun('.','/','。')][rp:emun('rp','rp ')][count:int]#[arr:str]",
     sign="rp [count:int]#[arr:str]",
     desc="惩罚骰, #前表示检定次数",
     category="跑团",
 )
 @Command(
-    f"{E}[rp:emun('rp','rp ')][arr:str]",
+    "[e:emun('.','/','。')][rp:emun('rp','rp ')][arr:str]",
     sign="rp [arr:str]",
     desc="惩罚骰，默认两次取最大",
     category="跑团",
@@ -162,18 +165,16 @@ def rp(msg: PacketMsg, e: str, rp: str, count: int = 2, arr: str = ""):
 
     config = RollConfig()
     result = ROLL.ra(arr, val, count, config.getRules(msg.getSessionId()))
-    config = RollConfig()
-    result = ROLL.ra(arr, val, count, config.getRules(msg.getSessionId()))
     b = result.punishment()
     if b.level < 4:
         bot_msg = D8.choice()
     else:
         bot_msg = D9.choice()
-    return f"#灾厄之书为“{msg.getName()}”进行了“{arr}”诅咒检定，\r\n#黯殇精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{BOT_NAME}：{bot_msg}\r\n"
+    return f"#灾厄之书为“{msg.getName()}”进行了“{arr}”诅咒检定，\r\n#黯殇精灵为你呈现出【{b.value}/{b.ref}】:\r\n#{result.toStr()}\r\n{bot_msg}\r\n"
 
 
 @Command(
-    f"{E}[st:emun('st','st ')][arr:str]",
+    "[e:emun('.','/','。')][st:emun('st','st ')][arr:str]",
     sign="st [arr:str]",
     desc="设置角色卡的属性",
     category="跑团",
@@ -191,7 +192,7 @@ def st(msg: PacketMsg, e: str, st: str, arr: str = ""):
 
 
 @Command(
-    f"{E}[show:emun('show','show ')][arr:str]",
+    "[e:emun('.','/','。')][show:emun('show','show ')][arr:str]",
     sign="show [arr:str]",
     desc="查看属性值",
     category="跑团",
@@ -203,7 +204,7 @@ def show(msg: PacketMsg, e: str, show: str, arr: str):
 
 
 @Command(
-    f"{E}[pc:emun('pc','pc ')][new:emun('new','new ')][name:str]",
+    "[e:emun('.','/','。')][pc:emun('pc','pc ')][new:emun('new','new ')][name:str]",
     sign="pc new [name:str]",
     desc="创建一张默认角色卡，最多25张",
     category="跑团",
@@ -219,7 +220,7 @@ def pcnew(msg: PacketMsg, name: str = "", **kw):
 
 
 @Command(
-    f"{E}[pc:emun('pc','pc ')][bind:emun('bind','bind ','tag','tag ')][name:str]",
+    "[e:emun('.','/','。')][pc:emun('pc','pc ')][bind:emun('bind','bind ','tag','tag ')][name:str]",
     sign="pc bind [name:str]",
     desc="设置为当前使用的角色卡",
     category="跑团",
@@ -236,7 +237,7 @@ def pcbind(msg: PacketMsg, name: str = "", **kw):
 
 
 @Command(
-    f"{E}[pc:emun('pc','pc ')][list:emun('list','list ','grp','grp ')]",
+    "[e:emun('.','/','。')][pc:emun('pc','pc ')][list:emun('list','list ','grp','grp ')]",
     sign="pc list",
     desc="拥有的角色卡列表",
     category="跑团",
@@ -248,7 +249,7 @@ def pclist(msg: PacketMsg, **kw):
 
 
 @Command(
-    f"{E}[pc:emun('pc','pc ')][del:emun('del','del ')][name:str]",
+    "[e:emun('.','/','。')][pc:emun('pc','pc ')][del:emun('del','del ')][name:str]",
     sign="pc del [name:str]",
     desc="删除角色卡",
     category="跑团",
@@ -263,7 +264,7 @@ def pcdel(msg: PacketMsg, name: str = "", **kw):
 
 
 @Command(
-    f"{E}[pc:emun('pc','pc ')][nn:emun('nn','nn ')][name:str]",
+    "[e:emun('.','/','。')][pc:emun('pc','pc ')][nn:emun('nn','nn ')][name:str]",
     sign="pc nn [name:str]",
     desc="重命名当前角色卡",
     category="跑团",
@@ -276,7 +277,7 @@ def pcnn(msg: PacketMsg, name: str = "", **kw):
 
 
 @Command(
-    f"{E}[pc:emun('pc','pc ')][copy:emun('copy','copy ','cpy','cpy ')][name1:str]=[name2:str]",
+    "[e:emun('.','/','。')][pc:emun('pc','pc ')][copy:emun('copy','copy ','cpy','cpy ')][name1:str]=[name2:str]",
     sign="pc copy [name1:str]=[name2:str]",
     desc="将角色卡2的属性赋值到角色卡1",
     category="跑团",
@@ -296,7 +297,7 @@ def pccopy(msg: PacketMsg, name1: str = "", name2: str = "", **kw):
 
 
 @Command(
-    f"{E}[pc:emun('pc','pc ')][show:emun('show','show ')][name:str]",
+    "[e:emun('.','/','。')][pc:emun('pc','pc ')][show:emun('show','show ')][name:str]",
     sign="pc show [name:str]",
     desc="查看角色卡数据",
     category="跑团",
@@ -314,13 +315,13 @@ def pcshow(msg: PacketMsg, name: str = "", **kw):
 
 
 @Command(
-    f"{E}[pc:emun('coc7','coc7 ')][count:int]",
+    "[e:emun('.','/','。')][pc:emun('coc7','coc7 ')][count:int]",
     sign="coc7 [count:int=5]",
     desc="查看角色卡数据",
     category="跑团",
 )
 @Command(
-    f"{E}[pc:emun('coc7','coc7 ')][count:int]",
+    "[e:emun('.','/','。')][pc:emun('coc7','coc7 ')][count:int]",
     sign="coc7",
     desc="查看角色卡数据",
     category="跑团",
@@ -331,7 +332,7 @@ def coc7(msg: PacketMsg, **kw):
 
 
 @Command(
-    f"{E}ti",
+    "[e:emun('.','/','。')]ti",
     sign="ti",
     desc="临时疯狂症状",
     category="跑团",
@@ -342,8 +343,9 @@ def ti(msg: PacketMsg, **kw):
     name, desc = result
     return f"{BOT_NAME}发现{msg.getName()}似乎出现一点小麻烦呢：『{name}』{desc}。看起来有点棘手呢，但{BOT_NAME}相信一定能慢慢应对的~"
 
+
 @Command(
-    f"{E}li",
+    "[e:emun('.','/','。')]li",
     sign="li",
     desc="总结疯狂症状",
     category="跑团",
@@ -356,7 +358,7 @@ def li(msg: PacketMsg, **kw):
 
 
 @Command(
-    f"{E}ph",
+    "[e:emun('.','/','。')]ph",
     sign="ph",
     desc="恐惧症",
     category="跑团",
@@ -371,7 +373,7 @@ def ph(msg: PacketMsg, **kw):
 
 
 @Command(
-    f"{E}ma",
+    "[e:emun('.','/','。')]ma",
     sign="ma",
     desc="狂躁症",
     category="跑团",

@@ -62,10 +62,10 @@ class CommandDLS:
 
     def __init__(self, dsl):
         self.dsl = dsl
-        self.compiled_dsl = self.compile_dsl(dsl)
+        self.compiled_dsl = self.compileDLS(dsl)
         self.memo = {}
 
-    def compile_dsl(self, dsl):
+    def compileDLS(self, dsl):
         result = []
         i = 0
         n = len(dsl)
