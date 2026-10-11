@@ -81,7 +81,6 @@ class WebApp(BaseWebApp):
             urls = []
             for real_msg in real_msgs:
                 if isinstance(real_msg, ImageSegment):
-                    print(real_msg.getUrl())
                     urls.append(real_msg.getUrl())
             data = {
                 "id": str(msg.getId()),
