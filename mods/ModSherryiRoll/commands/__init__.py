@@ -42,8 +42,8 @@ def r(msg: PacketMsg, exp: str = "1d100", **kw):
 )
 def rrule(msg: PacketMsg, **kw):
     config = RollConfig()
-    rule = config.getRules(msg.getSessionId())
-    config.setRules(msg.getSessionId(), not rule)
+    rule = not config.getRules(msg.getSessionId())
+    config.setRules(msg.getSessionId(), rule)
     return f"#切换检定规则为{'标准' if rule else '简易'}规则"
 
 

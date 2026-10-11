@@ -77,7 +77,7 @@ def bot(msg: PacketMsg, e: str):
 
 
 @Command(
-    "[e:emun('.','/','。')]e:emun('bye','exit')]",
+    "[e:emun('.','/','。')][e:emun('bye','exit')]",
     sign="bye",
     desc=f"让{BOT_NAME}离开群聊",
     category="常用"

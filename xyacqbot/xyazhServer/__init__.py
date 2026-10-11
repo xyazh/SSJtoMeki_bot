@@ -1,7 +1,6 @@
 from .App import App
 from .ConsoleMessage import ConsoleMessage
 from .FileClassTable import FileClassTable
-from .HtmlStr import HtmlStr
 from .PageManager import PageManager
 from .Server import Server
 from .ServerHelper import ServerHelper

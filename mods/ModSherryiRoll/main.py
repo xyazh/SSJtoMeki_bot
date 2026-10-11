@@ -12,7 +12,7 @@ try:
     from mods.LibModRoll.roll.Roll import Roll
 except ImportError:
     Command = None
-    Roll == None
+    Roll = None
 try:
     from mods.LibModMCP.MCP import MCP
 except ImportError:

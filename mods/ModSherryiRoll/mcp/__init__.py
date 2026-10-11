@@ -29,27 +29,24 @@ def roll(expression: str = "1d100") -> str:
     config = RollConfig()
     result = ROLL.r(exp, rule=config.getRules())
     value = RollHelper.formatValue(result.value)
-    step = [stp[1] for stp in result.steps]
-    if len(step) > 10:
-        step = step[:10]
-        step.append("...")
-    steps = "\r\n".join(step)
-    return f"骰子结果: {exp}={value}step: {steps}"
+    # result.steps 是计算过程字符串（Expression.eval 返回的第二个值），不是列表
+    steps = str(result.steps) if result.steps is not None else ""
+    if len(steps) > 200:
+        steps = steps[:200] + "..."
+    return f"骰子结果: {exp}={value}，计算过程: {steps}"
 
 
 @_MCP.tool()
 def switchRule(rule: bool = None) -> str:
     """
     切换检定规则
-    :param rule: True为标准规则，False为简易规则
+    :param rule: True为标准规则，False为简易规则，为None时在两种规则间切换
     :return: 切换检定规则为标准规则或者简易规则
     """
     config = RollConfig()
     if rule is None:
-        rule = config.getRules()
-        config.setRules(not rule)
-    else:
-        config.setRules(rule)
+        rule = not config.getRules()
+    config.setRules(None, rule)
     return f"#切换检定规则为{'标准' if rule else '简易'}规则"
 
 
